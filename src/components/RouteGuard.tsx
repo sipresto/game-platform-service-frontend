@@ -1,33 +1,25 @@
-import {type PropsWithChildren, useContext, useEffect, useState} from 'react'
+import {type PropsWithChildren, useContext, useEffect, useRef} from 'react'
 import SecurityContext from '../context/SecurityContext.ts'
-import { useLocation } from 'react-router'
 
 export function RouteGuard({children}: PropsWithChildren) {
     const {isInitialised, isAuthenticated, login} = useContext(SecurityContext)
-    const [loginTriggered, setLoginTriggered] = useState(false)
-    const location = useLocation()
+    const loginTriggeredRef = useRef(false)
 
     useEffect(() => {
-        if (isInitialised && !isAuthenticated() && !loginTriggered) {
+        if (isInitialised && !isAuthenticated() && !loginTriggeredRef.current) {
+            loginTriggeredRef.current = true
             console.log('RouteGuard: Not authenticated, initiating login...')
-            setLoginTriggered(true)
-            setTimeout(() => {
-                login()
-            }, 50)
+            login()
         }
-    }, [isInitialised, isAuthenticated, login, loginTriggered, location])
+    }, [isInitialised, isAuthenticated, login])
 
     if (!isInitialised) {
-        return <div>Initializing authentication...</div>
-    }
-
-    if (!isAuthenticated() && loginTriggered) {
-        return <div>Redirecting to login...</div>
+        return <div>Loading...</div>
     }
 
     if (!isAuthenticated()) {
-        return <div>Checking authentication...</div>
+        return null
     }
 
-    return children
+    return <>{children}</>
 }

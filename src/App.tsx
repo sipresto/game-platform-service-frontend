@@ -9,13 +9,12 @@ import {PublicPage} from "./pages/PublicPage.tsx"
 const queryClient = new QueryClient()
 
 function App() {
-
     return (
         <QueryClientProvider client={queryClient}>
             <SecurityContextProvider>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/securedPage" element={<RouteGuard><SecuredPage/></RouteGuard>}/>
+                        <Route path="/securedpage" element={<RouteGuard><SecuredPage/></RouteGuard>}/>
                         <Route path="/publicpage" element={<PublicPage/>}/>
                         <Route path="/" element={<Navigate to="/publicpage"/>}/>
                     </Routes>

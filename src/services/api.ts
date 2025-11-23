@@ -11,7 +11,7 @@ export async function getUserProfile(token?: string | null) {
         headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
-    const { data } = await axios.get<UserProfile>(`${BACKEND_URL}/api/user/profile`, {
+    const { data } = await axios.get<UserProfile>(`${BACKEND_URL}/user/profile`, {
         headers,
     });
     return data;
