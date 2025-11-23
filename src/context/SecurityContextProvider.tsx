@@ -19,10 +19,9 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
     const [loggedInUser, setLoggedInUser] = useState<User | undefined>(undefined)
     const [isInitialised, setIsInitialised] = useState(false)
     const [keycloakInstance, setKeycloakInstance] = useState<Keycloak | null>(null)
-    const initRef = useRef(false) // Prevent double initialization
+    const initRef = useRef(false)
 
     useEffect(() => {
-        // Prevent double initialization in React StrictMode
         if (initRef.current) return
         initRef.current = true
 
@@ -41,7 +40,6 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
 
                 console.log('Keycloak initialized, authenticated:', authenticated)
 
-                // Batch state updates to prevent multiple re-renders
                 if (authenticated && keycloak.token) {
                     addAccessTokenToAuthHeader(keycloak.token)
 
@@ -53,7 +51,6 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                     const realmRoles = keycloak.tokenParsed?.realm_access?.roles ?? []
                     const clientRoles = keycloak.tokenParsed?.resource_access?.[config.clientId]?.roles ?? []
 
-                    // Update all state at once
                     setKeycloakInstance(keycloak)
                     setLoggedInUser({
                         name,
@@ -63,7 +60,6 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                     })
                     setIsInitialised(true)
                 } else {
-                    // Not authenticated
                     setKeycloakInstance(keycloak)
                     setIsInitialised(true)
                 }

@@ -1,4 +1,3 @@
-// src/pages/SecuredPage.tsx (or wherever your component lives)
 import { useContext } from 'react';
 import { useUserProfile } from '../hooks/useUserProfile';
 import SecurityContext from '../context/SecurityContext';
