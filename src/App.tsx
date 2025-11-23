@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
+import SecurityContextProvider from "./context/SecurityContextProvider.tsx"
+import {SecuredPage} from "./pages/SecuredPage.tsx"
+import {RouteGuard} from "./components/RouteGuard.tsx"
+import {BrowserRouter, Navigate, Route, Routes} from "react-router"
+import {PublicPage} from "./pages/PublicPage.tsx"
+
+const queryClient = new QueryClient()
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <QueryClientProvider client={queryClient}>
+            <SecurityContextProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/securedpage" element={<RouteGuard><SecuredPage/></RouteGuard>}/>
+                        <Route path="/publicpage" element={<PublicPage/>}/>
+                        <Route path="/" element={<Navigate to="/publicpage"/>}/>
+                    </Routes>
+                </BrowserRouter>
+            </SecurityContextProvider>
+        </QueryClientProvider>
+    )
 }
 
 export default App
