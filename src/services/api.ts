@@ -16,3 +16,19 @@ export async function getUserProfile(token?: string | null) {
     });
     return data;
 }
+
+export async function updateUsername(username: string, token?: string | null) {
+    const accessToken = token ?? localStorage.getItem('accessToken');
+
+    const headers: Record<string, string> = {};
+    if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
+    const { data } = await axios.put(
+        `${BACKEND_URL}/user/username`,
+        { username },
+        { headers }
+    );
+    return data;
+}

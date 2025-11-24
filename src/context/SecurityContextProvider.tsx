@@ -1,8 +1,16 @@
-import {type PropsWithChildren, useEffect, useState, useCallback, useRef} from 'react'
+import { type PropsWithChildren, useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import SecurityContext from './SecurityContext'
-import {addAccessTokenToAuthHeader} from '../services/auth'
+import { addAccessTokenToAuthHeader } from '../services/auth'
 import Keycloak from 'keycloak-js'
-import type {User} from "../model/user.ts"
+import type { User } from "../model/user.ts"
+import type { UserProfile} from "../model/userProfile.ts";
+import { getUserProfile } from '../services/api'
+
+declare global {
+    interface Window {
+        keycloakInstance?: Keycloak;
+    }
+}
 
 const getKeycloakConfig = () => {
     const kcPath = import.meta.env.VITE_KC_URL || '/auth'
@@ -15,10 +23,12 @@ const getKeycloakConfig = () => {
     }
 }
 
-export default function SecurityContextProvider({children}: PropsWithChildren) {
+export default function SecurityContextProvider({ children }: PropsWithChildren) {
     const [loggedInUser, setLoggedInUser] = useState<User | undefined>(undefined)
     const [isInitialised, setIsInitialised] = useState(false)
     const [keycloakInstance, setKeycloakInstance] = useState<Keycloak | null>(null)
+    const [profile, setProfile] = useState<UserProfile | undefined>(undefined);
+    const [profileIsLoading, setProfileIsLoading] = useState(false);
     const initRef = useRef(false)
 
     useEffect(() => {
@@ -31,6 +41,7 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                 console.log('Initializing Keycloak with config:', config)
 
                 const keycloak = new Keycloak(config)
+                window.keycloakInstance = keycloak
 
                 const authenticated = await keycloak.init({
                     onLoad: 'check-sso',
@@ -73,6 +84,26 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
         initKeycloak()
     }, [])
 
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            if (!isInitialised || !keycloakInstance?.authenticated) return;
+
+            setProfileIsLoading(true);
+            try {
+                const userProfile = await getUserProfile();
+                setProfile(userProfile as UserProfile);
+            } catch (error) {
+                console.error("Failed to fetch user profile (or create user):", error);
+            } finally {
+                setProfileIsLoading(false);
+            }
+        };
+
+        if (isInitialised && keycloakInstance?.authenticated) {
+            fetchUserProfile();
+        }
+    }, [isInitialised, keycloakInstance]);
+
     const login = useCallback(() => {
         if (keycloakInstance) {
             console.log('Starting login process...')
@@ -88,13 +119,17 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
         return keycloakInstance?.authenticated ?? false
     }, [keycloakInstance])
 
+    const contextValue = useMemo(() => ({
+        isInitialised,
+        isAuthenticated,
+        loggedInUser,
+        login,
+        profile,
+        profileIsLoading,
+    }), [isInitialised, isAuthenticated, loggedInUser, login, profile, profileIsLoading]);
+
     return (
-        <SecurityContext.Provider value={{
-            isInitialised,
-            isAuthenticated,
-            loggedInUser,
-            login,
-        }}>
+        <SecurityContext.Provider value={contextValue}>
             {children}
         </SecurityContext.Provider>
     )
