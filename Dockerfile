@@ -5,8 +5,11 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Clean install dependencies
-RUN npm ci
+# Force clean install with all optional dependencies
+RUN npm ci --include=optional || (rm -rf node_modules package-lock.json && npm install)
+
+# Explicitly install the missing rollup binary
+RUN npm install --no-save @rollup/rollup-linux-x64-musl
 
 # Copy source files
 COPY . .
