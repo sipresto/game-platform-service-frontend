@@ -1,23 +1,59 @@
-import { useState, useEffect, useCallback } from 'react';
-import { fetchGames } from '../services/gameService';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { fetchGames, filterGames } from '../services/gameService';
 import type {Game} from "../model/game.ts";
+import type {GameFilterRequest} from "../model/gameRequest.ts";
 
-export function useGames() {
-    const [games, setGames] = useState<Game[]>([]);
+function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+}
+
+export function useFilteredStoreGames(
+    searchTerm: string,
+    activeFilters: GameFilterRequest
+) {
+    const [,setAllGames] = useState<Game[]>([]);
+
+    const [structurallyFilteredGames, setStructurallyFilteredGames] = useState<Game[]>([]);
+
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+    const isFilterEmpty = useMemo(() => {
+        return !activeFilters.minPrice &&
+            !activeFilters.maxPrice &&
+            (!activeFilters.categories || activeFilters.categories.length === 0);
+    }, [activeFilters]);
 
     const loadGames = useCallback(async () => {
         setLoading(true);
         setError(null);
-        try {
-            const data = await fetchGames();
-            setGames(data);
 
-            if (data.length > 0) {
-                console.info(`Successfully loaded ${data.length} games.`);
+        try {
+            let data: Game[];
+
+            if (isFilterEmpty) {
+                data = await fetchGames();
+                setAllGames(data);
+                setStructurallyFilteredGames(data);
+            } else if (structurallyFilteredGames.length === 0) {
+                data = await filterGames(activeFilters);
+                setStructurallyFilteredGames(data);
             } else {
-                console.info('Request successful, but no games exist.');
+                setLoading(false);
+                return;
             }
 
         } catch (err: unknown) {
@@ -29,11 +65,31 @@ export function useGames() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [isFilterEmpty, activeFilters, structurallyFilteredGames.length]);
 
     useEffect(() => {
-       void loadGames();
+        void loadGames();
     }, [loadGames]);
 
-    return { games, loading, error, refresh: loadGames };
+    const finalFilteredGames = useMemo(() => {
+        let currentGames = structurallyFilteredGames;
+
+        if (debouncedSearchTerm) {
+            const lowerCaseSearchTerm = debouncedSearchTerm.toLowerCase();
+            currentGames = currentGames.filter(game =>
+                game.name.toLowerCase().includes(lowerCaseSearchTerm)
+            );
+        }
+
+        return currentGames;
+
+    }, [structurallyFilteredGames, debouncedSearchTerm]);
+
+
+    return {
+        games: finalFilteredGames,
+        loading,
+        error,
+        refresh: loadGames
+    };
 }
