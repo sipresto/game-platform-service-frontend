@@ -96,7 +96,7 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
             removeAccessTokenFromAuthHeader()
 
             keycloakInstance.logout({
-                redirectUri: window.location.origin + '/publicpage'
+                redirectUri: window.location.origin + '/store'
             })
         } else {
             console.error('Keycloak instance not available')
