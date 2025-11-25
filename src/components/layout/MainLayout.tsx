@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router';
 import {
     Box, AppBar, Toolbar, Typography, Drawer, List, ListItem,
     ListItemButton, ListItemIcon, ListItemText, IconButton, Badge,
-    CssBaseline
+    CssBaseline, Button
 } from '@mui/material';
 import {
     Diversity3,
@@ -15,6 +15,8 @@ import {
     ArrowLeft,
     AccountCircle,
     Menu as MenuIcon,
+    Logout,
+    Login
 } from '@mui/icons-material';
 
 import SecurityContext from '../../context/SecurityContext';
@@ -24,7 +26,7 @@ const DRAWER_WIDTH = 240;
 export function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { loggedInUser } = useContext(SecurityContext);
+    const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
 
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -32,12 +34,28 @@ export function MainLayout() {
         setMobileOpen(!mobileOpen);
     };
 
-    const menuItems = [
+    const handleLogout = () => {
+        logout();
+    };
+
+    const handleLogin = () => {
+        login();
+    };
+
+    const publicMenuItems = [
         { text: 'Store', path: '/store', icon: <Store /> },
+    ];
+
+    const protectedMenuItems = [
         { text: 'Library', path: '/library', icon: <VerticalSplit /> },
         { text: 'Profile', path: '/profile', icon: <Person /> },
         { text: 'Friends', path: '/friends', icon: <Diversity3/> },
         { text: 'Settings', path: '/settings', icon: <Tune /> },
+    ];
+
+    const menuItems = [
+        ...publicMenuItems,
+        ...(isAuthenticated() ? protectedMenuItems : [])
     ];
 
     const drawerContent = (
@@ -73,6 +91,30 @@ export function MainLayout() {
                         </ListItem>
                     );
                 })}
+
+                <ListItem disablePadding>
+                    <ListItemButton
+                        onClick={isAuthenticated() ? handleLogout : handleLogin}
+                        sx={{
+                            py: 1.5,
+                            mt: 2,
+                            display: { sm: 'none' },
+                            justifyContent: 'center',
+                            bgcolor: isAuthenticated() ? 'error.main' : 'primary.main',
+                            color: 'white',
+                            '&:hover': {
+                                bgcolor: isAuthenticated() ? 'error.dark' : 'primary.dark'
+                            },
+                        }}
+                    >
+                        <ListItemIcon sx={{ minWidth: 40, color: 'white' }}>
+                            {isAuthenticated() ? <Logout /> : <Login />}
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={isAuthenticated() ? "Logout" : "Login"}
+                        />
+                    </ListItemButton>
+                </ListItem>
             </List>
         </Box>
     );
@@ -109,15 +151,55 @@ export function MainLayout() {
                     </Box>
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 500, display: { xs: 'none', sm: 'block' } }}>
-                            Hi, {loggedInUser?.name || 'Gamer'}!
-                        </Typography>
-                        <IconButton color="inherit" size="small"><AccountCircle /></IconButton>
-                        <IconButton color="inherit" size="small">
-                            <Badge color="default" sx={{ '& .MuiBadge-badge': { bgcolor: 'white', color: 'black' } }}>
-                                <ChatBubble fontSize="small" />
-                            </Badge>
-                        </IconButton>
+                        {isAuthenticated() && (
+                            <Typography variant="body2" sx={{ fontWeight: 500, display: { xs: 'none', sm: 'block' } }}>
+                                Hi, {loggedInUser?.name || 'Gamer'}!
+                            </Typography>
+                        )}
+
+                        {isAuthenticated() ? (
+                            <IconButton
+                                color="inherit"
+                                size="small"
+                                onClick={handleLogout}
+                                title="Logout"
+                                sx={{
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                }}
+                            >
+                                <Logout fontSize="small" />
+                            </IconButton>
+                        ) : (
+                            <Button
+                                color="inherit"
+                                startIcon={<Login />}
+                                onClick={handleLogin}
+                                sx={{
+                                    display: { xs: 'none', sm: 'flex' },
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(255,255,255,0.1)'
+                                    }
+                                }}
+                            >
+                                Login
+                            </Button>
+                        )}
+
+                        {isAuthenticated() && (
+                            <IconButton color="inherit" size="small">
+                                <AccountCircle fontSize="small" />
+                            </IconButton>
+                        )}
+
+                        {isAuthenticated() && (
+                            <IconButton color="inherit" size="small">
+                                <Badge color="default" sx={{ '& .MuiBadge-badge': { bgcolor: 'white', color: 'black' } }}>
+                                    <ChatBubble fontSize="small" />
+                                </Badge>
+                            </IconButton>
+                        )}
                     </Box>
                 </Toolbar>
             </AppBar>
