@@ -5,7 +5,7 @@ import {
     Typography,
     Box,
     Chip,
-    Divider
+    ButtonBase,
 } from '@mui/material';
 import type {Game} from "../model/game.ts";
 
@@ -14,74 +14,124 @@ interface GameCardProps {
 }
 
 export function GameCard({ game }: GameCardProps) {
+    const descriptionLimit = 150;
+
     return (
-        <Card
-            variant="outlined"
+        <ButtonBase
             sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                borderColor: 'text.secondary',
-                borderWidth: 1,
-                borderRadius: 0,
-                transition: 'transform 0.2s',
+                width: '100%',
+                textAlign: 'left',
+                borderRadius: 1,
                 '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: 3
+                    '& .game-card': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    }
                 }
             }}
         >
-            <CardMedia
-                component="img"
-                height="240"
-                image={game.imageUrl || `https://placehold.co/600x400/EEE/31343C?text=${encodeURIComponent(game.name)}`}
-                alt={game.name}
-                sx={{ borderBottom: '1px solid', borderColor: 'text.secondary' }}
-            />
+            <Card
+                className="game-card"
+                sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease',
+                    overflow: 'hidden',
+                    backgroundColor: 'background.paper',
+                    '&:hover': {
+                        borderColor: 'primary.main',
+                    }
+                }}
+            >
+                <Box sx={{ width: '100%', height: 140 }}>
+                    <CardMedia
+                        component="img"
+                        image={game.imageUrl || `https://placehold.co/400x140/1B2838/FFFFFF?text=${encodeURIComponent(game.name)}`}
+                        alt={game.name}
+                        sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                        }}
+                    />
+                </Box>
 
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 0 }}>
-                <Box sx={{ display: 'flex', height: '100%', minHeight: '140px' }}>
-
-                    <Box sx={{ p: 2.5, flexGrow: 1 }}>
-                        <Typography variant="h6" component="h2" fontWeight="bold" lineHeight={1.3} gutterBottom>
+                <CardContent sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1.5,
+                    flexGrow: 1,
+                }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                        <Typography
+                            variant="h6"
+                            component="h2"
+                            fontWeight="bold"
+                            lineHeight={1.2}
+                            sx={{
+                                fontSize: '1.1rem',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                flex: 1,
+                                mr: 2,
+                            }}
+                        >
                             {game.name}
                         </Typography>
-
-                        <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
-                            {game.description.substring(0, 80)}{game.description.length > 80 ? '...' : ''}
+                        <Typography
+                            variant="h6"
+                            color="primary.main"
+                            fontWeight="bold"
+                            sx={{
+                                fontSize: '1.1rem',
+                                flexShrink: 0,
+                                whiteSpace: 'nowrap',
+                            }}
+                        >
+                            ${game.price.toFixed(2)}
                         </Typography>
-
-                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                            {game.categories.map((category) => (
-                                <Chip
-                                    key={category}
-                                    label={category}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{ borderRadius: 1, height: 20, fontSize: '0.7rem' }}
-                                />
-                            ))}
-                        </Box>
                     </Box>
 
-                    <Divider orientation="vertical" flexItem />
+                    <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mb: 1.5 }}>
+                        {game.categories.slice(0, 4).map((category) => (
+                            <Chip
+                                key={category}
+                                label={category}
+                                size="small"
+                                sx={{
+                                    height: 22,
+                                    fontSize: '0.7rem',
+                                }}
+                            />
+                        ))}
+                    </Box>
 
-                    <Box
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
                         sx={{
-                            p: 2.5,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            minWidth: '100px',
-                            bgcolor: 'grey.50'
+                            lineHeight: 1.5,
+                            fontSize: '0.85rem',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            flexGrow: 1,
                         }}
                     >
-                        <Typography variant="h5" color="text.primary" fontWeight="bold">
-                            ${game.price}
-                        </Typography>
-                    </Box>
-                </Box>
-            </CardContent>
-        </Card>
+                        {game.description.substring(0, descriptionLimit)}
+                        {game.description.length > descriptionLimit ? '...' : ''}
+                    </Typography>
+                </CardContent>
+            </Card>
+        </ButtonBase>
     );
 }
