@@ -1,4 +1,3 @@
-// components/layout/MainLayout.tsx
 import { useState, useContext } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import {
@@ -43,7 +42,6 @@ export function MainLayout() {
         login();
     };
 
-    // Define menu items based on authentication
     const publicMenuItems = [
         { text: 'Store', path: '/store', icon: <Store /> },
     ];
@@ -94,7 +92,6 @@ export function MainLayout() {
                     );
                 })}
 
-                {/* Login/Logout button in drawer for mobile */}
                 <ListItem disablePadding>
                     <ListItemButton
                         onClick={isAuthenticated() ? handleLogout : handleLogin}
@@ -154,16 +151,13 @@ export function MainLayout() {
                     </Box>
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        {/* Conditional greeting */}
                         {isAuthenticated() && (
                             <Typography variant="body2" sx={{ fontWeight: 500, display: { xs: 'none', sm: 'block' } }}>
                                 Hi, {loggedInUser?.name || 'Gamer'}!
                             </Typography>
                         )}
 
-                        {/* Conditional Login/Logout button */}
                         {isAuthenticated() ? (
-                            // Authenticated - show logout
                             <IconButton
                                 color="inherit"
                                 size="small"
@@ -178,7 +172,6 @@ export function MainLayout() {
                                 <Logout fontSize="small" />
                             </IconButton>
                         ) : (
-                            // Not authenticated - show login button
                             <Button
                                 color="inherit"
                                 startIcon={<Login />}
@@ -194,14 +187,12 @@ export function MainLayout() {
                             </Button>
                         )}
 
-                        {/* Account icon - only show when authenticated */}
                         {isAuthenticated() && (
                             <IconButton color="inherit" size="small">
                                 <AccountCircle fontSize="small" />
                             </IconButton>
                         )}
 
-                        {/* Chat icon - only show when authenticated */}
                         {isAuthenticated() && (
                             <IconButton color="inherit" size="small">
                                 <Badge color="default" sx={{ '& .MuiBadge-badge': { bgcolor: 'white', color: 'black' } }}>

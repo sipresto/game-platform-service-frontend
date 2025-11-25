@@ -1,4 +1,3 @@
-// context/SecurityContextProvider.tsx
 import {type PropsWithChildren, useEffect, useState, useCallback, useRef} from 'react'
 import SecurityContext from './SecurityContext'
 import {addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader} from '../services/auth'
@@ -61,7 +60,6 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                     })
                 } else {
                     setKeycloakInstance(keycloak)
-                    // Clear any existing user data if not authenticated
                     setLoggedInUser(undefined)
                     removeAccessTokenFromAuthHeader()
                 }

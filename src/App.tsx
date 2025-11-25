@@ -1,4 +1,3 @@
-// App.tsx
 import './App.css'
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 import SecurityContextProvider from "./context/SecurityContextProvider.tsx"

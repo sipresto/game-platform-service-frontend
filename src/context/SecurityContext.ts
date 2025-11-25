@@ -1,4 +1,3 @@
-// context/SecurityContext.ts
 import {createContext} from 'react'
 import type {User} from "../model/user.ts"
 
