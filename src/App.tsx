@@ -17,6 +17,11 @@ function App() {
                 <BrowserRouter>
                     <Routes>
                         <Route path="/publicpage" element={<PublicPage />} />
+
+                        <Route element={<MainLayout />}>
+                            <Route path="/store" element={<StorePage />} />
+                        </Route>
+
                         <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
                             <Route path="/store" element={<StorePage />} />
                             <Route path="/securedpage" element={<SecuredPage />} />
