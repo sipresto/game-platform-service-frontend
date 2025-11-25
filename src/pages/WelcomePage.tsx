@@ -25,8 +25,7 @@ export function WelcomePage() {
             queryClient.invalidateQueries({ queryKey: ['userProfile'] });
             navigate('/securedpage');
         },
-        // 🔑 FIX: Replace 'any' with 'AxiosError<ApiErrorResponse>'
-        // This tells TypeScript that err.response?.data contains the 'error' property.
+
         onError: (err: AxiosError<ApiErrorResponse>) => {
             setError(err.response?.data?.error || 'Failed to update username');
         },
