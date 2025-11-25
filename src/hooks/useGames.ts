@@ -22,8 +22,6 @@ export function useFilteredStoreGames(
     searchTerm: string,
     activeFilters: GameFilterRequest
 ) {
-    const [,setAllGames] = useState<Game[]>([]);
-
     const [structurallyFilteredGames, setStructurallyFilteredGames] = useState<Game[]>([]);
 
     const [loading, setLoading] = useState<boolean>(true);
@@ -46,7 +44,6 @@ export function useFilteredStoreGames(
 
             if (isFilterEmpty) {
                 data = await fetchGames();
-                setAllGames(data);
                 setStructurallyFilteredGames(data);
             } else if (structurallyFilteredGames.length === 0) {
                 data = await filterGames(activeFilters);
