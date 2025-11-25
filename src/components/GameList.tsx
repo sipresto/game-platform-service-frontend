@@ -5,12 +5,11 @@ import {
     CircularProgress,
     Box,
     Button,
-    Container
 } from '@mui/material';
-import { GameCard } from './GameCard.tsx';
+import { GameCard } from './GameCard';
 import { useFilteredStoreGames } from '../hooks/useGames';
-import type { GameFilterRequest } from "../model/gameRequest.ts";
-import type { Game } from "../model/game.ts";
+import type { GameFilterRequest } from "../model/gameRequest";
+import type { Game } from "../model/game";
 
 interface GameListProps {
     searchTerm: string;
@@ -18,13 +17,7 @@ interface GameListProps {
 }
 
 export function GameList({ searchTerm, filters }: GameListProps) {
-
-    const {
-        games,
-        loading,
-        error,
-        refresh
-    } = useFilteredStoreGames(searchTerm, filters);
+    const { games, loading, error, refresh } = useFilteredStoreGames(searchTerm, filters);
 
     if (loading) {
         return (
@@ -36,7 +29,7 @@ export function GameList({ searchTerm, filters }: GameListProps) {
 
     if (error) {
         return (
-            <Container sx={{ mt: 4 }}>
+            <Box sx={{ mt: 4 }}>
                 <Alert
                     severity="error"
                     action={
@@ -47,40 +40,35 @@ export function GameList({ searchTerm, filters }: GameListProps) {
                 >
                     {error}
                 </Alert>
-            </Container>
+            </Box>
         );
     }
 
     if (games.length === 0) {
         return (
-            <Box sx={{ textAlign: 'center', mt: 10, opacity: 0.6 }}>
-                <Typography variant="h5" gutterBottom>
-                    {searchTerm || Object.keys(filters).length > 0
-                        ? `No games found matching your criteria.`
-                        : 'No games available'
-                    }
-                </Typography>
-                <Typography variant="body1">
-                    {searchTerm || Object.keys(filters).length > 0
-                        ? 'Try modifying your search term or filter settings.'
-                        : 'Check back later for new releases.'
-                    }
-                </Typography>
-            </Box>
+            <Grid container spacing={2} justifyContent="center" sx={{ mt: 10, opacity: 0.6 }}>
+                <Grid size={{xs: 12}}>
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Typography variant="h5" gutterBottom>
+                            {searchTerm || Object.keys(filters).length > 0
+                                ? `No games found matching your criteria.`
+                                : 'No games available'}
+                        </Typography>
+                        <Typography variant="body1">
+                            {searchTerm || Object.keys(filters).length > 0
+                                ? 'Try modifying your search term or filter settings.'
+                                : 'Check back later for new releases.'}
+                        </Typography>
+                    </Box>
+                </Grid>
+            </Grid>
         );
     }
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ overflowX: 'hidden' }}>
             {games.map((game: Game) => (
-                <Grid
-                    key={game.gameId}
-                    size={{
-                        xs: 12,
-                        sm: 6,
-                        md: 4,
-                    }}
-                >
+                <Grid key={game.gameId} size={{xs: 12, md: 6, lg: 4}}>
                     <GameCard game={game} />
                 </Grid>
             ))}

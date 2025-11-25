@@ -16,7 +16,7 @@ export function GameSearch({ searchTerm, onSearchTermChange }: GameSearchProps) 
         <Box sx={{ mb: 4 }}>
             <TextField
                 fullWidth
-                label="Search for Games by Name"
+                label="Search for games by name"
                 variant="outlined"
                 value={searchTerm}
                 onChange={handleChange}
