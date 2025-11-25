@@ -8,7 +8,7 @@ export const fetchGames = async (): Promise<Game[]> => {
     if (response.status === 404) return [];
 
     if (!response.ok) {
-        throw new Error(`Failed to fetch games: ${response.statusText}`);
+        throw new Error(`Failed to fetch games, try again later. `);
     }
 
     const data: unknown = await response.json();
