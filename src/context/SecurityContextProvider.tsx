@@ -1,6 +1,7 @@
+// context/SecurityContextProvider.tsx
 import {type PropsWithChildren, useEffect, useState, useCallback, useRef} from 'react'
 import SecurityContext from './SecurityContext'
-import {addAccessTokenToAuthHeader} from '../services/auth'
+import {addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader} from '../services/auth'
 import Keycloak from 'keycloak-js'
 import type {User} from "../model/user.ts"
 
@@ -58,14 +59,18 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                         accessToken: keycloak.token,
                         idToken: keycloak.idToken,
                     })
-                    setIsInitialised(true)
                 } else {
                     setKeycloakInstance(keycloak)
-                    setIsInitialised(true)
+                    // Clear any existing user data if not authenticated
+                    setLoggedInUser(undefined)
+                    removeAccessTokenFromAuthHeader()
                 }
+                setIsInitialised(true)
 
             } catch (error) {
                 console.error('Keycloak initialization failed:', error)
+                setLoggedInUser(undefined)
+                removeAccessTokenFromAuthHeader()
                 setIsInitialised(true)
             }
         }
@@ -77,7 +82,21 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
         if (keycloakInstance) {
             console.log('Starting login process...')
             keycloakInstance.login({
-                redirectUri: window.location.href
+                redirectUri: window.location.origin + '/store'
+            })
+        } else {
+            console.error('Keycloak instance not available')
+        }
+    }, [keycloakInstance])
+
+    const logout = useCallback(() => {
+        if (keycloakInstance) {
+            console.log('Starting logout process...')
+            setLoggedInUser(undefined)
+            removeAccessTokenFromAuthHeader()
+
+            keycloakInstance.logout({
+                redirectUri: window.location.origin + '/publicpage'
             })
         } else {
             console.error('Keycloak instance not available')
@@ -94,6 +113,7 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
             isAuthenticated,
             loggedInUser,
             login,
+            logout,
         }}>
             {children}
         </SecurityContext.Provider>
