@@ -43,9 +43,6 @@ export function GameList() {
             <Box sx={{ textAlign: 'center', mt: 10, opacity: 0.6 }}>
                 <Typography variant="h5" gutterBottom>No games available</Typography>
                 <Typography variant="body1">Check back later for new releases.</Typography>
-                <Button variant="outlined" sx={{ mt: 2 }} onClick={refresh}>
-                    Refresh
-                </Button>
             </Box>
         );
     }
