@@ -51,9 +51,9 @@ export function GameList() {
     }
 
     return (
-        <Grid container spacing={4}>
+        <Grid container spacing={3}>
             {games.map((game) => (
-                <Grid size={{ xs: 12, md: 6, lg: 6, xl: 4 }} key={game.id}>
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 6 }} key={game.gameId}>
                     <GameCard game={game} />
                 </Grid>
             ))}

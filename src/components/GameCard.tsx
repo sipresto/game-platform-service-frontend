@@ -33,46 +33,51 @@ export function GameCard({ game }: GameCardProps) {
         >
             <CardMedia
                 component="img"
-                height="200"
+                height="240"
                 image={game.imageUrl || `https://placehold.co/600x400/EEE/31343C?text=${encodeURIComponent(game.name)}`}
                 alt={game.name}
                 sx={{ borderBottom: '1px solid', borderColor: 'text.secondary' }}
             />
 
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 0 }}>
-                <Box sx={{ display: 'flex', height: '100%', minHeight: '100px' }}>
+                <Box sx={{ display: 'flex', height: '100%', minHeight: '140px' }}>
 
-                    <Box sx={{ p: 2, flexGrow: 1 }}>
-                        <Typography variant="subtitle1" component="h2" fontWeight="bold" lineHeight={1.2} gutterBottom>
+                    <Box sx={{ p: 2.5, flexGrow: 1 }}>
+                        <Typography variant="h6" component="h2" fontWeight="bold" lineHeight={1.3} gutterBottom>
                             {game.name}
                         </Typography>
 
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                            {game.description.substring(0, 60)}{game.description.length > 60 ? '...' : ''}
+                        <Typography variant="body2" color="text.secondary" sx={{ display: 'block', mb: 1.5 }}>
+                            {game.description.substring(0, 80)}{game.description.length > 80 ? '...' : ''}
                         </Typography>
 
-                        <Chip
-                            label={game.category}
-                            size="small"
-                            variant="outlined"
-                            sx={{ borderRadius: 1, height: 20, fontSize: '0.7rem' }}
-                        />
+                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                            {game.categories.map((category) => (
+                                <Chip
+                                    key={category}
+                                    label={category}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{ borderRadius: 1, height: 20, fontSize: '0.7rem' }}
+                                />
+                            ))}
+                        </Box>
                     </Box>
 
                     <Divider orientation="vertical" flexItem />
 
                     <Box
                         sx={{
-                            p: 2,
+                            p: 2.5,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            minWidth: '80px',
+                            minWidth: '100px',
                             bgcolor: 'grey.50'
                         }}
                     >
-                        <Typography variant="h6" color="text.primary" fontWeight="bold">
-                            {game.price}$
+                        <Typography variant="h5" color="text.primary" fontWeight="bold">
+                            ${game.price}
                         </Typography>
                     </Box>
                 </Box>

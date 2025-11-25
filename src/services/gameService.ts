@@ -5,7 +5,6 @@ const GAMES_ENDPOINT = '/api/games';
 
 export const fetchGames = async (): Promise<Game[]> => {
     const response = await fetch(GAMES_ENDPOINT);
-
     if (response.status === 404) return [];
 
     if (!response.ok) {

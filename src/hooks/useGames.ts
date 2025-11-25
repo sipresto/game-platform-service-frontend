@@ -32,6 +32,7 @@ export function useGames() {
     }, []);
 
     useEffect(() => {
+       void loadGames();
     }, [loadGames]);
 
     return { games, loading, error, refresh: loadGames };
