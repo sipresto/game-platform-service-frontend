@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import {
     Box, AppBar, Toolbar, Typography, Drawer, List, ListItem,
     ListItemButton, ListItemIcon, ListItemText, IconButton, Badge,
-    CssBaseline, CircularProgress
+    CssBaseline
 } from '@mui/material';
 import StoreIcon from '@mui/icons-material/Store';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
@@ -14,30 +14,16 @@ import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import { useUserProfile } from '../../hooks/useUserProfile';
-// import { auth } from '../../context/SecurityContext'; // later inloggne
+import SecurityContext from '../../context/SecurityContext';
 
 const DRAWER_WIDTH = 240;
 
 export function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
-    // const { isAuthenticated } = useAuth();
-    const { profile, isLoading } = useUserProfile();
+    const { loggedInUser } = useContext(SecurityContext);
 
     const [mobileOpen, setMobileOpen] = useState(false);
-
-    // if (!isAuthenticated) {
-    //     return <Navigate to="/publicpage" replace />;
-    // }
-
-    if (isLoading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -121,7 +107,7 @@ export function MainLayout() {
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Typography variant="body2" sx={{ fontWeight: 500, display: { xs: 'none', sm: 'block' } }}>
-                            Hi, {profile?.username || 'Gamer'}!
+                            Hi, {loggedInUser?.name || 'Gamer'}!
                         </Typography>
                         <IconButton color="inherit" size="small"><AccountCircleIcon /></IconButton>
                         <IconButton color="inherit" size="small">
