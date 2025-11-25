@@ -5,6 +5,8 @@ import {SecuredPage} from "./pages/SecuredPage.tsx"
 import {RouteGuard} from "./components/RouteGuard.tsx"
 import {BrowserRouter, Navigate, Route, Routes} from "react-router"
 import {PublicPage} from "./pages/PublicPage.tsx"
+import {MainLayout} from "./components/layout/MainLayout.tsx";
+import {StorePage} from "./pages/StorePage.tsx";
 
 const queryClient = new QueryClient()
 
@@ -14,9 +16,15 @@ function App() {
             <SecurityContextProvider>
                 <BrowserRouter>
                     <Routes>
-                        <Route path="/securedpage" element={<RouteGuard><SecuredPage/></RouteGuard>}/>
-                        <Route path="/publicpage" element={<PublicPage/>}/>
-                        <Route path="/" element={<Navigate to="/publicpage"/>}/>
+                        <Route path="/publicpage" element={<PublicPage />} />
+                        <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
+                            <Route path="/store" element={<StorePage />} />
+                            <Route path="/securedpage" element={<SecuredPage />} />
+
+                            <Route path="/" element={<Navigate to="/store" />} />
+                        </Route>
+
+                        <Route path="*" element={<Navigate to="/publicpage" />} />
                     </Routes>
                 </BrowserRouter>
             </SecurityContextProvider>
