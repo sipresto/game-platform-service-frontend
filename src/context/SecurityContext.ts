@@ -1,24 +1,18 @@
-import { createContext } from 'react'
-import type { User } from "../model/user.ts"
-import type { UserProfile } from "../model/userProfile.ts"
+import {createContext} from 'react'
+import type {User} from "../model/user.ts"
 
-export type SecurityContextType = {
+export type SecurityContext = {
     isInitialised: boolean
     isAuthenticated: () => boolean
     loggedInUser: User | undefined
     login: () => void
-
-    profile: UserProfile | undefined
-    profileIsLoading: boolean
+    logout: () => void
 }
 
-export default createContext<SecurityContextType>({
+export default createContext<SecurityContext>({
     isInitialised: false,
     isAuthenticated: () => false,
     loggedInUser: undefined,
-    login: () => {
-    },
-
-    profile: undefined,
-    profileIsLoading: true,
+    login: () => {},
+    logout: () => {},
 })

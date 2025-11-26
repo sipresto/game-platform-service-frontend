@@ -18,18 +18,19 @@ function App() {
                     <Routes>
                         <Route path="/publicpage" element={<PublicPage />} />
 
+                        {/* Public routes that don't require authentication */}
                         <Route element={<MainLayout />}>
                             <Route path="/store" element={<StorePage />} />
-                        </Route>
-
-                        <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
-                            <Route path="/store" element={<StorePage />} />
-                            <Route path="/securedpage" element={<SecuredPage />} />
-
                             <Route path="/" element={<Navigate to="/store" />} />
                         </Route>
 
-                        <Route path="*" element={<Navigate to="/publicpage" />} />
+                        {/* Protected routes - require authentication */}
+                        <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
+                            <Route path="/securedpage" element={<SecuredPage />} />
+                        </Route>
+
+                        {/* Catch all - redirect to store (public) */}
+                        <Route path="*" element={<Navigate to="/store" />} />
                     </Routes>
                 </BrowserRouter>
             </SecurityContextProvider>
