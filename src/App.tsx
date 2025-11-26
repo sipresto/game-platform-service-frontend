@@ -7,6 +7,7 @@ import {BrowserRouter, Navigate, Route, Routes} from "react-router"
 import {PublicPage} from "./pages/PublicPage.tsx"
 import {MainLayout} from "./components/layout/MainLayout.tsx";
 import {StorePage} from "./pages/StorePage.tsx";
+import {LobbyPage} from "./pages/LobbyPage.tsx";
 
 const queryClient = new QueryClient()
 
@@ -27,6 +28,7 @@ function App() {
                         {/* Protected routes - require authentication */}
                         <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
                             <Route path="/securedpage" element={<SecuredPage />} />
+                            <Route path="/lobby/:gameId" element={<LobbyPage />} />
                         </Route>
 
                         {/* Catch all - redirect to store (public) */}
