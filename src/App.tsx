@@ -8,6 +8,7 @@ import {PublicPage} from "./pages/PublicPage.tsx"
 import {MainLayout} from "./components/layout/MainLayout.tsx";
 import {StorePage} from "./pages/StorePage.tsx";
 import {LobbyPage} from "./pages/LobbyPage.tsx";
+import {LibraryPage} from "./pages/LibraryPage.tsx";
 
 const queryClient = new QueryClient()
 
@@ -29,6 +30,7 @@ function App() {
                         <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
                             <Route path="/securedpage" element={<SecuredPage />} />
                             <Route path="/lobby/:gameId" element={<LobbyPage />} />
+                            <Route path="/library" element={<LibraryPage />} />
                         </Route>
 
                         {/* Catch all - redirect to store (public) */}
