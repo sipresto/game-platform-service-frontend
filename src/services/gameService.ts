@@ -1,10 +1,10 @@
 import type {Game} from '../model/game';
 import type {GameFilterRequest} from "../model/gameRequest.ts";
 
-const GAMES_ENDPOINT = '/api/games';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const fetchGames = async (): Promise<Game[]> => {
-    const response = await fetch(GAMES_ENDPOINT);
+    const response = await fetch(`${BACKEND_URL}/games`);
     if (response.status === 404) return [];
 
     if (!response.ok) {
@@ -18,7 +18,7 @@ export const fetchGames = async (): Promise<Game[]> => {
 };
 
 export const filterGames = async (filter: GameFilterRequest): Promise<Game[]> => {
-    const response = await fetch(`${GAMES_ENDPOINT}/filter`, {
+    const response = await fetch(`${BACKEND_URL}/games/filter`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
