@@ -5,19 +5,19 @@ import SecurityContext from '../context/SecurityContext';
 export function RegistrationGuard({ children }: PropsWithChildren) {
     const {
         isAuthenticated,
-        profile,
-        profileIsLoading
+        loggedInUser,
+        isInitialised
     } = useContext(SecurityContext);
 
     if (!isAuthenticated()) {
         return <Navigate to="/publicpage" />;
     }
 
-    if (profileIsLoading) {
-        return <div>Loading profile...</div>;
+    if (!isInitialised) {
+        return <div>Loading...</div>;
     }
 
-    const hasCompletedRegistration = profile?.username && profile.username.length >= 3;
+    const hasCompletedRegistration = loggedInUser?.name && loggedInUser.name.length >= 3;
 
     if (!hasCompletedRegistration) {
         return <Navigate to="/welcome" />;

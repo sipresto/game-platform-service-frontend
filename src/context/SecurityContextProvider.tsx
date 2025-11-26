@@ -112,6 +112,7 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
             loggedInUser,
             login,
             logout,
+            keycloakInstance,
         }}>
             {children}
         </SecurityContext.Provider>

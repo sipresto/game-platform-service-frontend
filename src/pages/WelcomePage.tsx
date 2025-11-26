@@ -3,13 +3,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateUsername } from '../services/api';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { useNavigate } from 'react-router';
-// Import AxiosError from the framework (even though it's implicitly available)
 import { AxiosError } from 'axios';
 
-// 🔑 LOCAL FIX: Define the expected error structure inside the file
 interface ApiErrorResponse {
     error: string;
-    // We only need the 'error' property to fix the TS2339 issue
 }
 
 export function WelcomePage() {
@@ -53,7 +50,6 @@ export function WelcomePage() {
     };
 
     return (
-        // ... (JSX remains the same)
         <div style={{
             maxWidth: '500px',
             margin: '3rem auto',

@@ -3,11 +3,11 @@ import { Link } from 'react-router';
 import SecurityContext from '../context/SecurityContext';
 
 export function Header() {
-    const { isAuthenticated, login, loggedInUser } = useContext(SecurityContext);
+    const { isAuthenticated, login, loggedInUser, keycloakInstance } = useContext(SecurityContext);
 
     const handleSignup = () => {
-        if (window.keycloakInstance) {
-            window.keycloakInstance.register();
+        if (keycloakInstance) {
+            keycloakInstance.register();
         } else {
             login();
         }
