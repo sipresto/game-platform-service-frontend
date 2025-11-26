@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { fetchGames, filterGames } from '../services/gameService';
+import {fetchGames, filterGames, getGameById} from '../services/gameService';
 import type {Game} from "../model/game.ts";
 import type {GameFilterRequest} from "../model/gameRequest.ts";
+import {useQuery} from "@tanstack/react-query";
 
 function useDebounce<T>(value: T, delay: number): T {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -89,4 +90,12 @@ export function useFilteredStoreGames(
         error,
         refresh: loadGames
     };
+}
+
+export function useGameDetails(gameId: string | undefined) {
+    return useQuery({
+        queryKey: ['game', gameId],
+        queryFn: () => getGameById(gameId!),
+        enabled: !!gameId,
+    });
 }
