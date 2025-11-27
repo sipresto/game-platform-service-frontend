@@ -8,9 +8,10 @@ import {
     ButtonBase
 } from '@mui/material';
 import {useNavigate} from 'react-router';
-import {useContext} from 'react';
+import {useContext, useState} from 'react';
 import SecurityContext from '../context/SecurityContext';
 import type {Game} from "../model/game.ts";
+import {usePurchaseGame} from "../hooks/usePurchases.ts";
 
 interface GameCardProps {
     game: Game;
@@ -20,11 +21,26 @@ interface GameCardProps {
 export function GameCard({game, isLibrary = false}: GameCardProps) {
     const navigate = useNavigate();
     const {isAuthenticated, login} = useContext(SecurityContext);
+    const [isPurchaseTriggered, setIsPurchaseTriggered] = useState(false);
+    const { data, isLoading, isError, error } = usePurchaseGame(game.gameId);
     const descriptionLimit = 150;
 
     const handleGameClick = () => {
         if (isAuthenticated() && isLibrary) {
             navigate(`/lobby/${game.gameId}`);
+        } else if (isAuthenticated() && !isLibrary) {
+            if (!isPurchaseTriggered) {
+                setIsPurchaseTriggered(true);
+
+                console.log('Purchasing game...');
+            } else if (isLoading) {
+                console.log('Purchasing game...');
+            } else if (isError) {
+                console.error('Failed to purchase game:', error);
+            } else if (data) {
+                console.log('Game purchased successfully:', data);
+                navigate(`/user/library`);
+            }
         } else if (!isAuthenticated()) {
             login();
         }
