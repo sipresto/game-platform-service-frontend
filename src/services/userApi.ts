@@ -9,9 +9,17 @@ const getAuthHeaders = (token?: string | null) => {
 };
 
 export async function getOwnedGamesForUser(userId: string, token?: string | null): Promise<LibraryGame[]> {
-    const { data } = await axios.get<LibraryGame[]>(
-        `${BACKEND_URL}/user/${userId}/games`,
-        { headers: getAuthHeaders(token) }
-    );
-    return data;
+    try {
+        const { data } = await axios.get<LibraryGame[]>(
+            `${BACKEND_URL}/user/${userId}/games`,
+            { headers: getAuthHeaders(token) }
+        );
+        return data;
+    } catch (error) {
+        const axiosError = error as { response?: { status: number; statusText: string }; message: string };
+        if (axiosError.response?.status === 404) {
+            return [];
+        }
+        throw new Error(`Failed to fetch owned games: ${axiosError.response?.statusText || axiosError.message}`);
+    }
 }
