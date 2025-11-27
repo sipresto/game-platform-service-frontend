@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import {fetchGames, filterGames, getGameById} from '../services/gameService';
+import {fetchGames, filterGames, getGameById} from '../services/gameApi.ts';
 import type {Game} from "../model/game.ts";
 import type {GameFilterRequest} from "../model/gameRequest.ts";
 import {useQuery} from "@tanstack/react-query";
