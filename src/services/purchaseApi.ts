@@ -3,9 +3,17 @@ import type {Purchase} from "../model/purchase.ts";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const buyGame = async (gameId: string): Promise<Purchase> => {
+const getAuthHeaders = (token?: string | null) => {
+    const accessToken = token ?? localStorage.getItem('accessToken');
+    return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+};
+
+export const buyGame = async (gameId: string, token?: string | null): Promise<Purchase> => {
     try {
-        const response = await axios.post<Purchase>(`${BACKEND_URL}/purchases/${gameId}`);
+        const response = await axios.post<Purchase>(
+            `${BACKEND_URL}/purchases/${gameId}`,
+            { headers: getAuthHeaders(token) }
+        );
         return response.data;
     } catch (error) {
         const axiosError = error as { response?: { status: number; statusText: string }; message: string };
