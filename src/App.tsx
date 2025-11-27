@@ -9,6 +9,7 @@ import {MainLayout} from "./components/layout/MainLayout.tsx";
 import {StorePage} from "./pages/StorePage.tsx";
 import {LobbyPage} from "./pages/LobbyPage.tsx";
 import {LibraryPage} from "./pages/LibraryPage.tsx";
+import {ProfilePage} from "./pages/ProfilePage.tsx";
 
 const queryClient = new QueryClient()
 
@@ -31,6 +32,7 @@ function App() {
                             <Route path="/securedpage" element={<SecuredPage />} />
                             <Route path="/lobby/:gameId" element={<LobbyPage />} />
                             <Route path="/library" element={<LibraryPage />} />
+                            <Route path="/profile/:userId" element={<ProfilePage />} />
                         </Route>
 
                         {/* Catch all - redirect to store (public) */}

@@ -132,7 +132,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                                     whiteSpace: 'nowrap',
                                 }}
                             >
-                                ${game.price.toFixed(2)}
+                                ${(game.price ?? 0).toFixed(2)}
                             </Typography>
                         )}
                     </Box>
