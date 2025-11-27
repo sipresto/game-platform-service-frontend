@@ -48,7 +48,7 @@ export function MainLayout() {
 
     const protectedMenuItems = [
         { text: 'Library', path: '/library', icon: <VerticalSplit /> },
-        { text: 'Profile', path: '/profile', icon: <Person /> },
+        { text: 'Profile', path: `/profile/${loggedInUser?.profile?.userId || ''}`, icon: <Person /> },
         { text: 'Friends', path: '/friends', icon: <Diversity3/> },
         { text: 'Settings', path: '/settings', icon: <Tune /> },
     ];
