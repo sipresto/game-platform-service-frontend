@@ -8,13 +8,15 @@ interface LobbyCardProps {
         isPrivate: boolean;
     };
     onJoinLobby: (lobbyId: string, isPrivate: boolean) => void;
+    onLeaveLobby: (lobbyId: string) => void;
     onStartGame: (lobbyId: string) => void;
     isJoining?: boolean;
+    isLeaving?: boolean;
     isStarting?: boolean;
     children?: React.ReactNode;
 }
 
-export const LobbyCard = ({ lobby, onJoinLobby, onStartGame, isJoining, isStarting, children }: LobbyCardProps) => {
+export const LobbyCard = ({ lobby, onJoinLobby, onLeaveLobby, onStartGame, isJoining, isLeaving, isStarting, children }: LobbyCardProps) => {
     const getLobbyName = (lobbyId: string) => {
         const idSuffix = lobbyId.slice(-6).toUpperCase();
         return `Game Room ${idSuffix}`;
@@ -76,6 +78,15 @@ export const LobbyCard = ({ lobby, onJoinLobby, onStartGame, isJoining, isStarti
                     disabled={isStarting}
                 >
                     {isStarting ? 'Starting...' : 'Start'}
+                </Button>
+                <Button
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => onLeaveLobby(lobby.id)}
+                    disabled={isLeaving}
+                >
+                    {isLeaving ? 'Leaving...' : 'Leave'}
                 </Button>
             </CardActions>
         </Card>

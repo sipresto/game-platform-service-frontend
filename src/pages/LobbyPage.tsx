@@ -23,7 +23,7 @@ export const LobbyPage = () => {
     const { gameId } = useParams<{ gameId: string }>();
 
     const { lobbies, isLoading, error, refetch } = useLobbies(gameId);
-    const { createLobby, joinLobby, startGame } = useLobbyActions(gameId);
+    const { createLobby, joinLobby, leaveLobby, startGame } = useLobbyActions(gameId);
     const { data: game, isLoading: gameLoading, error: gameError } = useGameDetails(gameId);
 
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -101,6 +101,29 @@ export const LobbyPage = () => {
         );
     };
 
+    const handleLeaveLobby = (lobbyId: string) => {
+        setSelectedLobbyId(null);
+
+        leaveLobby.mutate(
+            { lobbyId },
+            {
+                onSuccess: () => {
+                    setNotification({
+                        type: 'success',
+                        message: 'Successfully left lobby!',
+                    });
+                    localStorage.removeItem('currentLobbyId');
+                },
+                onError: () => {
+                    setNotification({
+                        type: 'error',
+                        message: 'Failed to leave lobby.',
+                    })
+                }
+            }
+        )
+    };
+
     // Clear the stored lobby ID when leaving the page or creating a new lobby
     useEffect(() => {
         return () => {
@@ -150,10 +173,24 @@ export const LobbyPage = () => {
     const handleStartGameConfirm = () => {
         if (!selectedLobbyId || !gameId) return;
 
+        let aiDifficulty: StartGameRequest['difficulty'];
+
+        switch (difficulty) {
+            case 'EASY':
+                aiDifficulty = 'EASY';
+                break;
+            case 'MEDIUM':
+                aiDifficulty = 'HARD';
+                break;
+            case 'HARD':
+                aiDifficulty = 'IMPOSSIBLE';
+                break;
+        }
+
         const request: StartGameRequest = {
             gameId,
             players: [],
-            difficulty,
+            difficulty: aiDifficulty,
         };
 
         startGame.mutate(
@@ -239,8 +276,10 @@ export const LobbyPage = () => {
                 <LobbyGrid
                     lobbies={lobbies}
                     onJoinLobby={handleJoinLobby}
+                    onLeaveLobby={handleLeaveLobby}
                     onStartGame={handleStartGame}
                     isJoining={joinLobby.isPending}
+                    isLeaving={leaveLobby.isPending}
                     isStarting={startGame.isPending}
                 />
             )}

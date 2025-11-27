@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useContext, useEffect, useState } from 'react';
 import SecurityContext from '../context/SecurityContext';
-import { createLobby, getLobbiesForGame, joinLobby, startGame } from '../services/lobbyApi';
+import {createLobby, getLobbiesForGame, joinLobby, leaveLobby, startGame} from '../services/lobbyApi';
 import type { CreateLobbyRequest, JoinLobbyRequest, Lobby, StartGameRequest } from '../model/lobby';
 
 const useToken = () => {
@@ -65,6 +65,14 @@ export function useLobbyActions(gameId: string | undefined) {
         },
     });
 
+    const leaveMutation = useMutation({
+        mutationFn: ({lobbyId}: { lobbyId: string; }) =>
+            leaveLobby(lobbyId, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['lobbies', gameId]});
+        }
+    })
+
     const startMutation = useMutation({
         mutationFn: ({ lobbyId, request }: { lobbyId: string; request: StartGameRequest }) =>
             startGame(lobbyId, request, token),
@@ -76,6 +84,7 @@ export function useLobbyActions(gameId: string | undefined) {
     return {
         createLobby: createMutation,
         joinLobby: joinMutation,
+        leaveLobby: leaveMutation,
         startGame: startMutation,
     };
 }
