@@ -47,6 +47,16 @@ export async function joinLobby(
     );
 }
 
+export async function leaveLobby(
+    lobbyId: string,
+    token?: string | null
+): Promise<void> {
+    await axios.post(
+        `${BACKEND_URL}/lobbies/${lobbyId}/leave`,
+        { headers: getAuthHeaders(token) }
+    )
+}
+
 export async function startGame(
     lobbyId: string,
     request: StartGameRequest,

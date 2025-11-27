@@ -14,10 +14,11 @@ export interface JoinLobbyRequest {
     password?: string | null;
 }
 
+
 export interface StartGameRequest {
     gameId: string;
     players: string[];
-    difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+    difficulty: 'EASY' | 'HARD' | 'IMPOSSIBLE';
 }
 
 export interface LobbyCreatedResponse {
