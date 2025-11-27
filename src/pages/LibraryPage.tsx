@@ -28,7 +28,7 @@ export function LibraryPage() {
                     onSearchTermChange={setSearchTerm}
                 />*/}
 
-                <GameList searchTerm={searchTerm} filters={filters} />
+                <GameList searchTerm={searchTerm} filters={filters} isLibrary={true} />
             </Box>
         </Container>
     );

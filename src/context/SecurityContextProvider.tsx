@@ -54,9 +54,18 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                     setKeycloakInstance(keycloak)
                     setLoggedInUser({
                         name,
+                        username: keycloak.tokenParsed?.preferred_username,
+                        email: keycloak.tokenParsed?.email,
                         roles: [...realmRoles, ...clientRoles],
                         accessToken: keycloak.token,
                         idToken: keycloak.idToken,
+                        profile: {
+                            userId: keycloak.tokenParsed?.sub || '',
+                            username: keycloak.tokenParsed?.preferred_username || '',
+                            email: keycloak.tokenParsed?.email,
+                            name: name,
+                            roles: [...realmRoles, ...clientRoles],
+                        }
                     })
                 } else {
                     setKeycloakInstance(keycloak)

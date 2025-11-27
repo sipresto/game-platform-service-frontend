@@ -10,14 +10,27 @@ import { GameCard } from './GameCard';
 import { useFilteredStoreGames } from '../hooks/useGames';
 import type { GameFilterRequest } from "../model/gameRequest";
 import type { Game } from "../model/game";
+import type {LibraryGame} from "../model/libraryGame.ts";
+import {useOwnedGames} from "../hooks/useOwnedGames.ts";
+
+type ListGame = Game | LibraryGame;
 
 interface GameListProps {
     searchTerm: string;
     filters: GameFilterRequest;
+    isLibrary?: boolean;
 }
 
-export function GameList({ searchTerm, filters }: GameListProps) {
-    const { games, loading, error, refresh } = useFilteredStoreGames(searchTerm, filters);
+export function GameList({ searchTerm, filters, isLibrary=false }: GameListProps) {
+    const storeHook = useFilteredStoreGames(searchTerm, filters);
+    const libraryHook = useOwnedGames(searchTerm);
+
+    const data = isLibrary ? libraryHook : storeHook;
+
+    const games: ListGame[] = data.games as ListGame[];
+    const loading = data.loading;
+    const error = data.error;
+    const refresh = data.refresh;
 
     if (loading) {
         return (
@@ -33,7 +46,7 @@ export function GameList({ searchTerm, filters }: GameListProps) {
                 <Alert
                     severity="error"
                     action={
-                        <Button color="inherit" size="small" onClick={refresh}>
+                        <Button color="inherit" size="small" onClick={() => void refresh()}>
                             Retry
                         </Button>
                     }
@@ -50,14 +63,14 @@ export function GameList({ searchTerm, filters }: GameListProps) {
                 <Grid size={{xs: 12}}>
                     <Box sx={{ textAlign: 'center' }}>
                         <Typography variant="h5" gutterBottom>
-                            {searchTerm || Object.keys(filters).length > 0
+                            {searchTerm || (isLibrary ? false : Object.keys(filters).length > 0)
                                 ? `No games found matching your criteria.`
-                                : 'No games available'}
+                                : isLibrary ? 'Your library is empty.' : 'No games available'}
                         </Typography>
                         <Typography variant="body1">
-                            {searchTerm || Object.keys(filters).length > 0
+                            {searchTerm || (isLibrary ? false : Object.keys(filters).length > 0)
                                 ? 'Try modifying your search term or filter settings.'
-                                : 'Check back later for new releases.'}
+                                : isLibrary ? 'Time to check out the store!' : 'Check back later for new releases.'}
                         </Typography>
                     </Box>
                 </Grid>
@@ -67,9 +80,9 @@ export function GameList({ searchTerm, filters }: GameListProps) {
 
     return (
         <Grid container spacing={2} sx={{ overflowX: 'hidden' }}>
-            {games.map((game: Game) => (
+            {games.map((game: ListGame) => (
                 <Grid key={game.gameId} size={{xs: 12, md: 6, lg: 4}}>
-                    <GameCard game={game} />
+                    <GameCard game={game as Game} isLibrary={isLibrary} />
                 </Grid>
             ))}
         </Grid>
