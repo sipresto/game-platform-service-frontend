@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import SecurityContext from '../context/SecurityContext';
-import type {LibraryGame} from "../model/libraryGame.ts";
 import {useQuery} from "@tanstack/react-query";
 import {getOwnedGamesForUser} from "../services/userApi.ts";
+import type {Game} from "../model/game.ts";
 
 function useCurrentUser() {
     const { loggedInUser, isAuthenticated } = useContext(SecurityContext);
@@ -23,7 +23,7 @@ export function useOwnedGames(searchTerm: string) {
         isLoading: loading,
         error,
         refetch: refresh,
-    } = useQuery<LibraryGame[], Error>({
+    } = useQuery<Game[], Error>({
         queryKey: ['ownedGames', userId],
         queryFn: () => getOwnedGamesForUser(userId, token),
         enabled: isAuthenticated && !!userId,

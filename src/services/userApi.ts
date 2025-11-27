@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type {LibraryGame} from "../model/libraryGame.ts";
+import type {Game} from "../model/game.ts";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
@@ -8,9 +8,9 @@ const getAuthHeaders = (token?: string | null) => {
     return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
 };
 
-export async function getOwnedGamesForUser(userId: string, token?: string | null): Promise<LibraryGame[]> {
+export async function getOwnedGamesForUser(userId: string, token?: string | null): Promise<Game[]> {
     try {
-        const { data } = await axios.get<LibraryGame[]>(
+        const { data } = await axios.get<Game[]>(
             `${BACKEND_URL}/user/${userId}/games`,
             { headers: getAuthHeaders(token) }
         );
