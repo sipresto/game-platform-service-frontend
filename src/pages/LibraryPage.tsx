@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Typography, Container, Box } from '@mui/material';
-import { GameSearch } from "../components/Searchbar";
 import { GameList } from "../components/GameList";
 import type { GameFilterRequest } from "../model/gameRequest";
 
 export function LibraryPage() {
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, ] = useState('');
     const [filters] = useState<GameFilterRequest>({});
 
     return (
