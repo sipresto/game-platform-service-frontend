@@ -43,10 +43,16 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                 if (authenticated && keycloak.token) {
                     addAccessTokenToAuthHeader(keycloak.token)
 
-                    const name = keycloak.tokenParsed?.given_name ||
+                    const givenName = keycloak.tokenParsed?.given_name || '';
+                    const familyName = keycloak.tokenParsed?.family_name || '';
+                    const preferredUsername = keycloak.tokenParsed?.preferred_username || '';
+                    const email = keycloak.tokenParsed?.email;
+
+                    const name = givenName && familyName
+                        ? `${givenName} ${familyName}`
+                        : keycloak.tokenParsed?.name ||
                         keycloak.tokenParsed?.preferred_username ||
-                        keycloak.tokenParsed?.name ||
-                        'Unknown User'
+                        'Unknown User';
 
                     const realmRoles = keycloak.tokenParsed?.realm_access?.roles ?? []
                     const clientRoles = keycloak.tokenParsed?.resource_access?.[config.clientId]?.roles ?? []
@@ -54,16 +60,18 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                     setKeycloakInstance(keycloak)
                     setLoggedInUser({
                         name,
-                        username: keycloak.tokenParsed?.preferred_username,
-                        email: keycloak.tokenParsed?.email,
+                        username: preferredUsername,
+                        email: email,
                         roles: [...realmRoles, ...clientRoles],
                         accessToken: keycloak.token,
                         idToken: keycloak.idToken,
                         profile: {
                             userId: keycloak.tokenParsed?.sub || '',
-                            username: keycloak.tokenParsed?.preferred_username || '',
-                            email: keycloak.tokenParsed?.email,
+                            username: preferredUsername,
+                            email: email,
                             name: name,
+                            firstName: givenName,
+                            lastName: familyName,
                             roles: [...realmRoles, ...clientRoles],
                         }
                     })

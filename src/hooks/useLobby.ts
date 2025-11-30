@@ -1,4 +1,3 @@
-// src/hooks/useLobby.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useContext, useEffect, useState } from 'react';
 import SecurityContext from '../context/SecurityContext';

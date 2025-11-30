@@ -48,8 +48,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
             return;
         }
 
-        // If purchase hasn't been triggered yet, trigger it now
-        setIsPurchaseTriggered(true); // Set state to trigger the API request
+        setIsPurchaseTriggered(true);
         console.log('Purchasing game...');
     };
 

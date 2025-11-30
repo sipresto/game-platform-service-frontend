@@ -1,4 +1,3 @@
-// src/pages/LobbyPage.tsx
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import {
@@ -42,7 +41,6 @@ export const LobbyPage = () => {
         message: string;
     } | null>(null);
 
-    // Store joined lobby ID in localStorage when joining
     const handleJoinLobby = (lobbyId: string, isPrivateLobby: boolean) => {
         setSelectedLobbyId(lobbyId);
         if (isPrivateLobby) {
@@ -58,7 +56,6 @@ export const LobbyPage = () => {
                             type: 'success',
                             message: 'Successfully joined lobby! Waiting for game to start...',
                         });
-                        // Store the lobby ID so we can detect when it disappears
                         localStorage.setItem('currentLobbyId', lobbyId);
                         setJoinPassword('');
                     },
@@ -86,7 +83,6 @@ export const LobbyPage = () => {
                         type: 'success',
                         message: 'Successfully joined lobby! Waiting for game to start...',
                     });
-                    // Store the lobby ID so we can detect when it disappears
                     localStorage.setItem('currentLobbyId', selectedLobbyId);
                     setJoinDialogOpen(false);
                     setJoinPassword('');
@@ -124,11 +120,9 @@ export const LobbyPage = () => {
         )
     };
 
-    // Clear the stored lobby ID when leaving the page or creating a new lobby
     useEffect(() => {
         return () => {
-            // Optional: clear when component unmounts
-            // localStorage.removeItem('currentLobbyId');
+
         };
     }, []);
 

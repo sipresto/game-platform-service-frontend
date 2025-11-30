@@ -1,8 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
-import { getUserProfile } from '../services/api';
-import { useContext } from 'react';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {getUserProfile, updateUserProfile} from '../services/api';
+import {useContext} from 'react';
 import SecurityContext from '../context/SecurityContext';
-import type { UserProfile } from '../model/userProfile';
+import type {ProfileUpdateData, UserProfile} from '../model/userProfile';
+import {useKeycloakAccountService} from "../services/keycloakService.ts";
 
 export function useUserProfile() {
     const { loggedInUser } = useContext(SecurityContext);
@@ -24,4 +25,28 @@ export function useUserProfile() {
         ...query,
         profile: query.data,
     };
+}
+
+export function useUpdateProfile() {
+    const queryClient = useQueryClient();
+    const { updateKeycloakAccount } = useKeycloakAccountService();
+
+    return useMutation({
+        mutationFn: async (profileData: ProfileUpdateData) => {
+            await updateKeycloakAccount(
+                profileData.username,
+                undefined,
+                profileData.firstName,
+                profileData.lastName
+            );
+
+            return await updateUserProfile({
+                displayName: profileData.displayName,
+                bio: profileData.bio
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['userProfile']});
+        },
+    });
 }
