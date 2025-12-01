@@ -41,7 +41,7 @@ export function ProfileForm({
                     onChange={handleChange('username')}
                     required
                     error={!formState.username.trim()}
-                    helperText="Your unique login identifier - updates Keycloak"
+                    helperText="Your unique login identifier"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -59,7 +59,7 @@ export function ProfileForm({
                     onChange={handleChange('firstName')}
                     required
                     error={!formState.firstName.trim()}
-                    helperText="Your first name - updates Keycloak"
+                    helperText="Your first name"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -71,7 +71,7 @@ export function ProfileForm({
                     label="Last Name"
                     value={formState.lastName}
                     onChange={handleChange('lastName')}
-                    helperText="Your last name - updates Keycloak"
+                    helperText="Your last name"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -85,7 +85,7 @@ export function ProfileForm({
                     onChange={handleChange('displayName')}
                     required
                     error={!formState.displayName.trim()}
-                    helperText="This name appears to other users in the app - stored in our database"
+                    helperText="This name appears to other users in the app"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -99,7 +99,7 @@ export function ProfileForm({
                     onChange={handleChange('bio')}
                     multiline
                     rows={4}
-                    helperText="Tell others about yourself - stored in our database"
+                    helperText="Tell others about yourself"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -112,7 +112,7 @@ export function ProfileForm({
                         label="Email"
                         value={loggedInUser.email}
                         aria-readonly={true}
-                        helperText="Email is managed by Keycloak"
+                        helperText="Email"
                         variant="outlined"
                         disabled
                     />
