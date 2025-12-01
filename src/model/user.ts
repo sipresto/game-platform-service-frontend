@@ -15,5 +15,6 @@ export interface User {
         roles?: string[];
         displayName?: string;
         bio?: string;
+        profile_visibility?: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
     };
 }

@@ -23,3 +23,24 @@ export async function getOwnedGamesForUser(userId: string, token?: string | null
         throw new Error(`Failed to fetch owned games: ${axiosError.response?.statusText || axiosError.message}`);
     }
 }
+
+export async function updateUserPrivacy(
+    visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE',
+    token?: string | null
+): Promise<void> {
+    try {
+        await axios.put(
+            `${BACKEND_URL}/user/privacy`,
+            `"${visibility}"`,
+            {
+                headers: {
+                    ...getAuthHeaders(token),
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+    } catch (error) {
+        const axiosError = error as { response?: { status: number; statusText: string }; message: string };
+        throw new Error(`Failed to update privacy settings: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}

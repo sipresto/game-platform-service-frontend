@@ -14,6 +14,12 @@ import { useProfileForm } from '../hooks/useProfileForm';
 import { ActionButtons } from "../components/profileEdit/ActionButtons.tsx";
 import { FormAlerts } from "../components/profileEdit/FormAlerts.tsx";
 import { ProfileForm } from "../components/profileEdit/ProfileForm.tsx";
+import type {UseMutationResult} from "@tanstack/react-query";
+import type {PrivacyUpdateData} from "../model/userProfile.ts";
+
+interface PrivacyAlertProps {
+    mutation: UseMutationResult<void, Error, PrivacyUpdateData>;
+}
 
 function LoadingState() {
     return (
@@ -33,6 +39,40 @@ function ErrorState({ error }: { error: Error }) {
     );
 }
 
+function PrivacyAlert({ mutation }: PrivacyAlertProps) {
+    if (mutation.isError) {
+        return (
+            <Grid size={{ xs: 12 }}>
+                <Alert severity="error" sx={{ mt: 2 }}>
+                    Failed to update privacy settings: {mutation.error.message}
+                </Alert>
+            </Grid>
+        );
+    }
+
+    if (mutation.isPending) {
+        return (
+            <Grid size={{ xs: 12 }}>
+                <Alert severity="info" sx={{ mt: 2 }}>
+                    Updating privacy settings...
+                </Alert>
+            </Grid>
+        );
+    }
+
+    if (mutation.isSuccess) {
+        return (
+            <Grid size={{ xs: 12 }}>
+                <Alert severity="success" sx={{ mt: 2 }}>
+                    Privacy settings updated successfully!
+                </Alert>
+            </Grid>
+        );
+    }
+
+    return null;
+}
+
 export function ProfileEditPage() {
     const { profile: userProfile, isLoading, error } = useUserProfile();
     const { loggedInUser } = useContext(SecurityContext);
@@ -43,9 +83,12 @@ export function ProfileEditPage() {
         formState,
         isDirty,
         updateProfileMutation,
+        updatePrivacyMutation,
         handleFieldChange,
+        handlePrivacyChange,
         handleReset,
-        handleSubmit
+        handleSubmit,
+        isPrivacyUpdating
     } = useProfileForm({ userProfile, loggedInUser: loggedInUserOrNull });
 
     if (isLoading && !loggedInUser) {
@@ -71,8 +114,12 @@ export function ProfileEditPage() {
                             isLoading={isLoading}
                             error={error}
                             isSubmitting={updateProfileMutation.isPending}
+                            isPrivacyUpdating={isPrivacyUpdating}
                             onFieldChange={handleFieldChange}
+                            onPrivacyChange={handlePrivacyChange}
                         />
+
+                        <PrivacyAlert mutation={updatePrivacyMutation} />
 
                         <FormAlerts
                             isLoading={isLoading}

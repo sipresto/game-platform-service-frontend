@@ -5,6 +5,7 @@ export interface UserProfile {
     email?: string;
     name?: string;
     roles?: string[];
+    visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
     profile?: {
         displayName?: string;
         bio?: string;
@@ -17,4 +18,9 @@ export interface ProfileUpdateData {
     lastName: string;
     displayName: string;
     bio: string;
+    profile_visibility?: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
+}
+
+export interface PrivacyUpdateData {
+    profile_visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
 }
