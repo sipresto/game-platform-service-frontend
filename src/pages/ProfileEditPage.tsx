@@ -8,7 +8,7 @@ import {
     Grid,
 } from '@mui/material';
 import { useUserProfile } from '../hooks/useUserProfile';
-import { useContext } from 'react';
+import {useContext} from 'react';
 import SecurityContext from '../context/SecurityContext';
 import { useProfileForm } from '../hooks/useProfileForm';
 import { ActionButtons } from "../components/profileEdit/ActionButtons.tsx";
@@ -16,6 +16,7 @@ import { FormAlerts } from "../components/profileEdit/FormAlerts.tsx";
 import { ProfileForm } from "../components/profileEdit/ProfileForm.tsx";
 import type {UseMutationResult} from "@tanstack/react-query";
 import type {PrivacyUpdateData} from "../model/userProfile.ts";
+import type {ApiError} from "../services/keycloakService.ts";
 
 interface PrivacyAlertProps {
     mutation: UseMutationResult<void, Error, PrivacyUpdateData>;
@@ -32,19 +33,39 @@ function LoadingState() {
 }
 
 function ErrorState({ error }: { error: Error }) {
+    const formatErrorMessage = (errorInstance: Error): string => {
+        const apiError = errorInstance as ApiError;
+        if (apiError.status) {
+            const statusText = apiError.statusText ? ` ${apiError.statusText}` : '';
+            return `(HTTP ${apiError.status}${statusText}) ${apiError.message}`;
+        }
+        return errorInstance.message;
+    };
+
     return (
         <Container maxWidth="md" sx={{ mt: 4 }}>
-            <Alert severity="error">Error loading profile: {error.message}</Alert>
+            <Alert severity="error">Error loading profile: {formatErrorMessage(error)}</Alert>
         </Container>
     );
 }
 
 function PrivacyAlert({ mutation }: PrivacyAlertProps) {
+    const formatErrorMessage = (errorInstance: Error | null): string => {
+        if (!errorInstance) return '';
+
+        const apiError = errorInstance as ApiError;
+        if (apiError.status) {
+            const statusText = apiError.statusText ? ` ${apiError.statusText}` : '';
+            return `(HTTP ${apiError.status}${statusText}) ${apiError.message}`;
+        }
+        return errorInstance.message;
+    };
+
     if (mutation.isError) {
         return (
             <Grid size={{ xs: 12 }}>
                 <Alert severity="error" sx={{ mt: 2 }}>
-                    Failed to update privacy settings: {mutation.error.message}
+                    Failed to update privacy settings: {formatErrorMessage(mutation.error)}
                 </Alert>
             </Grid>
         );

@@ -1,26 +1,25 @@
 import { useContext } from 'react';
 import SecurityContext from '../context/SecurityContext';
 
-interface KeycloakProfile {
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    username?: string;
-}
-
-interface KeycloakUpdateData {
-    username: string;
-    email: string;
-    firstName: string;
-    lastName: string;
+export interface ApiError extends Error {
+    status?: number;
+    statusText?: string;
+    response?: unknown;
 }
 
 export function useKeycloakAccountService() {
-    const { keycloakInstance, loggedInUser } = useContext(SecurityContext);
+    const { keycloakInstance, loggedInUser, refreshUserData } = useContext(SecurityContext);
 
-    const updateKeycloakAccount = async (username: string, email?: string, firstName?: string, lastName?: string): Promise<void> => {
+    const updateKeycloakAccount = async (
+        username: string,
+        email?: string,
+        firstName?: string,
+        lastName?: string
+    ): Promise<void> => {
         if (!keycloakInstance || !loggedInUser) {
-            throw new Error('Keycloak instance not available or user not logged in');
+            const error: ApiError = new Error('Keycloak instance not available or user not logged in');
+            error.status = 401;
+            throw error;
         }
 
         try {
@@ -29,39 +28,73 @@ export function useKeycloakAccountService() {
                 console.log('Keycloak token was refreshed');
             }
 
-            await keycloakInstance.loadUserProfile();
-            const currentProfile = keycloakInstance.profile as KeycloakProfile;
+            const keycloakUrl = keycloakInstance.authServerUrl;
+            const realm = keycloakInstance.realm;
 
-            const updateData: KeycloakUpdateData = {
+            const accountUpdatePayload = {
                 username: username,
-                email: email || currentProfile?.email || loggedInUser.email || '',
-                firstName: firstName || currentProfile?.firstName || loggedInUser.name?.split(' ')[0] || 'User',
-                lastName: lastName || currentProfile?.lastName || loggedInUser.name?.split(' ').slice(1).join(' ') || ' '
+                firstName: firstName || '',
+                lastName: lastName || '',
+                email: email || loggedInUser.email || '',
             };
 
-            console.log('Sending Keycloak update:', updateData);
-
             const response = await fetch(
-                `${keycloakInstance.authServerUrl}/realms/${keycloakInstance.realm}/account`,
+                `${keycloakUrl}/realms/${realm}/account`,
                 {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${keycloakInstance.token}`,
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${keycloakInstance.token}`,
+                        'Accept': 'application/json',
                     },
-                    body: JSON.stringify(updateData),
+                    body: JSON.stringify(accountUpdatePayload),
                 }
             );
 
             if (!response.ok) {
-                const errorText = await response.text();
-                new Error(`Account update failed: ${response.status} ${response.statusText} - ${errorText}`);
+                let errorMessage: string;
+                try {
+                    const errorData = await response.json() as { error?: string; message?: string };
+                    errorMessage = errorData.error || errorData.message || 'Unknown error occurred';
+                } catch {
+                    errorMessage = await response.text() || 'Unknown error occurred';
+                }
+
+                const error: ApiError = new Error(errorMessage);
+                error.status = response.status;
+                error.statusText = response.statusText;
+                try {
+                    error.response = await response.json();
+                } catch {
+                    error.response = errorMessage;
+                }
+                throw error;
             }
 
-            console.log('Keycloak account updated successfully');
+            console.log('Keycloak account updated successfully on server');
+
+            keycloakInstance.profile = {
+                ...keycloakInstance.profile,
+                username: username,
+                firstName: firstName,
+                lastName: lastName,
+                email: email
+            };
+
+            await refreshUserData(true);
+
+            console.log('Keycloak account update process completed');
+
         } catch (error) {
             console.error('Error updating Keycloak account:', error);
-            throw new Error(`Failed to update account: ${error instanceof Error ? error.message : 'Unknown error'}`);
+
+            if (error instanceof Error && !('status' in error)) {
+                const apiError: ApiError = error;
+                apiError.status = 0;
+                apiError.statusText = 'Network Error';
+                throw apiError;
+            }
+            throw error;
         }
     };
 

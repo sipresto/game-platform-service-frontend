@@ -28,12 +28,16 @@ export function useUserProfile() {
     };
 }
 
-export function useUpdateProfile() {
+export function useUpdateProfile(): UseMutationResult<
+    UserProfile,
+    Error,
+    ProfileUpdateData
+> {
     const queryClient = useQueryClient();
     const { updateKeycloakAccount } = useKeycloakAccountService();
 
     return useMutation({
-        mutationFn: async (profileData: ProfileUpdateData) => {
+        mutationFn: async (profileData: ProfileUpdateData): Promise<UserProfile> => {
             await updateKeycloakAccount(
                 profileData.username,
                 undefined,
@@ -46,9 +50,28 @@ export function useUpdateProfile() {
                 bio: profileData.bio
             });
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['userProfile']});
+        onSuccess: (updatedProfile, variables) => {
+            queryClient.setQueryData(['userProfile'], (old: UserProfile | undefined) => {
+                if (!old) return updatedProfile;
+
+                return {
+                    ...old,
+                    username: variables.username,
+                    profile: {
+                        ...old.profile,
+                        displayName: variables.displayName,
+                        bio: variables.bio
+                    }
+                };
+            });
+
+            queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+
+            console.log('Profile update successful');
         },
+        onError: (error) => {
+            console.error('Profile update failed:', error);
+        }
     });
 }
 

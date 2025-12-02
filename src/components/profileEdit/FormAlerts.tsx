@@ -1,17 +1,26 @@
 import { Alert, Grid } from '@mui/material';
+import type { ApiError } from "../../services/keycloakService.ts";
+import type { UserProfile, ProfileUpdateData } from "../../model/userProfile.ts";
+import type { UseMutationResult } from "@tanstack/react-query";
 
 interface FormAlertsProps {
     isLoading: boolean;
     error: Error | null;
-    updateProfileMutation: {
-        isError: boolean;
-        isSuccess: boolean;
-        error: Error | null;
-        isPending: boolean;
-    };
+    updateProfileMutation: UseMutationResult<UserProfile, Error, ProfileUpdateData>;
 }
 
 export function FormAlerts({ isLoading, error, updateProfileMutation }: FormAlertsProps) {
+    const formatErrorMessage = (errorInstance: Error | null): string => {
+        if (!errorInstance) return '';
+
+        const apiError = errorInstance as ApiError;
+        if (apiError.status) {
+            const statusText = apiError.statusText ? ` ${apiError.statusText}` : '';
+            return `(HTTP ${apiError.status}${statusText}) ${apiError.message}`;
+        }
+        return errorInstance.message;
+    };
+
     return (
         <>
             {isLoading && (
@@ -25,7 +34,7 @@ export function FormAlerts({ isLoading, error, updateProfileMutation }: FormAler
             {error && (
                 <Grid size={{ xs: 12 }}>
                     <Alert severity="warning">
-                        Could not load backend profile: {error.message}. You can still edit Keycloak data.
+                        Could not load backend profile: {formatErrorMessage(error)}. You can still edit Keycloak data.
                     </Alert>
                 </Grid>
             )}
@@ -33,7 +42,7 @@ export function FormAlerts({ isLoading, error, updateProfileMutation }: FormAler
             {updateProfileMutation.isError && (
                 <Grid size={{ xs: 12 }}>
                     <Alert severity="error">
-                        Error updating profile: {updateProfileMutation.error?.message}
+                        Error updating profile: {formatErrorMessage(updateProfileMutation.error)}
                     </Alert>
                 </Grid>
             )}
