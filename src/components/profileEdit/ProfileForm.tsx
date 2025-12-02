@@ -103,7 +103,6 @@ export function ProfileForm({
                     onChange={handleChange('firstName')}
                     required
                     error={!formState.firstName.trim()}
-                    helperText="Your first name"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -115,7 +114,6 @@ export function ProfileForm({
                     label="Last Name"
                     value={formState.lastName}
                     onChange={handleChange('lastName')}
-                    helperText="Your last name"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -143,7 +141,6 @@ export function ProfileForm({
                     onChange={handleChange('bio')}
                     multiline
                     rows={4}
-                    helperText="Tell others about yourself"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -156,7 +153,6 @@ export function ProfileForm({
                         label="Email"
                         value={loggedInUser.email}
                         aria-readonly={true}
-                        helperText="Email"
                         variant="outlined"
                         disabled
                     />
