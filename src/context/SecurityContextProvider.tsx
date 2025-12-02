@@ -15,11 +15,84 @@ const getKeycloakConfig = () => {
     }
 }
 
+const createUserFromKeycloak = (keycloak: Keycloak, config: ReturnType<typeof getKeycloakConfig>): User | undefined => {
+    if (!keycloak.tokenParsed || !keycloak.authenticated) return undefined;
+
+    const profile = keycloak.profile || {};
+    const tokenParsed = keycloak.tokenParsed || {};
+
+    const givenName = profile.firstName || tokenParsed.given_name || '';
+    const familyName = profile.lastName || tokenParsed.family_name || '';
+    const preferredUsername = profile.username || tokenParsed.preferred_username || '';
+    const email = profile.email || tokenParsed.email;
+
+    const name = givenName && familyName
+        ? `${givenName} ${familyName}`
+        : profile.username || tokenParsed.name || tokenParsed.preferred_username || 'Unknown User';
+
+    const realmRoles = tokenParsed.realm_access?.roles ?? []
+    const clientRoles = tokenParsed.resource_access?.[config.clientId]?.roles ?? []
+
+    return {
+        name,
+        username: preferredUsername,
+        email: email,
+        roles: [...realmRoles, ...clientRoles],
+        accessToken: keycloak.token,
+        idToken: keycloak.idToken,
+        profile: {
+            userId: tokenParsed.sub || '',
+            username: preferredUsername,
+            email: email,
+            name: name,
+            firstName: givenName,
+            lastName: familyName,
+            roles: [...realmRoles, ...clientRoles],
+            displayName: name,
+            profile_visibility: 'PUBLIC'
+        }
+    }
+}
+
 export default function SecurityContextProvider({children}: PropsWithChildren) {
     const [loggedInUser, setLoggedInUser] = useState<User | undefined>(undefined)
     const [isInitialised, setIsInitialised] = useState(false)
     const [keycloakInstance, setKeycloakInstance] = useState<Keycloak | null>(null)
     const initRef = useRef(false)
+    const configRef = useRef(getKeycloakConfig())
+
+    const refreshUserData = useCallback(async (forceTokenRefresh: boolean = false): Promise<void> => {
+        if (!keycloakInstance || !keycloakInstance.authenticated) {
+            console.warn('Cannot refresh user data: not authenticated');
+            return;
+        }
+
+        try {
+            console.log('Starting user data refresh, forceTokenRefresh:', forceTokenRefresh);
+
+            await keycloakInstance.loadUserProfile();
+            console.log('User profile loaded from Keycloak server');
+
+            if (forceTokenRefresh) {
+                const tokenRefreshed = await keycloakInstance.updateToken(-1);
+                console.log('Token force refresh result:', tokenRefreshed);
+
+                if (tokenRefreshed && keycloakInstance.token) {
+                    addAccessTokenToAuthHeader(keycloakInstance.token);
+                }
+            }
+
+            // Step 3: Create updated user object
+            const updatedUser = createUserFromKeycloak(keycloakInstance, configRef.current);
+
+            if (updatedUser) {
+                setLoggedInUser(updatedUser);
+                console.log('User data refreshed and state updated');
+            }
+        } catch (error) {
+            console.error('Failed to refresh user data:', error);
+        }
+    }, [keycloakInstance]);
 
     useEffect(() => {
         if (initRef.current) return
@@ -27,7 +100,7 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
 
         const initKeycloak = async () => {
             try {
-                const config = getKeycloakConfig()
+                const config = configRef.current
                 console.log('Initializing Keycloak with config:', config)
 
                 const keycloak = new Keycloak(config)
@@ -43,30 +116,10 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
                 if (authenticated && keycloak.token) {
                     addAccessTokenToAuthHeader(keycloak.token)
 
-                    const name = keycloak.tokenParsed?.given_name ||
-                        keycloak.tokenParsed?.preferred_username ||
-                        keycloak.tokenParsed?.name ||
-                        'Unknown User'
-
-                    const realmRoles = keycloak.tokenParsed?.realm_access?.roles ?? []
-                    const clientRoles = keycloak.tokenParsed?.resource_access?.[config.clientId]?.roles ?? []
+                    const user = createUserFromKeycloak(keycloak, config);
 
                     setKeycloakInstance(keycloak)
-                    setLoggedInUser({
-                        name,
-                        username: keycloak.tokenParsed?.preferred_username,
-                        email: keycloak.tokenParsed?.email,
-                        roles: [...realmRoles, ...clientRoles],
-                        accessToken: keycloak.token,
-                        idToken: keycloak.idToken,
-                        profile: {
-                            userId: keycloak.tokenParsed?.sub || '',
-                            username: keycloak.tokenParsed?.preferred_username || '',
-                            email: keycloak.tokenParsed?.email,
-                            name: name,
-                            roles: [...realmRoles, ...clientRoles],
-                        }
-                    })
+                    setLoggedInUser(user)
                 } else {
                     setKeycloakInstance(keycloak)
                     setLoggedInUser(undefined)
@@ -122,6 +175,7 @@ export default function SecurityContextProvider({children}: PropsWithChildren) {
             login,
             logout,
             keycloakInstance,
+            refreshUserData,
         }}>
             {children}
         </SecurityContext.Provider>

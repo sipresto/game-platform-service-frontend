@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router';
 import {
     Box, AppBar, Toolbar, Typography, Drawer, List, ListItem,
     ListItemButton, ListItemIcon, ListItemText, IconButton, Badge,
-    CssBaseline, Button
+    CssBaseline, Button, Menu, MenuItem
 } from '@mui/material';
 import {
     Diversity3,
@@ -11,15 +11,17 @@ import {
     Person,
     ChatBubble,
     VerticalSplit,
-    Tune,
     ArrowLeft,
     AccountCircle,
     Menu as MenuIcon,
     Logout,
-    Login
+    Login,
+    Settings,
+    Edit
 } from '@mui/icons-material';
 
 import SecurityContext from '../../context/SecurityContext';
+import { useUserProfile } from '../../hooks/useUserProfile';
 
 const DRAWER_WIDTH = 240;
 
@@ -27,14 +29,25 @@ export function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
     const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
+    const { profile: userProfile } = useUserProfile();
 
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setUserMenuAnchor(event.currentTarget);
+    };
+
+    const handleUserMenuClose = () => {
+        setUserMenuAnchor(null);
+    };
+
     const handleLogout = () => {
+        handleUserMenuClose();
         logout();
     };
 
@@ -42,15 +55,35 @@ export function MainLayout() {
         login();
     };
 
+    const handleEditProfile = () => {
+        handleUserMenuClose();
+        navigate('/profile/edit');
+    };
+
+    const handleViewProfile = () => {
+        handleUserMenuClose();
+        const userId = userProfile?.id || userProfile?.id || loggedInUser?.profile?.userId;
+        if (userId) {
+            navigate(`/profile/${userId}`);
+        }
+    };
+
+    const displayName = userProfile?.profile?.displayName ||
+        userProfile?.profile?.displayName ||
+        loggedInUser?.name ||
+        'Gamer';
+
     const publicMenuItems = [
         { text: 'Store', path: '/store', icon: <Store /> },
     ];
 
+    const userId = userProfile?.id || userProfile?.id || loggedInUser?.profile?.userId || '';
+
     const protectedMenuItems = [
         { text: 'Library', path: '/library', icon: <VerticalSplit /> },
-        { text: 'Profile', path: `/profile/${loggedInUser?.profile?.userId || ''}`, icon: <Person /> },
+        { text: 'Profile', path: `/profile/${userId}`, icon: <Person /> },
         { text: 'Friends', path: '/friends', icon: <Diversity3/> },
-        { text: 'Settings', path: '/settings', icon: <Tune /> },
+        { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
     ];
 
     const menuItems = [
@@ -153,24 +186,68 @@ export function MainLayout() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         {isAuthenticated() && (
                             <Typography variant="body2" sx={{ fontWeight: 500, display: { xs: 'none', sm: 'block' } }}>
-                                Hi, {loggedInUser?.name || 'Gamer'}!
+                                Hi, {displayName}!
                             </Typography>
                         )}
 
                         {isAuthenticated() ? (
-                            <IconButton
-                                color="inherit"
-                                size="small"
-                                onClick={handleLogout}
-                                title="Logout"
-                                sx={{
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                    }
-                                }}
-                            >
-                                <Logout fontSize="small" />
-                            </IconButton>
+                            <>
+                                <IconButton
+                                    color="inherit"
+                                    size="small"
+                                    onClick={handleLogout}
+                                    title="Logout"
+                                    sx={{
+                                        display: { xs: 'none', sm: 'inline-flex' },
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(255,255,255,0.1)'
+                                        }
+                                    }}
+                                >
+                                    <Logout fontSize="small" />
+                                </IconButton>
+
+                                <IconButton
+                                    color="inherit"
+                                    size="small"
+                                    onClick={handleUserMenuOpen}
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(255,255,255,0.1)'
+                                        }
+                                    }}
+                                >
+                                    <AccountCircle fontSize="small" />
+                                </IconButton>
+
+                                <Menu
+                                    anchorEl={userMenuAnchor}
+                                    open={Boolean(userMenuAnchor)}
+                                    onClose={handleUserMenuClose}
+                                    onClick={handleUserMenuClose}
+                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                                >
+                                    <MenuItem onClick={handleViewProfile}>
+                                        <ListItemIcon>
+                                            <Person fontSize="small" />
+                                        </ListItemIcon>
+                                        View Profile
+                                    </MenuItem>
+                                    <MenuItem onClick={handleEditProfile}>
+                                        <ListItemIcon>
+                                            <Edit fontSize="small" />
+                                        </ListItemIcon>
+                                        Edit Profile
+                                    </MenuItem>
+                                    <MenuItem onClick={handleLogout}>
+                                        <ListItemIcon>
+                                            <Logout fontSize="small" />
+                                        </ListItemIcon>
+                                        Logout
+                                    </MenuItem>
+                                </Menu>
+                            </>
                         ) : (
                             <Button
                                 color="inherit"
@@ -185,12 +262,6 @@ export function MainLayout() {
                             >
                                 Login
                             </Button>
-                        )}
-
-                        {isAuthenticated() && (
-                            <IconButton color="inherit" size="small">
-                                <AccountCircle fontSize="small" />
-                            </IconButton>
                         )}
 
                         {isAuthenticated() && (

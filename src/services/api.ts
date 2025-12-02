@@ -3,7 +3,7 @@ import type { UserProfile } from '../model/userProfile.ts';
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
-export async function getUserProfile(token?: string | null) {
+export async function getUserProfile(token?: string | null): Promise<UserProfile> {
     const accessToken = token ?? localStorage.getItem('accessToken');
 
     const headers: Record<string, string> = {};
@@ -11,23 +11,27 @@ export async function getUserProfile(token?: string | null) {
         headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
-    const { data } = await axios.get<UserProfile>(`${BACKEND_URL}/user/profile`, {
+    const { data } = await axios.get<UserProfile>(`${BACKEND_URL}/user`, {
         headers,
     });
     return data;
 }
 
-export async function updateUsername(username: string, token?: string | null) {
+export async function updateUserProfile(profileData: { displayName: string; bio: string }, token?: string | null) {
     const accessToken = token ?? localStorage.getItem('accessToken');
 
     const headers: Record<string, string> = {};
     if (accessToken) {
         headers['Authorization'] = `Bearer ${accessToken}`;
+        headers['Content-Type'] = 'application/json';
     }
 
     const { data } = await axios.put(
-        `${BACKEND_URL}/user/username`,
-        { username },
+        `${BACKEND_URL}/user/profile`,
+        {
+            displayName: profileData.displayName,
+            bio: profileData.bio
+        },
         { headers }
     );
     return data;

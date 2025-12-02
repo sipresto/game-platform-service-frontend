@@ -1,4 +1,3 @@
-// SessionCard.tsx
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import type { Session } from "../model/session.ts";
 

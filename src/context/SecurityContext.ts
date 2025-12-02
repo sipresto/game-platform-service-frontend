@@ -9,6 +9,7 @@ export type SecurityContext = {
     login: () => void
     logout: () => void
     keycloakInstance: Keycloak | null
+    refreshUserData: (forceTokenRefresh?: boolean) => Promise<void>
 }
 
 export default createContext<SecurityContext>({
@@ -17,5 +18,6 @@ export default createContext<SecurityContext>({
     loggedInUser: undefined,
     login: () => {},
     logout: () => {},
-    keycloakInstance: null
+    keycloakInstance: null,
+    refreshUserData: async () => {}
 })

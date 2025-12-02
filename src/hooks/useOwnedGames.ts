@@ -1,19 +1,7 @@
-import { useContext } from 'react';
-import SecurityContext from '../context/SecurityContext';
 import {useQuery} from "@tanstack/react-query";
 import {getOwnedGamesForUser} from "../services/userApi.ts";
 import type {Game} from "../model/game.ts";
-
-function useCurrentUser() {
-    const { loggedInUser, isAuthenticated } = useContext(SecurityContext);
-
-    return {
-        userId: loggedInUser?.profile?.userId || '',
-        token: loggedInUser?.accessToken,
-        isAuthenticated: isAuthenticated() && !!loggedInUser?.profile?.userId,
-        user: loggedInUser
-    };
-}
+import {useCurrentUser} from "./useUserProfile.ts";
 
 export function useOwnedGames(searchTerm: string) {
     const { userId, token, isAuthenticated } = useCurrentUser();

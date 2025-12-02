@@ -1,4 +1,3 @@
-// SessionList.tsx
 import { Box, CircularProgress, Alert, Button, Typography } from '@mui/material';
 import { useSessions } from '../hooks/useSessions';
 import { SessionCard } from "./SessionCard.tsx";
