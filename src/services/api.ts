@@ -1,38 +1,20 @@
-import axios from 'axios';
+import apiClient from './axiosInstance';
 import type { UserProfile } from '../model/userProfile.ts';
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
-export async function getUserProfile(token?: string | null): Promise<UserProfile> {
-    const accessToken = token ?? localStorage.getItem('accessToken');
-
-    const headers: Record<string, string> = {};
-    if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-
-    const { data } = await axios.get<UserProfile>(`${BACKEND_URL}/user`, {
-        headers,
-    });
+export async function getUserProfile(): Promise<UserProfile> {
+    const { data } = await apiClient.get<UserProfile>(`${BACKEND_URL}/user`);
     return data;
 }
 
-export async function updateUserProfile(profileData: { displayName: string; bio: string }, token?: string | null) {
-    const accessToken = token ?? localStorage.getItem('accessToken');
-
-    const headers: Record<string, string> = {};
-    if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-        headers['Content-Type'] = 'application/json';
-    }
-
-    const { data } = await axios.put(
+export async function updateUserProfile(profileData: { displayName: string; bio: string }): Promise<UserProfile> {
+    const { data } = await apiClient.put<UserProfile>(
         `${BACKEND_URL}/user/profile`,
         {
             displayName: profileData.displayName,
             bio: profileData.bio
-        },
-        { headers }
+        }
     );
     return data;
 }

@@ -1,23 +1,18 @@
-import axios from 'axios';
-import type {Game} from "../model/game.ts";
-import type {UserProfile} from "../model/userProfile.ts";
+import apiClient from './axiosInstance';
+import type { Game } from "../model/game.ts";
+import type { UserProfile } from "../model/userProfile.ts";
+import type {AxiosError} from "axios";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
-const getAuthHeaders = (token?: string | null) => {
-    const accessToken = token ?? localStorage.getItem('accessToken');
-    return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
-};
-
-export async function getOwnedGamesForUser(userId: string, token?: string | null): Promise<Game[]> {
+export async function getOwnedGamesForUser(userId: string): Promise<Game[]> {
     try {
-        const { data } = await axios.get<Game[]>(
-            `${BACKEND_URL}/user/${userId}/games`,
-            { headers: getAuthHeaders(token) }
+        const { data } = await apiClient.get<Game[]>(
+            `${BACKEND_URL}/user/${userId}/games`
         );
         return data;
     } catch (error) {
-        const axiosError = error as { response?: { status: number; statusText: string }; message: string };
+        const axiosError = error as AxiosError;
         if (axiosError.response?.status === 404) {
             return [];
         }
@@ -26,40 +21,30 @@ export async function getOwnedGamesForUser(userId: string, token?: string | null
 }
 
 export async function updateUserPrivacy(
-    visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE',
-    token?: string | null
+    visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE'
 ): Promise<void> {
     try {
-        await axios.put(
+        await apiClient.put(
             `${BACKEND_URL}/user/privacy`,
             `"${visibility}"`,
             {
                 headers: {
-                    ...getAuthHeaders(token),
                     'Content-Type': 'application/json',
                 },
             }
         );
     } catch (error) {
-        const axiosError = error as { response?: { status: number; statusText: string }; message: string };
+        const axiosError = error as AxiosError;
         throw new Error(`Failed to update privacy settings: ${axiosError.response?.statusText || axiosError.message}`);
     }
 }
 
-export async function getPublicUsers(token?: string | null): Promise<UserProfile[]> {
-    const accessToken = token ?? localStorage.getItem('accessToken');
-    const headers: Record<string, string> = {};
-    if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
-
-    const { data } = await axios.get<UserProfile[]>(`${BACKEND_URL}/users`, { headers });
+export async function getPublicUsers(): Promise<UserProfile[]> {
+    const { data } = await apiClient.get<UserProfile[]>(`${BACKEND_URL}/users`);
     return data;
 }
 
-export async function getFriendsList(token?: string | null): Promise<UserProfile[]> {
-    const accessToken = token ?? localStorage.getItem('accessToken');
-    const headers: Record<string, string> = {};
-    if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
-
-    const { data } = await axios.get<UserProfile[]>(`${BACKEND_URL}/friends`, { headers });
+export async function getFriendsList(): Promise<UserProfile[]> {
+    const { data } = await apiClient.get<UserProfile[]>(`${BACKEND_URL}/friends`);
     return data;
 }

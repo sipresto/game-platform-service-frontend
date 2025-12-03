@@ -21,23 +21,19 @@ export function useKeycloakAccountService() {
             error.status = 401;
             throw error;
         }
-
         try {
             const updated = await keycloakInstance.updateToken(30);
             if (updated) {
                 console.log('Keycloak token was refreshed');
             }
-
             const keycloakUrl = keycloakInstance.authServerUrl;
             const realm = keycloakInstance.realm;
-
             const accountUpdatePayload = {
                 username: username,
                 firstName: firstName || '',
                 lastName: lastName || '',
                 email: email || loggedInUser.email || '',
             };
-
             const response = await fetch(
                 `${keycloakUrl}/realms/${realm}/account`,
                 {
@@ -50,7 +46,6 @@ export function useKeycloakAccountService() {
                     body: JSON.stringify(accountUpdatePayload),
                 }
             );
-
             if (!response.ok) {
                 let errorMessage: string;
                 try {
@@ -59,7 +54,6 @@ export function useKeycloakAccountService() {
                 } catch {
                     errorMessage = await response.text() || 'Unknown error occurred';
                 }
-
                 const error: ApiError = new Error(errorMessage);
                 error.status = response.status;
                 error.statusText = response.statusText;
@@ -70,9 +64,7 @@ export function useKeycloakAccountService() {
                 }
                 throw error;
             }
-
             console.log('Keycloak account updated successfully on server');
-
             keycloakInstance.profile = {
                 ...keycloakInstance.profile,
                 username: username,
@@ -80,16 +72,12 @@ export function useKeycloakAccountService() {
                 lastName: lastName,
                 email: email
             };
-
             await refreshUserData(true);
-
             console.log('Keycloak account update process completed');
-
         } catch (error) {
             console.error('Error updating Keycloak account:', error);
-
             if (error instanceof Error && !('status' in error)) {
-                const apiError: ApiError = error;
+                const apiError: ApiError = error as ApiError;
                 apiError.status = 0;
                 apiError.statusText = 'Network Error';
                 throw apiError;

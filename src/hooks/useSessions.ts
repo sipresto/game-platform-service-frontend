@@ -16,7 +16,7 @@ function useCurrentUser() {
 }
 
 export function useSessions() {
-    const { userId, token, isAuthenticated } = useCurrentUser();
+    const { userId, isAuthenticated } = useCurrentUser();
 
     const {
         data: sessions = [],
@@ -25,7 +25,7 @@ export function useSessions() {
         refetch: refresh,
     } = useQuery<Session[], Error>({
         queryKey: ['sessions', userId],
-        queryFn: () => getSessionsByUserId(userId, token),
+        queryFn: () => getSessionsByUserId(userId),
         enabled: isAuthenticated && !!userId,
     });
 

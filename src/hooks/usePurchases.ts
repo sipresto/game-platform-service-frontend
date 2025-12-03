@@ -13,7 +13,7 @@ export function usePurchaseGame(gameId: string | undefined) {
 
     return useQuery({
         queryKey: ['game', gameId],
-        queryFn: () => buyGame(gameId!, token),
+        queryFn: () => buyGame(gameId!),
         enabled: !!gameId && !!token
     })
 }

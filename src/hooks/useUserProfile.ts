@@ -16,7 +16,7 @@ export function useUserProfile() {
 
     const query = useQuery<UserProfile, Error>({
         queryKey: ['userProfile'],
-        queryFn: () => getUserProfile(token ?? null),
+        queryFn: () => getUserProfile(),
         enabled: !!token,
         staleTime: 1000 * 60 * 5,
         retry: 1,
@@ -85,8 +85,8 @@ export function useCurrentUser() {
     console.log('useCurrentUser: isAuthenticated:', isAuthenticated());
 
     return {
-        userId: userId, // This is actually the Keycloak ID
-        keycloakId: userId, // Same as above, for clarity
+        userId: userId,
+        keycloakId: userId,
         token: loggedInUser?.accessToken,
         isAuthenticated: isAuthenticated() && !!userId,
         user: loggedInUser
@@ -99,7 +99,7 @@ export function usePrivacySettings(): UseMutationResult<
     PrivacyUpdateData
 > {
     const queryClient = useQueryClient();
-    const { userId, token } = useCurrentUser();
+    const { userId } = useCurrentUser();
 
     return useMutation({
         mutationFn: async (privacyData: PrivacyUpdateData) => {
@@ -108,8 +108,7 @@ export function usePrivacySettings(): UseMutationResult<
             }
 
             return await updateUserPrivacy(
-                privacyData.profile_visibility,
-                token ?? localStorage.getItem('accessToken')
+                privacyData.profile_visibility
             );
         },
         onMutate: async (newPrivacyData) => {
@@ -141,14 +140,14 @@ export function useAllUsers() {
 
     const publicUsersQuery = useQuery({
         queryKey: ['publicUsers'],
-        queryFn: () => getPublicUsers(token ?? null),
+        queryFn: () => getPublicUsers(),
         enabled: !!token,
         staleTime: 1000 * 60 * 5,
     });
 
     const friendsQuery = useQuery({
         queryKey: ['friends'],
-        queryFn: () => getFriendsList(token ?? null),
+        queryFn: () => getFriendsList(),
         enabled: !!token,
         staleTime: 1000 * 60 * 5,
     });
@@ -164,14 +163,14 @@ export function useAllUsers() {
 }
 
 export function useUserProfileById(targetKeycloakId: string) {
-    const { token, isAuthenticated, userId: currentUserKeycloakId } = useCurrentUser();
+    const { isAuthenticated, userId: currentUserKeycloakId } = useCurrentUser();
 
     return useQuery<UserProfile | null, Error>({
         queryKey: ['userProfileById', targetKeycloakId],
         queryFn: async () => {
             if (targetKeycloakId === currentUserKeycloakId) {
                 try {
-                    return await getUserProfile(token ?? null);
+                    return await getUserProfile();
                 } catch (error) {
                     console.error('useUserProfileById: Failed to get current user:', error);
                 }
@@ -180,7 +179,7 @@ export function useUserProfileById(targetKeycloakId: string) {
             let foundUser: UserProfile | null = null;
 
             try {
-                const publicUsers = await getPublicUsers(token);
+                const publicUsers = await getPublicUsers();
                 foundUser = publicUsers.find(user => user.keycloakId === targetKeycloakId) || null;
 
                 if (foundUser) {
@@ -192,7 +191,7 @@ export function useUserProfileById(targetKeycloakId: string) {
 
             if (!foundUser && isAuthenticated) {
                 try {
-                    const friends = await getFriendsList(token);
+                    const friends = await getFriendsList();
                     foundUser = friends.find(user => user.keycloakId === targetKeycloakId) || null;
 
                     if (foundUser) {
@@ -206,9 +205,9 @@ export function useUserProfileById(targetKeycloakId: string) {
             return null;
         },
         enabled: !!targetKeycloakId,
-        staleTime: 0, // Don't use stale data
-        refetchOnMount: true, // Always refetch when component mounts
-        refetchOnWindowFocus: true, // Refetch when window gets focus
+        staleTime: 0,
+        refetchOnMount: true,
+        refetchOnWindowFocus: true,
         retry: 1,
     });
 }
