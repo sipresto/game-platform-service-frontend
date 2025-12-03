@@ -77,12 +77,12 @@ export function MainLayout() {
         { text: 'Store', path: '/store', icon: <Store /> },
     ];
 
-    const userId = userProfile?.id || userProfile?.id || loggedInUser?.profile?.userId || '';
+    const keycloakId = userProfile?.keycloakId || '';
 
     const protectedMenuItems = [
         { text: 'Library', path: '/library', icon: <VerticalSplit /> },
-        { text: 'Profile', path: `/profile/${userId}`, icon: <Person /> },
-        { text: 'Friends', path: '/friends', icon: <Diversity3/> },
+        { text: 'Profile', path: `/profile/${keycloakId}`, icon: <Person /> },
+        { text: 'Users', path: '/users', icon: <Diversity3/> },
         { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
     ];
 

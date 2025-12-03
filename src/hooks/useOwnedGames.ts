@@ -28,3 +28,27 @@ export function useOwnedGames(searchTerm: string) {
         refresh,
     };
 }
+
+export function useOwnedGamesForUser(userId: string, searchTerm: string = "") {
+    const { token, isAuthenticated } = useCurrentUser();
+
+    const {
+        data: ownedGames = [],
+        isLoading: loading,
+        error,
+    } = useQuery<Game[], Error>({
+        queryKey: ['ownedGames', userId],
+        queryFn: () => getOwnedGamesForUser(userId, token),
+        enabled: isAuthenticated && !!userId,
+    });
+
+    const filteredGames = ownedGames.filter(game =>
+        game.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return {
+        games: filteredGames,
+        loading,
+        error: error ? error.message : null,
+    };
+}

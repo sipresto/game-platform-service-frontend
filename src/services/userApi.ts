@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type {Game} from "../model/game.ts";
+import type {UserProfile} from "../model/userProfile.ts";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
@@ -43,4 +44,22 @@ export async function updateUserPrivacy(
         const axiosError = error as { response?: { status: number; statusText: string }; message: string };
         throw new Error(`Failed to update privacy settings: ${axiosError.response?.statusText || axiosError.message}`);
     }
+}
+
+export async function getPublicUsers(token?: string | null): Promise<UserProfile[]> {
+    const accessToken = token ?? localStorage.getItem('accessToken');
+    const headers: Record<string, string> = {};
+    if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+
+    const { data } = await axios.get<UserProfile[]>(`${BACKEND_URL}/users`, { headers });
+    return data;
+}
+
+export async function getFriendsList(token?: string | null): Promise<UserProfile[]> {
+    const accessToken = token ?? localStorage.getItem('accessToken');
+    const headers: Record<string, string> = {};
+    if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+
+    const { data } = await axios.get<UserProfile[]>(`${BACKEND_URL}/friends`, { headers });
+    return data;
 }

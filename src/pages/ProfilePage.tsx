@@ -1,24 +1,63 @@
-import { Typography, Container, Box } from '@mui/material';
-import { SessionList } from "../components/SessionList";
+import { useParams } from 'react-router';
+import { Container, Grid, Alert, Typography } from '@mui/material';
+import { useCurrentUser, useUserProfileById } from '../hooks/useUserProfile';
+import { ProfileHeader } from '../components/profile/ProfileHeader';
+import { GameLibrarySection } from '../components/profile/GameLibrarySection';
+import { ProfileSkeleton } from '../components/profile/ProfileSkeleton';
+import {useOwnedGamesForUser} from "../hooks/useOwnedGames.ts";
 
 export function ProfilePage() {
-    return (
-        <Container maxWidth="xl" sx={{ p: 0 }}>
-            <Box
-                sx={{
-                    mx: 'auto',
-                    px: 2,
-                    width: '100%',
-                    maxWidth: 1200,
-                    overflowX: 'hidden',
-                }}
-            >
-                <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3 }}>
-                    Profile
-                </Typography>
+    const { keycloakId } = useParams<{ keycloakId: string }>();
+    const { userId: currentUserKeycloakId } = useCurrentUser();
+    const { data: user, isLoading, error } = useUserProfileById(keycloakId || '');
+    const { games, loading: gamesLoading } = useOwnedGamesForUser(keycloakId || '', '');
+    const isOwnProfile = currentUserKeycloakId === keycloakId;
+    const canViewProfile = user?.visibility === 'PUBLIC' || isOwnProfile;
 
-                <SessionList />
-            </Box>
+    if (isLoading) {
+        return <ProfileSkeleton />;
+    }
+
+    if (error || !user) {
+        return (
+            <Container maxWidth="md" sx={{ py: 4 }}>
+                <Alert severity="error">
+                    <Typography variant="h6" gutterBottom>
+                        Profile Not Found
+                    </Typography>
+                    <Typography variant="body2">
+                        {error?.message || 'This profile does not exist or is not available.'}
+                    </Typography>
+                </Alert>
+            </Container>
+        );
+    }
+
+    if (!canViewProfile) {
+        return (
+            <Container maxWidth="md" sx={{ py: 4 }}>
+                <Alert severity="warning">
+                    <Typography variant="h6" gutterBottom>
+                        Private Profile
+                    </Typography>
+                    <Typography variant="body2">
+                        This profile is private. Only the owner can view it.
+                    </Typography>
+                </Alert>
+            </Container>
+        );
+    }
+
+    return (
+        <Container maxWidth={false} sx={{ py: 4, width: '100%' }}>
+            <Grid container spacing={3} sx={{ width: '100%' }}>
+                <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                    <ProfileHeader user={user} isOwnProfile={isOwnProfile} />
+                </Grid>
+                <Grid size={{ xs: 12, md: 8 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                    <GameLibrarySection games={games} loading={gamesLoading} isOwnProfile={isOwnProfile} />
+                </Grid>
+            </Grid>
         </Container>
     );
 }
