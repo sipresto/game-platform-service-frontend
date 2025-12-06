@@ -1,22 +1,17 @@
-import axios from 'axios';
+import apiClient from './axiosInstance';
 import type { Session } from "../model/session.ts";
+import type {AxiosError} from "axios";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
-const getAuthHeaders = (token?: string | null) => {
-    const accessToken = token ?? localStorage.getItem('accessToken');
-    return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
-};
-
-export async function getSessionsByUserId(userId: string, token?: string | null): Promise<Session[]> {
+export async function getSessionsByUserId(userId: string): Promise<Session[]> {
     try {
-        const { data } = await axios.get<Session[]>(
-            `${BACKEND_URL}/session/${userId}`,
-            { headers: getAuthHeaders(token) }
+        const { data } = await apiClient.get<Session[]>(
+            `${BACKEND_URL}/session/${userId}`
         );
         return data;
     } catch (error) {
-        const axiosError = error as { response?: { status: number; statusText: string }; message: string };
+        const axiosError = error as AxiosError;
         if (axiosError.response?.status === 404) {
             return [];
         }

@@ -1,23 +1,12 @@
-import axios, { AxiosError } from 'axios';
+import apiClient from './axiosInstance';
 import type { Game } from '../model/game';
 import type { GameFilterRequest } from '../model/gameRequest';
+import type {AxiosError} from "axios";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-function authHeaders(token?: string | null): Record<string, string> {
-    const accessToken = token ?? localStorage.getItem('accessToken');
-    const headers: Record<string, string> = {};
-
-    if (accessToken) {
-        headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-
-    return headers;
-}
-
 function extractError(error: unknown): { status?: number; statusText?: string; message: string } {
     const axiosError = error as AxiosError;
-
     return {
         status: axiosError.response?.status,
         statusText: axiosError.response?.statusText,
@@ -25,11 +14,10 @@ function extractError(error: unknown): { status?: number; statusText?: string; m
     };
 }
 
-export const fetchGames = async (token?: string | null): Promise<Game[]> => {
+export const fetchGames = async (): Promise<Game[]> => {
     try {
-        const response = await axios.get<Game[]>(
-            `${BACKEND_URL}/games`,
-            { headers: authHeaders(token) }
+        const response = await apiClient.get<Game[]>(
+            `${BACKEND_URL}/games`
         );
         return response.data;
     } catch (error) {
@@ -42,14 +30,12 @@ export const fetchGames = async (token?: string | null): Promise<Game[]> => {
 };
 
 export const filterGames = async (
-    filter: GameFilterRequest,
-    token?: string | null
+    filter: GameFilterRequest
 ): Promise<Game[]> => {
     try {
-        const response = await axios.post<Game[]>(
+        const response = await apiClient.post<Game[]>(
             `${BACKEND_URL}/games/filter`,
-            filter,
-            { headers: authHeaders(token) }
+            filter
         );
         return response.data;
     } catch (error) {
@@ -61,11 +47,10 @@ export const filterGames = async (
     }
 };
 
-export const getGameById = async (gameId: string, token?: string | null): Promise<Game> => {
+export const getGameById = async (gameId: string): Promise<Game> => {
     try {
-        const response = await axios.get<Game>(
-            `${BACKEND_URL}/games/${gameId}`,
-            { headers: authHeaders(token) }
+        const response = await apiClient.get<Game>(
+            `${BACKEND_URL}/games/${gameId}`
         );
         return response.data;
     } catch (error) {

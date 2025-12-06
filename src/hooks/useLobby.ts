@@ -16,7 +16,7 @@ export function useLobbies(gameId: string | undefined) {
 
     const query = useQuery({
         queryKey: ['lobbies', gameId],
-        queryFn: () => getLobbiesForGame(gameId!, token),
+        queryFn: () => getLobbiesForGame(gameId!),
         enabled: !!gameId && !!token,
         refetchInterval: 1000,
     });
@@ -50,7 +50,7 @@ export function useLobbyActions(gameId: string | undefined) {
     const queryClient = useQueryClient();
 
     const createMutation = useMutation({
-        mutationFn: (request: CreateLobbyRequest) => createLobby(request, token),
+        mutationFn: (request: CreateLobbyRequest) => createLobby(request),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
         },
@@ -58,7 +58,7 @@ export function useLobbyActions(gameId: string | undefined) {
 
     const joinMutation = useMutation({
         mutationFn: ({ lobbyId, request }: { lobbyId: string; request: JoinLobbyRequest }) =>
-            joinLobby(lobbyId, request, token),
+            joinLobby(lobbyId, request),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
         },
@@ -66,7 +66,7 @@ export function useLobbyActions(gameId: string | undefined) {
 
     const leaveMutation = useMutation({
         mutationFn: ({lobbyId}: { lobbyId: string; }) =>
-            leaveLobby(lobbyId, token),
+            leaveLobby(lobbyId),
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['lobbies', gameId]});
         }
