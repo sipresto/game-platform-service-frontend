@@ -8,10 +8,9 @@ import {
     ButtonBase
 } from '@mui/material';
 import {useNavigate} from 'react-router';
-import {useContext, useState} from 'react';
+import {useContext} from 'react';
 import SecurityContext from '../context/SecurityContext';
 import type {Game} from "../model/game.ts";
-import {usePurchaseGame} from "../hooks/usePurchases.ts";
 
 interface GameCardProps {
     game: Game;
@@ -21,8 +20,6 @@ interface GameCardProps {
 export function GameCard({game, isLibrary = false}: GameCardProps) {
     const navigate = useNavigate();
     const {isAuthenticated, login} = useContext(SecurityContext);
-    const [isPurchaseTriggered, setIsPurchaseTriggered] = useState(false);
-    const { data, isLoading, isError, error } = usePurchaseGame(isPurchaseTriggered ? game.gameId : undefined);
     const descriptionLimit = 150;
 
     const handleGameClick = () => {
@@ -36,20 +33,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
             return;
         }
 
-        if (isPurchaseTriggered) {
-            if (isLoading) {
-                console.log('Purchasing game...');
-            } else if (isError) {
-                console.error('Failed to purchase game:', error);
-            } else if (data) {
-                console.log('Game purchased successfully:', data);
-                navigate(`/library`);
-            }
-            return;
-        }
-
-        setIsPurchaseTriggered(true);
-        console.log('Purchasing game...');
+        navigate(`/purchase/${game.gameId}`);
     };
 
     return (
@@ -135,7 +119,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                                     whiteSpace: 'nowrap',
                                 }}
                             >
-                                ${(game.price ?? 0).toFixed(2)}
+                                €{(game.price ?? 0).toFixed(2)}
                             </Typography>
                         )}
                     </Box>
@@ -189,7 +173,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                                     ? "Play Now →"
                                     : "Login to Play →"
                                 : isAuthenticated()
-                                    ? "Add to Library →"
+                                    ? "Purchase →"
                                     : "Login to Purchase →"}
                         </Typography>
                     </Box>
