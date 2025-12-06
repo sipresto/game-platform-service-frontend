@@ -10,6 +10,7 @@ import {LibraryPage} from "./pages/LibraryPage.tsx";
 import {ProfilePage} from "./pages/ProfilePage.tsx";
 import {ProfileEditPage} from "./pages/ProfileEditPage.tsx";
 import {GamePage} from "./pages/GamePage.tsx";
+import {UsersPage} from "./pages/UsersPage.tsx";
 
 const queryClient = new QueryClient()
 
@@ -30,8 +31,9 @@ function App() {
                         <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
                             <Route path="/lobby/:gameId" element={<LobbyPage />} />
                             <Route path="/library" element={<LibraryPage />} />
-                            <Route path="/profile/:userId" element={<ProfilePage />} />
+                            <Route path="/profile/:keycloakId" element={<ProfilePage />} />
                             <Route path="/profile/edit" element={<ProfileEditPage />} />
+                            <Route path="/users" element={<UsersPage />} />
                         </Route>
 
                         {/* Catch all - redirect to store (public) */}

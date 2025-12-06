@@ -1,12 +1,19 @@
-import axios from 'axios'
+import apiClient from './axiosInstance';
 
-export function addAccessTokenToAuthHeader(token: string | undefined) {
-    if (token) axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    else {
-        removeAccessTokenFromAuthHeader()
+// Type guard to check if the default headers have Authorization property
+interface AuthHeaders {
+    Authorization?: string;
+}
+
+export function addAccessTokenToAuthHeader(token: string | undefined): void {
+    if (token && token.trim().length > 0) {
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+        removeAccessTokenFromAuthHeader();
     }
 }
 
-export function removeAccessTokenFromAuthHeader() {
-    delete axios.defaults.headers.common['Authorization']
+export function removeAccessTokenFromAuthHeader(): void {
+    const headers = apiClient.defaults.headers.common as AuthHeaders;
+    delete headers.Authorization;
 }

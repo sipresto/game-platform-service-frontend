@@ -4,7 +4,7 @@ import type {Game} from "../model/game.ts";
 import {useCurrentUser} from "./useUserProfile.ts";
 
 export function useOwnedGames(searchTerm: string) {
-    const { userId, token, isAuthenticated } = useCurrentUser();
+    const { userId, isAuthenticated } = useCurrentUser();
 
     const {
         data: ownedGames = [],
@@ -13,7 +13,7 @@ export function useOwnedGames(searchTerm: string) {
         refetch: refresh,
     } = useQuery<Game[], Error>({
         queryKey: ['ownedGames', userId],
-        queryFn: () => getOwnedGamesForUser(userId, token),
+        queryFn: () => getOwnedGamesForUser(userId),
         enabled: isAuthenticated && !!userId,
     });
 
@@ -26,5 +26,29 @@ export function useOwnedGames(searchTerm: string) {
         loading,
         error: error ? error.message : null,
         refresh,
+    };
+}
+
+export function useOwnedGamesForUser(userId: string, searchTerm: string = "") {
+    const { isAuthenticated } = useCurrentUser();
+
+    const {
+        data: ownedGames = [],
+        isLoading: loading,
+        error,
+    } = useQuery<Game[], Error>({
+        queryKey: ['ownedGames', userId],
+        queryFn: () => getOwnedGamesForUser(userId),
+        enabled: isAuthenticated && !!userId,
+    });
+
+    const filteredGames = ownedGames.filter(game =>
+        game.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    return {
+        games: filteredGames,
+        loading,
+        error: error ? error.message : null,
     };
 }
