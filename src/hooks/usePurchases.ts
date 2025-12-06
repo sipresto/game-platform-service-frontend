@@ -1,4 +1,4 @@
-import {useQuery} from "@tanstack/react-query";
+import {useMutation} from "@tanstack/react-query";
 import {buyGame} from "../services/purchaseApi.ts";
 import {useContext} from "react";
 import SecurityContext from "../context/SecurityContext.ts";
@@ -8,12 +8,14 @@ const useToken = () => {
     return loggedInUser?.accessToken ?? loggedInUser?.idToken ?? localStorage.getItem('accessToken');
 };
 
-export function usePurchaseGame(gameId: string | undefined) {
+export function usePurchaseGame() {
     const token = useToken();
 
-    return useQuery({
-        queryKey: ['game', gameId],
-        queryFn: () => buyGame(gameId!, token),
-        enabled: !!gameId && !!token
-    })
+    const purchaseMutation = useMutation(
+        {mutationFn: (gameId: string) => buyGame(gameId, token)}
+    );
+
+    return {
+        purchaseGame: purchaseMutation
+    }
 }

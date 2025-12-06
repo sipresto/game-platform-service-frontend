@@ -12,6 +12,7 @@ export const buyGame = async (gameId: string, token?: string | null): Promise<Pu
     try {
         const response = await axios.post<Purchase>(
             `${BACKEND_URL}/purchases/${gameId}`,
+            {},
             { headers: getAuthHeaders(token) }
         );
         return response.data;
