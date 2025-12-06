@@ -3,6 +3,7 @@ import SecurityContext from './SecurityContext';
 import { addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader } from '../services/auth';
 import Keycloak from 'keycloak-js';
 import type { User } from "../model/user.ts";
+import {attachAuthInterceptor} from "../services/axiosInstance.ts";
 
 const getKeycloakConfig = () => {
     const kcPath = import.meta.env.VITE_KC_URL || '/auth';
@@ -143,6 +144,15 @@ export default function SecurityContextProvider({ children }: PropsWithChildren)
     const isAuthenticated = useCallback(() => {
         return keycloakInstance?.authenticated ?? false;
     }, [keycloakInstance]);
+
+    useEffect(() => {
+        if (keycloakInstance && refreshUserData) {
+            attachAuthInterceptor(
+                () => keycloakInstance,
+                () => refreshUserData
+            );
+        }
+    }, [keycloakInstance, refreshUserData]);
 
     return (
         <SecurityContext.Provider value={{
