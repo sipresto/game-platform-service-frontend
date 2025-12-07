@@ -12,7 +12,7 @@ import { LobbyHeader } from '../components/lobby/LobbyHeader';
 import { CreateLobbyDialog } from '../components/lobby/CreateLobbyDialog';
 import { JoinLobbyDialog } from '../components/lobby/JoinLobbyDialog';
 import { StartGameDialog } from '../components/lobby/StartGameDialog';
-import { NotificationAlert } from '../components/lobby/NotificationAlert';
+import { NotificationAlert } from '../components/NotificationAlert.tsx';
 import { LobbyGrid } from '../components/lobby/LobbyGrid';
 import { useLobbies, useLobbyActions } from "../hooks/useLobby";
 import { useGameDetails } from "../hooks/useGames";
@@ -23,7 +23,7 @@ export const LobbyPage = () => {
 
     const { lobbies, isLoading, error, refetch } = useLobbies(gameId);
     const { createLobby, joinLobby, leaveLobby, startGame } = useLobbyActions(gameId);
-    const { data: game, isLoading: gameLoading, error: gameError } = useGameDetails(gameId);
+    const { game, loading: gameLoading, error: gameError } = useGameDetails(gameId);
 
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [joinDialogOpen, setJoinDialogOpen] = useState(false);

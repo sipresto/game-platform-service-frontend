@@ -19,21 +19,19 @@ interface GameCardProps {
 
 export function GameCard({game, isLibrary = false}: GameCardProps) {
     const navigate = useNavigate();
-    const {isAuthenticated, login} = useContext(SecurityContext);
+    const {isAuthenticated} = useContext(SecurityContext);
     const descriptionLimit = 150;
 
     const handleGameClick = () => {
-        if (!isAuthenticated()) {
-            login();
-            return;
-        }
-
         if (isLibrary) {
             navigate(`/lobby/${game.gameId}`);
             return;
         }
 
-        navigate(`/purchase/${game.gameId}`);
+        if (!isLibrary) {
+            navigate(`/game/${game.gameId}`);
+            return;
+        }
     };
 
     return (
@@ -119,7 +117,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                                     whiteSpace: 'nowrap',
                                 }}
                             >
-                                €{(game.price ?? 0).toFixed(2)}
+                                ${(game.price ?? 0).toFixed(2)}
                             </Typography>
                         )}
                     </Box>
@@ -173,7 +171,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                                     ? "Play Now →"
                                     : "Login to Play →"
                                 : isAuthenticated()
-                                    ? "Purchase →"
+                                    ? "Add to Library →"
                                     : "Login to Purchase →"}
                         </Typography>
                     </Box>
