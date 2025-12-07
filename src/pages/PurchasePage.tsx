@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -42,10 +42,23 @@ export function PurchasePage() {
     const isOwned = !!game && ownedGames.some((g) => g.gameId === game.gameId);
 
     const [successDialogOpen, setSuccessDialogOpen] = useState(false);
-    const [ownedDialogOpen, setOwnedDialogOpen] = useState(isOwned);
+    const [ownedDialogOpen, setOwnedDialogOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    if (isOwned && !ownedDialogOpen) setOwnedDialogOpen(true);
+    const mountedRef = useRef(false);
+
+    useEffect(() => {
+        if (!mountedRef.current) {
+            if (isOwned) {
+                setOwnedDialogOpen(true);
+            }
+            mountedRef.current = true;
+            return;
+        }
+        if (isOwned && !successDialogOpen) {
+            setOwnedDialogOpen(true);
+        }
+    }, [isOwned, successDialogOpen]);
 
     const handlePurchase = async (stripeToken: string) => {
         if (!gameId) {
@@ -101,9 +114,9 @@ export function PurchasePage() {
                 elevation={3}
                 sx={{
                     transition: 'opacity .25s, filter .25s',
-                    opacity: isOwned ? 0.35 : 1,
-                    pointerEvents: isOwned ? 'none' : 'auto',
-                    filter: isOwned ? 'grayscale(10%)' : 'none',
+                    opacity: isOwned && !successDialogOpen ? 0.35 : 1,
+                    pointerEvents: isOwned && !successDialogOpen ? 'none' : 'auto',
+                    filter: isOwned && !successDialogOpen ? 'grayscale(10%)' : 'none',
                 }}
             >
                 <GameSummary game={game} />
@@ -128,7 +141,7 @@ export function PurchasePage() {
                 </CardContent>
             </Card>
 
-            {isOwned && (
+            {isOwned && !successDialogOpen && (
                 <Box
                     sx={{
                         position: 'fixed',

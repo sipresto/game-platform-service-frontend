@@ -90,7 +90,6 @@ export function SessionCard({ session }: SessionCardProps) {
                 </Box>
             </CardContent>
 
-            {/* Always visible bottom bar */}
             <Box
                 sx={{
                     p: 2,

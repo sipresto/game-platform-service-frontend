@@ -1,6 +1,5 @@
 import apiClient from './axiosInstance';
 
-// Type guard to check if the default headers have Authorization property
 interface AuthHeaders {
     Authorization?: string;
 }
