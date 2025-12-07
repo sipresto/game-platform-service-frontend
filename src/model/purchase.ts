@@ -1,6 +1,6 @@
 export interface Purchase {
-    purchaseId: string;
-    buyerId: string;
-    gameId: string;
+    id: string;
+    buyer: string;
+    game: string;
     purchasedAt: string;
 }
