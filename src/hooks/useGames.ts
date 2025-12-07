@@ -93,9 +93,21 @@ export function useFilteredStoreGames(
 }
 
 export function useGameDetails(gameId: string | undefined) {
-    return useQuery({
+    const {
+        data: game,
+        isLoading: loading,
+        error,
+        refetch: refresh
+    } = useQuery<Game, Error>({
         queryKey: ['game', gameId],
         queryFn: () => getGameById(gameId!),
-        enabled: !!gameId,
-    });
+        enabled: true,
+    })
+
+    return {
+        game,
+        loading,
+        error: error,
+        refresh
+    }
 }
