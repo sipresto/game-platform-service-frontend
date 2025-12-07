@@ -1,4 +1,3 @@
-// components/purchase/GameSummary.tsx
 import { Box, CardMedia, Typography, Chip, Stack, Divider } from '@mui/material';
 import type { Game } from '../../model/game';
 
@@ -24,17 +23,23 @@ export function GameSummary({ game }: GameSummaryProps) {
                 </Typography>
 
                 {game.categories && game.categories.length > 0 && (
-                    <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
-                        {game.categories.map((category) => (
-                            <Chip
-                                key={category}
-                                label={category}
-                                size="small"
-                                color="primary"
-                                variant="outlined"
-                            />
-                        ))}
-                    </Stack>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ flexWrap: 'wrap', gap: 1, justifyContent: 'center', alignItems: 'center' }}
+                        >
+                            {game.categories.map((category) => (
+                                <Chip
+                                    key={category}
+                                    label={category}
+                                    size="small"
+                                    color="primary"
+                                    variant="outlined"
+                                />
+                            ))}
+                        </Stack>
+                    </Box>
                 )}
 
                 {game.description && (
