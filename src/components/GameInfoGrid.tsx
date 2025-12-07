@@ -20,6 +20,8 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
         message: string;
     } | null>(null);
 
+    const [isGamePurchased, setIsGamePurchased] = useState(false);
+
     const handleBuyClick = () => {
         if (!isAuthenticated()) {
             login();
@@ -28,6 +30,7 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
         else {
             purchaseGame.mutate(game.gameId, {
                 onSuccess: () => {
+                    setIsGamePurchased(true);
                     navigate(`/library`)
                 },
                 onError: () => {
@@ -50,8 +53,9 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
                 {game.description}
             </Typography>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
-                {game.categories.map(tag => (
+                {game.categories.map((tag, index) => (
                     <Box
+                        key={index}
                         sx={{
                             px: 1.5,
                             py: 0.5,
@@ -75,8 +79,9 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
                     variant="contained"
                     size="medium"
                     onClick={handleBuyClick}
+                    disabled={isGamePurchased}
                 >
-                    Buy the game
+                    {isGamePurchased ? "You already own this game" : "Buy the game"}
                 </Button>
 
                 <NotificationAlert
