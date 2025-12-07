@@ -1,25 +1,23 @@
-import {Box, Button, Grid, Typography} from "@mui/material";
-import type {Game} from "../model/game.ts";
-import {useNavigate} from "react-router";
-import {useContext, useEffect, useState} from "react";
+import { Box, Button, Grid, Typography } from "@mui/material";
+import type { Game } from "../model/game.ts";
+import { useNavigate } from "react-router";
+import { useContext, useEffect, useState } from "react";
 import SecurityContext from "../context/SecurityContext.ts";
-import {usePurchaseGame} from "../hooks/usePurchases.ts";
-import {NotificationAlert} from "./NotificationAlert.tsx";
-import {useOwnedGames} from "../hooks/useOwnedGames.ts";
+import { NotificationAlert } from "./NotificationAlert.tsx";
+import { useOwnedGames } from "../hooks/useOwnedGames.ts";
 
 interface GameInfoGridProps {
     game: Game;
 }
 
-export function GameInfoGrid({game}: GameInfoGridProps) {
+export function GameInfoGrid({ game }: GameInfoGridProps) {
     const navigate = useNavigate();
-    const {isAuthenticated, login} = useContext(SecurityContext);
-    const {purchaseGame} = usePurchaseGame();
+    const { isAuthenticated, login } = useContext(SecurityContext);
     const libraryHook = useOwnedGames("");
     const games: Game[] = libraryHook.games;
 
     const [notification, setNotification] = useState<{
-        type: 'success' | 'error';
+        type: "success" | "error";
         message: string;
     } | null>(null);
 
@@ -35,26 +33,13 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
             login();
             return;
         }
-        else {
-            purchaseGame.mutate(game.gameId, {
-                onSuccess: () => {
-                    setIsGameOwned(true);
-                    navigate(`/library`)
-                },
-                onError: () => {
-                    setNotification({
-                        type: 'error',
-                        message: 'Failed to buy game.'
-                    });
-                }
-            })
-        }
+
+        navigate(`/purchase/${game.gameId}`);
     };
 
-
     return (
-        <Grid size={{xs: 12, md: 5}}>
-            <Typography variant="h5" sx={{fontWeight: 'bold'}}>
+        <Grid size={{ xs: 12, md: 5 }}>
+            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                 Description
             </Typography>
             <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
@@ -67,10 +52,10 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
                         sx={{
                             px: 1.5,
                             py: 0.5,
-                            bgcolor: '#e0e0e0',
-                            borderRadius: '4px',
-                            fontSize: '0.85rem',
-                            color: '#333',
+                            bgcolor: "#e0e0e0",
+                            borderRadius: "4px",
+                            fontSize: "0.85rem",
+                            color: "#333",
                         }}
                     >
                         {tag}
@@ -78,9 +63,9 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
                 ))}
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography variant="h5" sx={{fontWeight: 'bold'}}>
-                    € {game.price?.toFixed(2) ?? 0 }
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    € {game.price?.toFixed(2) ?? 0}
                 </Typography>
 
                 <Button
@@ -96,9 +81,7 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
                     notification={notification}
                     onClose={() => setNotification(null)}
                 />
-
             </Box>
         </Grid>
-    )
-
+    );
 }

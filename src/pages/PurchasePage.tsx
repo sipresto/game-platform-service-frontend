@@ -25,7 +25,7 @@ const stripePromise = loadStripe(
 export function PurchasePage() {
     const { gameId } = useParams<{ gameId: string }>();
     const navigate = useNavigate();
-    const { data: game, isLoading, error: gameError } = useGameDetails(gameId);
+    const { game: game, loading, error: gameError } = useGameDetails(gameId);
     const purchaseMutation = usePurchaseGame();
 
     const [successDialogOpen, setSuccessDialogOpen] = useState(false);
@@ -62,7 +62,7 @@ export function PurchasePage() {
         setError(null);
     };
 
-    if (isLoading) {
+    if (loading) {
         return (
             <Container maxWidth="sm" sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
                 <CircularProgress />
