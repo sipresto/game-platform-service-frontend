@@ -1,10 +1,11 @@
 import {Box, Button, Grid, Typography} from "@mui/material";
 import type {Game} from "../model/game.ts";
 import {useNavigate} from "react-router";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import SecurityContext from "../context/SecurityContext.ts";
 import {usePurchaseGame} from "../hooks/usePurchases.ts";
 import {NotificationAlert} from "./NotificationAlert.tsx";
+import {useOwnedGames} from "../hooks/useOwnedGames.ts";
 
 interface GameInfoGridProps {
     game: Game;
@@ -13,14 +14,21 @@ interface GameInfoGridProps {
 export function GameInfoGrid({game}: GameInfoGridProps) {
     const navigate = useNavigate();
     const {isAuthenticated, login} = useContext(SecurityContext);
-    const { purchaseGame } = usePurchaseGame();
+    const {purchaseGame} = usePurchaseGame();
+    const libraryHook = useOwnedGames("");
+    const games: Game[] = libraryHook.games;
 
     const [notification, setNotification] = useState<{
         type: 'success' | 'error';
         message: string;
     } | null>(null);
 
-    const [isGamePurchased, setIsGamePurchased] = useState(false);
+    const [isGameOwned, setIsGameOwned] = useState(false);
+
+    useEffect(() => {
+        const owned = games.some((gameMap) => gameMap.gameId === game.gameId);
+        setIsGameOwned(owned);
+    }, [games, game.gameId]);
 
     const handleBuyClick = () => {
         if (!isAuthenticated()) {
@@ -30,7 +38,7 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
         else {
             purchaseGame.mutate(game.gameId, {
                 onSuccess: () => {
-                    setIsGamePurchased(true);
+                    setIsGameOwned(true);
                     navigate(`/library`)
                 },
                 onError: () => {
@@ -79,9 +87,9 @@ export function GameInfoGrid({game}: GameInfoGridProps) {
                     variant="contained"
                     size="medium"
                     onClick={handleBuyClick}
-                    disabled={isGamePurchased}
+                    disabled={isGameOwned}
                 >
-                    {isGamePurchased ? "You already own this game" : "Buy the game"}
+                    {isGameOwned ? "You already own this game" : "Buy the game"}
                 </Button>
 
                 <NotificationAlert
