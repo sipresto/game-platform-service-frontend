@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import {
     Box, AppBar, Toolbar, Typography, Drawer, List, ListItem,
@@ -17,7 +17,8 @@ import {
     Logout,
     Login,
     Settings,
-    Edit
+    Edit,
+    Gamepad
 } from '@mui/icons-material';
 
 import SecurityContext from '../../context/SecurityContext';
@@ -81,6 +82,7 @@ export function MainLayout() {
 
     const protectedMenuItems = [
         { text: 'Library', path: '/library', icon: <VerticalSplit /> },
+        { text: 'Sessions', path: '/sessions', icon: <Gamepad /> },
         { text: 'Profile', path: `/profile/${keycloakId}`, icon: <Person /> },
         { text: 'Users', path: '/users', icon: <Diversity3/> },
         { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
