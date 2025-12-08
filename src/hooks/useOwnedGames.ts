@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {getOwnedGamesForUser} from "../services/userApi.ts";
+import {getOwnedGamesForUser} from "../services/gameApi.ts";
 import type {Game} from "../model/game.ts";
 import {useCurrentUser} from "./useUserProfile.ts";
 

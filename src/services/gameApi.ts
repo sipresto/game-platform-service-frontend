@@ -61,3 +61,18 @@ export const getGameById = async (gameId: string): Promise<Game> => {
         throw new Error(`Failed to fetch game: ${err.statusText || err.message}`);
     }
 };
+
+export async function getOwnedGamesForUser(userId: string): Promise<Game[]> {
+    try {
+        const { data } = await apiClient.get<Game[]>(
+            `${BACKEND_URL}/games/user/${userId}`
+        );
+        return data;
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response?.status === 404) {
+            return [];
+        }
+        throw new Error(`Failed to fetch owned games: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
