@@ -18,10 +18,11 @@ import {
     SentimentVerySatisfied,
     SentimentNeutral,
     SentimentVeryDissatisfied,
-    Gamepad
+    Gamepad,
+    SmartToy
 } from '@mui/icons-material';
 import type { Session } from "../../model/session.ts";
-import { useUserProfileById } from '../../hooks/useUserProfile.ts';
+import {useCurrentUser, useUserProfileById} from '../../hooks/useUserProfile.ts';
 
 interface SessionCardProps {
     session: Session;
@@ -29,11 +30,37 @@ interface SessionCardProps {
 }
 
 export function SessionCard({ session, onClick }: SessionCardProps) {
+    const { userId: currentUserId } = useCurrentUser();
     const { data: winnerProfile, isLoading: winnerLoading } = useUserProfileById(
         session.winnerId || ''
     );
 
-    const getResultConfig = (result: string) => {
+    // Determine if session is against AI
+    const isAgainstAI = session.result === 'AI_WIN' || session.playerIds.length === 1;
+
+    // Determine user's result
+    const getUserResult = (): 'WIN' | 'LOSS' | 'DRAW' => {
+        if (!currentUserId) return 'DRAW';
+
+        if (session.result === 'DRAW') return 'DRAW';
+
+        if (session.result === 'PLAYER_WIN') {
+            // Check if current user is the winner
+            return session.winnerId === currentUserId ? 'WIN' : 'LOSS';
+        }
+
+        if (session.result === 'AI_WIN') {
+            // User loses against AI, unless they're not a player (shouldn't happen)
+            return 'LOSS';
+        }
+
+        return 'DRAW';
+    };
+
+    const userResult = getUserResult();
+    const isUserWinner = userResult === 'WIN';
+
+    const getResultConfig = (result: 'WIN' | 'LOSS' | 'DRAW') => {
         switch (result) {
             case 'WIN':
                 return {
@@ -96,24 +123,31 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
     };
 
     const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'Invalid date';
 
-        if (diffInHours < 24) {
-            return date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit'
+            const now = new Date();
+            const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
+            if (diffInHours < 24) {
+                return date.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: diffInHours > 8760 ? 'numeric' : undefined
             });
+        } catch (e) {
+            console.warn(e);
+            return 'Invalid date';
         }
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: diffInHours > 8760 ? 'numeric' : undefined
-        });
     };
 
-    const resultConfig = getResultConfig(session.result);
+    const resultConfig = getResultConfig(userResult);
     const difficultyConfig = getDifficultyConfig(session.difficulty);
 
     return (
@@ -170,13 +204,25 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
                             </Box>
                         </Box>
 
-                        <Chip
-                            label={difficultyConfig.label}
-                            color={difficultyConfig.color}
-                            size="small"
-                            icon={difficultyConfig.icon}
-                            sx={{ fontWeight: 500 }}
-                        />
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
+                            <Chip
+                                label={difficultyConfig.label}
+                                color={difficultyConfig.color}
+                                size="small"
+                                icon={difficultyConfig.icon}
+                                sx={{ fontWeight: 500 }}
+                            />
+                            {isAgainstAI && (
+                                <Chip
+                                    label="vs AI"
+                                    size="small"
+                                    variant="outlined"
+                                    color="info"
+                                    icon={<SmartToy fontSize="small" />}
+                                    sx={{ fontSize: '0.7rem' }}
+                                />
+                            )}
+                        </Box>
                     </Box>
 
                     <Box sx={{
@@ -189,18 +235,22 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
                         borderRadius: 1
                     }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Group sx={{ fontSize: 20, color: 'primary.main' }} />
+                            {isAgainstAI ? (
+                                <SmartToy sx={{ fontSize: 20, color: 'info.main' }} />
+                            ) : (
+                                <Group sx={{ fontSize: 20, color: 'primary.main' }} />
+                            )}
                             <Box>
                                 <Typography variant="caption" color="text.secondary" display="block">
-                                    Players
+                                    {isAgainstAI ? 'Opponent' : 'Players'}
                                 </Typography>
                                 <Typography variant="body2" fontWeight={600}>
-                                    {session.playerIds.length}
+                                    {isAgainstAI ? 'AI' : `${session.playerIds?.length || 0} players`}
                                 </Typography>
                             </Box>
                         </Box>
 
-                        {session.winnerId && (
+                        {session.winnerId && !isUserWinner && userResult !== 'DRAW' && (
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <EmojiEvents sx={{ fontSize: 20, color: 'warning.main' }} />
                                 <Box sx={{ minWidth: 0, flex: 1 }}>
@@ -219,9 +269,51 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
                                                 whiteSpace: 'nowrap'
                                             }}
                                         >
-                                            {winnerProfile?.profile?.displayName || 'Unknown'}
+                                            {isAgainstAI ? 'AI' : (winnerProfile?.profile?.displayName || 'Opponent')}
                                         </Typography>
                                     )}
+                                </Box>
+                            </Box>
+                        )}
+                        {isUserWinner && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <MilitaryTech sx={{ fontSize: 20, color: 'success.main' }} />
+                                <Box sx={{ minWidth: 0, flex: 1 }}>
+                                    <Typography variant="caption" color="text.secondary" display="block">
+                                        Result
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        fontWeight={600}
+                                        sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                    >
+                                        You Won!
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        )}
+                        {userResult === 'DRAW' && (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Handshake sx={{ fontSize: 20, color: 'warning.main' }} />
+                                <Box sx={{ minWidth: 0, flex: 1 }}>
+                                    <Typography variant="caption" color="text.secondary" display="block">
+                                        Result
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        fontWeight={600}
+                                        sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                    >
+                                        Draw
+                                    </Typography>
                                 </Box>
                             </Box>
                         )}
@@ -236,7 +328,7 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
                         borderColor: 'divider'
                     }}>
                         <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
-                            #{session.id.slice(0, 8)}
+                            #{session.id?.slice(0, 8) || 'unknown'}
                         </Typography>
                         <Chip
                             label="View Details"

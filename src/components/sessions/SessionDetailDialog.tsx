@@ -27,11 +27,12 @@ import {
     Handshake,
     SentimentVerySatisfied,
     SentimentNeutral,
-    SentimentVeryDissatisfied
+    SentimentVeryDissatisfied,
+    SmartToy,
+    Person
 } from '@mui/icons-material';
 import type { Session } from "../../model/session.ts";
-import { useUserProfileById } from '../../hooks/useUserProfile';
-import { useGameDetails } from '../../hooks/useGames';
+import {useCurrentUser, useUserProfileById} from '../../hooks/useUserProfile';
 
 interface SessionDetailDialogProps {
     open: boolean;
@@ -39,8 +40,52 @@ interface SessionDetailDialogProps {
     session: Session | null;
 }
 
-function PlayerListItem({ playerId, isWinner }: { playerId: string; isWinner: boolean }) {
-    const { data: profile, isLoading } = useUserProfileById(playerId);
+function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false }: {
+    playerId: string;
+    isWinner: boolean;
+    isCurrentUser: boolean;
+    isAI?: boolean;
+}) {
+    const { data: profile, isLoading } = useUserProfileById(isAI ? '' : playerId);
+
+    if (isAI) {
+        return (
+            <ListItem
+                sx={{
+                    bgcolor: isWinner ? 'info.lighter' : 'transparent',
+                    borderRadius: 1,
+                    mb: 0.5
+                }}
+            >
+                <ListItemAvatar>
+                    <Avatar sx={{
+                        bgcolor: isWinner ? 'info.main' : 'grey.500'
+                    }}>
+                        <SmartToy />
+                    </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                    primary={
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Typography variant="body1" fontWeight={isWinner ? 600 : 400}>
+                                AI Opponent
+                            </Typography>
+                            {isWinner && (
+                                <Chip
+                                    label="Winner"
+                                    size="small"
+                                    color="info"
+                                    icon={<EmojiEvents sx={{ fontSize: 16 }} />}
+                                    sx={{ height: 20, fontSize: '0.7rem' }}
+                                />
+                            )}
+                        </Box>
+                    }
+                    secondary="Computer opponent"
+                />
+            </ListItem>
+        );
+    }
 
     if (isLoading) {
         return (
@@ -61,19 +106,22 @@ function PlayerListItem({ playerId, isWinner }: { playerId: string; isWinner: bo
             sx={{
                 bgcolor: isWinner ? 'warning.lighter' : 'transparent',
                 borderRadius: 1,
-                mb: 0.5
+                mb: 0.5,
+                border: isCurrentUser ? '2px solid #1976d2' : 'none'
             }}
         >
             <ListItemAvatar>
-                <Avatar sx={{ bgcolor: isWinner ? 'warning.main' : 'primary.main' }}>
-                    {isWinner ? <EmojiEvents /> : <Gamepad />}
+                <Avatar sx={{
+                    bgcolor: isWinner ? 'warning.main' : (isCurrentUser ? 'primary.main' : 'secondary.main')
+                }}>
+                    {isWinner ? <EmojiEvents /> : (isCurrentUser ? <Person /> : <Gamepad />)}
                 </Avatar>
             </ListItemAvatar>
             <ListItemText
                 primary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body1" fontWeight={isWinner ? 600 : 400}>
-                            {profile?.profile?.displayName || 'Unknown Player'}
+                        <Typography variant="body1" fontWeight={isWinner || isCurrentUser ? 600 : 400}>
+                            {isCurrentUser ? 'You' : (profile?.profile?.displayName || 'Unknown Player')}
                         </Typography>
                         {isWinner && (
                             <Chip
@@ -84,44 +132,78 @@ function PlayerListItem({ playerId, isWinner }: { playerId: string; isWinner: bo
                                 sx={{ height: 20, fontSize: '0.7rem' }}
                             />
                         )}
+                        {isCurrentUser && !isWinner && (
+                            <Chip
+                                label="You"
+                                size="small"
+                                color="primary"
+                                sx={{ height: 20, fontSize: '0.7rem' }}
+                            />
+                        )}
                     </Box>
                 }
-                secondary={`ID: ${playerId.slice(0, 8)}...`}
+                secondary={`ID: ${playerId?.slice(0, 8) || 'unknown'}...`}
             />
         </ListItem>
     );
 }
 
 export function SessionDetailDialog({ open, onClose, session }: SessionDetailDialogProps) {
-    const { game, loading: gameLoading } = useGameDetails(session?.gameId);
+    const { userId: currentUserId } = useCurrentUser();
 
     if (!session) return null;
 
-    const getResultConfig = (result: string) => {
+    // Determine if against AI
+    const isAgainstAI = session.result === 'AI_WIN' || session.playerIds.length === 1;
+
+    // Determine user's result
+    const getUserResult = (): 'WIN' | 'LOSS' | 'DRAW' => {
+        if (!currentUserId) return 'DRAW';
+
+        if (session.result === 'DRAW') return 'DRAW';
+
+        if (session.result === 'PLAYER_WIN') {
+            return session.winnerId === currentUserId ? 'WIN' : 'LOSS';
+        }
+
+        if (session.result === 'AI_WIN') {
+            return 'LOSS';
+        }
+
+        return 'DRAW';
+    };
+
+    const userResult = getUserResult();
+
+    const getResultConfig = (result: 'WIN' | 'LOSS' | 'DRAW') => {
         switch (result) {
             case 'WIN':
                 return {
                     color: 'success' as const,
                     icon: <MilitaryTech />,
-                    text: 'Victory!'
+                    text: 'Victory!',
+                    description: 'You won this game'
                 };
             case 'LOSS':
                 return {
                     color: 'error' as const,
                     icon: <Block />,
-                    text: 'Defeat'
+                    text: 'Defeat',
+                    description: 'You lost this game'
                 };
             case 'DRAW':
                 return {
                     color: 'warning' as const,
                     icon: <Handshake />,
-                    text: 'Draw'
+                    text: 'Draw',
+                    description: 'The game ended in a draw'
                 };
             default:
                 return {
                     color: 'default' as const,
                     icon: <Gamepad />,
-                    text: result
+                    text: 'Unknown',
+                    description: 'Game result unknown'
                 };
         }
     };
@@ -151,19 +233,26 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
         }
     };
 
-    const resultConfig = getResultConfig(session.result);
+    const resultConfig = getResultConfig(userResult);
     const difficultyConfig = getDifficultyConfig(session.difficulty);
 
     const formatFullDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'Invalid date';
+
+            return date.toLocaleString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            console.warn(e);
+            return 'Invalid date';
+        }
     };
 
     return (
@@ -191,7 +280,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                                 {resultConfig.text}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
-                                Session Details
+                                {resultConfig.description}
                             </Typography>
                         </Box>
                     </Box>
@@ -203,19 +292,29 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
 
             <DialogContent>
                 <Paper elevation={0} sx={{ p: 2, mb: 2, bgcolor: 'grey.50' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <Gamepad sx={{ color: 'primary.main' }} />
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            Game Information
-                        </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                            <Gamepad sx={{ color: 'primary.main' }} />
+                            <Typography variant="subtitle2" fontWeight={600}>
+                                Game Information
+                            </Typography>
+                        </Box>
+                        {isAgainstAI && (
+                            <Chip
+                                label="vs AI"
+                                color="info"
+                                size="small"
+                                icon={<SmartToy />}
+                                sx={{ height: 24 }}
+                            />
+                        )}
                     </Box>
-                    {gameLoading ? (
-                        <Skeleton width="100%" height={24} />
-                    ) : (
-                        <Typography variant="body1">
-                            {game?.name || 'Unknown Game'}
-                        </Typography>
-                    )}
+                    <Typography variant="body1">
+                        Tic Tac Toe {isAgainstAI && '(Single Player)'}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                        Game ID: {session.gameId || 'Unknown'}
+                    </Typography>
                 </Paper>
 
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
@@ -251,19 +350,37 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
 
                 <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                        <Group sx={{ color: 'primary.main' }} />
+                        {isAgainstAI ? (
+                            <SmartToy sx={{ color: 'info.main' }} />
+                        ) : (
+                            <Group sx={{ color: 'primary.main' }} />
+                        )}
                         <Typography variant="subtitle2" fontWeight={600}>
-                            Players ({session.playerIds.length})
+                            {isAgainstAI ? 'Player vs AI' : `Players (${session.playerIds?.length || 0})`}
                         </Typography>
                     </Box>
+
                     <List sx={{ p: 0 }}>
-                        {session.playerIds.map((playerId) => (
+                        {/* Human players */}
+                        {session.playerIds?.map((playerId) => (
                             <PlayerListItem
                                 key={playerId}
                                 playerId={playerId}
-                                isWinner={playerId === session.winnerId}
+                                isWinner={session.winnerId === playerId}
+                                isCurrentUser={playerId === currentUserId}
+                                isAI={false}
                             />
                         ))}
+
+                        {/* AI opponent (if applicable) */}
+                        {isAgainstAI && (
+                            <PlayerListItem
+                                playerId="ai"
+                                isWinner={session.result === 'AI_WIN'}
+                                isCurrentUser={false}
+                                isAI={true}
+                            />
+                        )}
                     </List>
                 </Box>
 
@@ -272,7 +389,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                         Session ID
                     </Typography>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
-                        {session.id}
+                        {session.id || 'Unknown'}
                     </Typography>
                 </Paper>
             </DialogContent>
