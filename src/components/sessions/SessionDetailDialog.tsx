@@ -32,7 +32,7 @@ import {
     Person
 } from '@mui/icons-material';
 import type { Session } from "../../model/session.ts";
-import {useCurrentUser, useUserProfileById} from '../../hooks/useUserProfile';
+import { useUserProfile, useUserProfileById } from '../../hooks/useUserProfile';
 
 interface SessionDetailDialogProps {
     open: boolean;
@@ -54,13 +54,13 @@ function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false }: {
                 sx={{
                     bgcolor: isWinner ? 'info.lighter' : 'transparent',
                     borderRadius: 1,
-                    mb: 0.5
+                    mb: 0.5,
+                    border: isWinner ? '1px solid' : 'none',
+                    borderColor: 'info.light'
                 }}
             >
                 <ListItemAvatar>
-                    <Avatar sx={{
-                        bgcolor: isWinner ? 'info.main' : 'grey.500'
-                    }}>
+                    <Avatar sx={{ bgcolor: isWinner ? 'info.main' : 'grey.500' }}>
                         <SmartToy />
                     </Avatar>
                 </ListItemAvatar>
@@ -107,7 +107,8 @@ function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false }: {
                 bgcolor: isWinner ? 'warning.lighter' : 'transparent',
                 borderRadius: 1,
                 mb: 0.5,
-                border: isCurrentUser ? '2px solid #1976d2' : 'none'
+                border: isCurrentUser ? '2px solid' : (isWinner ? '1px solid' : 'none'),
+                borderColor: isCurrentUser ? 'primary.main' : (isWinner ? 'warning.light' : 'transparent')
             }}
         >
             <ListItemAvatar>
@@ -149,15 +150,15 @@ function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false }: {
 }
 
 export function SessionDetailDialog({ open, onClose, session }: SessionDetailDialogProps) {
-    const { userId: currentUserId } = useCurrentUser();
+    const { profile } = useUserProfile();
+    const currentUserId = profile?.id;
 
     if (!session) return null;
 
-    const isAgainstAI = session.result === 'AI_WIN' || session.playerIds.length === 1;
+    const isAgainstAI = session.result === 'AI_WIN' || (session.playerIds && session.playerIds.length === 1);
 
     const getUserResult = (): 'WIN' | 'LOSS' | 'DRAW' => {
         if (!currentUserId) return 'DRAW';
-
         if (session.result === 'DRAW') return 'DRAW';
 
         if (session.result === 'PLAYER_WIN') {
@@ -175,59 +176,19 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
 
     const getResultConfig = (result: 'WIN' | 'LOSS' | 'DRAW') => {
         switch (result) {
-            case 'WIN':
-                return {
-                    color: 'success' as const,
-                    icon: <MilitaryTech />,
-                    text: 'Victory!',
-                    description: 'You won this game'
-                };
-            case 'LOSS':
-                return {
-                    color: 'error' as const,
-                    icon: <Block />,
-                    text: 'Defeat',
-                    description: 'You lost this game'
-                };
-            case 'DRAW':
-                return {
-                    color: 'warning' as const,
-                    icon: <Handshake />,
-                    text: 'Draw',
-                    description: 'The game ended in a draw'
-                };
-            default:
-                return {
-                    color: 'default' as const,
-                    icon: <Gamepad />,
-                    text: 'Unknown',
-                    description: 'Game result unknown'
-                };
+            case 'WIN': return { color: 'success' as const, icon: <MilitaryTech />, text: 'Victory!', description: 'You won this game' };
+            case 'LOSS': return { color: 'error' as const, icon: <Block />, text: 'Defeat', description: 'You lost this game' };
+            case 'DRAW': return { color: 'warning' as const, icon: <Handshake />, text: 'Draw', description: 'The game ended in a draw' };
+            default: return { color: 'default' as const, icon: <Gamepad />, text: 'Unknown', description: 'Game result unknown' };
         }
     };
 
     const getDifficultyConfig = (difficulty: string) => {
         switch (difficulty) {
-            case 'EASY':
-                return {
-                    color: 'success' as const,
-                    icon: <SentimentVerySatisfied />
-                };
-            case 'MEDIUM':
-                return {
-                    color: 'warning' as const,
-                    icon: <SentimentNeutral />
-                };
-            case 'HARD':
-                return {
-                    color: 'error' as const,
-                    icon: <SentimentVeryDissatisfied />
-                };
-            default:
-                return {
-                    color: 'default' as const,
-                    icon: <Gamepad />
-                };
+            case 'EASY': return { color: 'success' as const, icon: <SentimentVerySatisfied /> };
+            case 'MEDIUM': return { color: 'warning' as const, icon: <SentimentNeutral /> };
+            case 'HARD': return { color: 'error' as const, icon: <SentimentVeryDissatisfied /> };
+            default: return { color: 'default' as const, icon: <Gamepad /> };
         }
     };
 
@@ -238,14 +199,9 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
         try {
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return 'Invalid date';
-
             return date.toLocaleString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+                hour: '2-digit', minute: '2-digit'
             });
         } catch (e) {
             console.warn(e);
@@ -254,22 +210,14 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={onClose}
-            maxWidth="sm"
-            fullWidth
-        >
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle sx={{ pb: 1 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Avatar sx={{
                             bgcolor: `${resultConfig.color}.main`,
-                            width: 56,
-                            height: 56,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
+                            width: 56, height: 56,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center'
                         }}>
                             {resultConfig.icon}
                         </Avatar>
@@ -282,9 +230,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                             </Typography>
                         </Box>
                     </Box>
-                    <IconButton onClick={onClose} size="small">
-                        <Close />
-                    </IconButton>
+                    <IconButton onClick={onClose} size="small"><Close /></IconButton>
                 </Box>
             </DialogTitle>
 
@@ -293,47 +239,28 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                             <Gamepad sx={{ color: 'primary.main' }} />
-                            <Typography variant="subtitle2" fontWeight={600}>
-                                Game Information
-                            </Typography>
+                            <Typography variant="subtitle2" fontWeight={600}>Game Information</Typography>
                         </Box>
                         {isAgainstAI && (
-                            <Chip
-                                label="vs AI"
-                                color="info"
-                                size="small"
-                                icon={<SmartToy />}
-                                sx={{ height: 24 }}
-                            />
+                            <Chip label="vs AI" color="info" size="small" icon={<SmartToy />} sx={{ height: 24 }} />
                         )}
                     </Box>
-                    <Typography variant="body1">
-                        Tic Tac Toe {isAgainstAI && '(Single Player)'}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                        Game ID: {session.gameId || 'Unknown'}
-                    </Typography>
+                    <Typography variant="body1">Tic Tac Toe {isAgainstAI && '(Single Player)'}</Typography>
                 </Paper>
 
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
                     <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                             <CalendarToday sx={{ fontSize: 20, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary">
-                                Completed
-                            </Typography>
+                            <Typography variant="caption" color="text.secondary">Completed</Typography>
                         </Box>
-                        <Typography variant="body2" fontWeight={600}>
-                            {formatFullDate(session.completedAt)}
-                        </Typography>
+                        <Typography variant="body2" fontWeight={600}>{formatFullDate(session.completedAt)}</Typography>
                     </Paper>
 
                     <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                             <Timer sx={{ fontSize: 20, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary">
-                                Difficulty
-                            </Typography>
+                            <Typography variant="caption" color="text.secondary">Difficulty</Typography>
                         </Box>
                         <Chip
                             label={session.difficulty}
@@ -348,11 +275,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
 
                 <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                        {isAgainstAI ? (
-                            <SmartToy sx={{ color: 'info.main' }} />
-                        ) : (
-                            <Group sx={{ color: 'primary.main' }} />
-                        )}
+                        {isAgainstAI ? <SmartToy sx={{ color: 'info.main' }} /> : <Group sx={{ color: 'primary.main' }} />}
                         <Typography variant="subtitle2" fontWeight={600}>
                             {isAgainstAI ? 'Player vs AI' : `Players (${session.playerIds?.length || 0})`}
                         </Typography>
@@ -381,9 +304,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                 </Box>
 
                 <Paper elevation={0} sx={{ p: 1.5, bgcolor: 'grey.100', textAlign: 'center' }}>
-                    <Typography variant="caption" color="text.secondary" display="block">
-                        Session ID
-                    </Typography>
+                    <Typography variant="caption" color="text.secondary" display="block">Session ID</Typography>
                     <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
                         {session.id || 'Unknown'}
                     </Typography>

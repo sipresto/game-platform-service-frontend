@@ -36,7 +36,7 @@ const createUserFromKeycloak = (keycloak: Keycloak, config: ReturnType<typeof ge
         accessToken: keycloak.token,
         idToken: keycloak.idToken,
         profile: {
-            userId: tokenParsed.sub || '',
+            keycloakId: tokenParsed.sub || '',
             username: preferredUsername,
             email: email,
             name: name,

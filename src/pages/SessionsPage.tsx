@@ -4,7 +4,7 @@ import { SessionList } from "../components/sessions/SessionList.tsx";
 import { SessionFilters } from "../components/sessions/SessionFilters.tsx";
 import { useSessions } from '../hooks/useSessions.ts';
 import type { Session } from '../model/session.ts';
-import { useCurrentUser } from "../hooks/useUserProfile.ts";
+import {useUserProfile} from "../hooks/useUserProfile.ts";
 
 interface EnhancedSession extends Session {
     enhancedUserResult: 'WIN' | 'LOSS' | 'DRAW';
@@ -14,7 +14,8 @@ interface EnhancedSession extends Session {
 
 export function SessionsPage() {
     const { sessions, loading, error, refresh } = useSessions();
-    const { userId: currentUserId } = useCurrentUser();
+    const { profile} = useUserProfile();
+    const currentUserId = profile?.id;
 
     const [sortField, setSortField] = useState<'date' | 'result' | 'difficulty' | 'players'>('date');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -28,21 +29,35 @@ export function SessionsPage() {
     const getEnhancedUserResult = useCallback((session: Session): 'WIN' | 'LOSS' | 'DRAW' => {
         if (!currentUserId) return 'DRAW';
 
-        if (session.result === 'DRAW') return 'DRAW';
-
-        if (session.result === 'PLAYER_WIN') {
-            return session.winnerId === currentUserId ? 'WIN' : 'LOSS';
-        }
-
         if (session.result === 'AI_WIN') {
             return 'LOSS';
+        }
+
+        if (session.result === 'DRAW') {
+            return 'DRAW';
+        }
+
+        if (session.result === 'PLAYER_WIN') {
+
+            if (session.winnerId === currentUserId) {
+                return 'WIN';
+            }
+            else if (session.playerIds?.length === 1 && session.playerIds[0] === currentUserId) {
+                return 'WIN';
+            }
+            else if (session.playerIds?.includes(currentUserId)) {
+                return 'LOSS';
+            }
+            else {
+                return 'LOSS';
+            }
         }
 
         return 'DRAW';
     }, [currentUserId]);
 
     const isAgainstAI = useCallback((session: Session): boolean => {
-        return session.result === 'AI_WIN' || session.playerIds.length === 1;
+        return session.result === 'AI_WIN' || (session.playerIds && session.playerIds.length === 1);
     }, []);
 
     const enhancedSessions: EnhancedSession[] = useMemo(() => {
@@ -95,36 +110,21 @@ export function SessionsPage() {
         }
 
         if (filters.result.length > 0) {
-            const allResultTypes = ['WIN', 'LOSS', 'DRAW'];
-            const allSelected = allResultTypes.every(type => filters.result.includes(type));
-
-            if (!allSelected) {
-                result = result.filter(session => {
-                    return filters.result.includes(session.enhancedUserResult);
-                });
-            }
+            result = result.filter(session => {
+                return filters.result.includes(session.enhancedUserResult);
+            });
         }
 
         if (filters.difficulty.length > 0) {
-            const allDifficultyTypes = ['EASY', 'HARD', 'IMPOSSIBLE'];
-            const allSelected = allDifficultyTypes.every(type => filters.difficulty.includes(type));
-
-            if (!allSelected) {
-                result = result.filter(session => filters.difficulty.includes(session.difficulty));
-            }
+            result = result.filter(session => filters.difficulty.includes(session.difficulty));
         }
 
         if (filters.opponent.length > 0) {
-            const allOpponentTypes = ['ai', 'player'];
-            const allSelected = allOpponentTypes.every(type => filters.opponent.includes(type));
-
-            if (!allSelected) {
-                result = result.filter(session => {
-                    const isAI = session.isAgainstAI;
-                    if (filters.opponent.includes('ai') && isAI) return true;
-                    return filters.opponent.includes('player') && !isAI;
-                });
-            }
+            result = result.filter(session => {
+                const isAI = session.isAgainstAI;
+                if (filters.opponent.includes('ai') && isAI) return true;
+                return filters.opponent.includes('player') && !isAI;
+            });
         }
 
         result.sort((a, b) => {
@@ -132,20 +132,26 @@ export function SessionsPage() {
 
             switch (sortField) {
                 case 'date':
-                    { const dateA = new Date(a.completedAt).getTime();
+                {
+                    const dateA = new Date(a.completedAt).getTime();
                     const dateB = new Date(b.completedAt).getTime();
-                    comparison = dateB - dateA;
-                    break; }
+                    comparison = dateA - dateB;
+                    break;
+                }
 
                 case 'result':
-                    { const resultOrder = { WIN: 1, LOSS: 2, DRAW: 3 };
+                {
+                    const resultOrder = { WIN: 1, DRAW: 2, LOSS: 3 };
                     comparison = (resultOrder[a.enhancedUserResult] || 4) - (resultOrder[b.enhancedUserResult] || 4);
-                    break; }
+                    break;
+                }
 
                 case 'difficulty':
-                    { const difficultyOrder = { EASY: 1, HARD: 2, IMPOSSIBLE: 3 };
-                    comparison = (difficultyOrder[a.difficulty] || 0) - (difficultyOrder[b.difficulty] || 0);
-                    break; }
+                {
+                    const difficultyOrder = { EASY: 1, HARD: 2, IMPOSSIBLE: 3 };
+                    comparison = (difficultyOrder[a.difficulty] || 4) - (difficultyOrder[b.difficulty] || 4);
+                    break;
+                }
 
                 case 'players':
                     comparison = (a.playerIds?.length || 0) - (b.playerIds?.length || 0);

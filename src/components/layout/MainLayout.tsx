@@ -63,7 +63,7 @@ export function MainLayout() {
 
     const handleViewProfile = () => {
         handleUserMenuClose();
-        const userId = userProfile?.id || userProfile?.id || loggedInUser?.profile?.userId;
+        const userId = userProfile?.id || userProfile?.id || loggedInUser?.profile?.keycloakId;
         if (userId) {
             navigate(`/profile/${userId}`);
         }

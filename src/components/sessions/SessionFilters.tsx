@@ -27,13 +27,7 @@ import {
     SmartToy,
     Person
 } from '@mui/icons-material';
-import type { Session } from '../../model/session.ts';
-
-interface EnhancedSession extends Session {
-    enhancedUserResult: 'WIN' | 'LOSS' | 'DRAW';
-    isAgainstAI: boolean;
-    _userResultLabel: string;
-}
+import type {Session} from "../../model/session.ts";
 
 interface SessionFiltersProps {
     filters: {
@@ -51,6 +45,12 @@ interface SessionFiltersProps {
     enhancedSessions: EnhancedSession[];
     filteredAndSortedSessions: EnhancedSession[];
     currentUserId?: string;
+}
+
+interface EnhancedSession extends Session {
+    enhancedUserResult: 'WIN' | 'LOSS' | 'DRAW';
+    isAgainstAI: boolean;
+    _userResultLabel: string;
 }
 
 export function SessionFilters({
@@ -166,6 +166,7 @@ export function SessionFilters({
                                     <SentimentVerySatisfied sx={{ mr: 1 }} />
                                     Easy
                                 </ToggleButton>
+
                                 <ToggleButton value="HARD" aria-label="hard">
                                     <SentimentVeryDissatisfied sx={{ mr: 1 }} />
                                     Hard
@@ -201,7 +202,7 @@ export function SessionFilters({
 
                         {(filters.result.length > 0 || filters.difficulty.length > 0 ||
                             filters.opponent.length > 0 || filters.search) && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, flexWrap: 'wrap' }}>
                                 <Typography variant="caption" color="text.secondary">
                                     Active filters:
                                 </Typography>

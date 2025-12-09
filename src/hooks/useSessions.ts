@@ -4,7 +4,7 @@ import type {Session} from "../model/session.ts";
 import {useCurrentUser} from "./useUserProfile.ts";
 
 export function useSessions() {
-    const { userId, isAuthenticated } = useCurrentUser();
+    const { keycloakId, isAuthenticated } = useCurrentUser();
 
     const {
         data: sessions = [],
@@ -12,9 +12,9 @@ export function useSessions() {
         error,
         refetch: refresh,
     } = useQuery<Session[], Error>({
-        queryKey: ['sessions', userId],
-        queryFn: () => getSessionsByUserId(userId),
-        enabled: isAuthenticated && !!userId,
+        queryKey: ['sessions', keycloakId],
+        queryFn: () => getSessionsByUserId(keycloakId),
+        enabled: isAuthenticated && !!keycloakId,
     });
 
     return {
