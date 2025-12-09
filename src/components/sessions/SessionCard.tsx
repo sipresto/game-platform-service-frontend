@@ -35,22 +35,18 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
         session.winnerId || ''
     );
 
-    // Determine if session is against AI
     const isAgainstAI = session.result === 'AI_WIN' || session.playerIds.length === 1;
 
-    // Determine user's result
     const getUserResult = (): 'WIN' | 'LOSS' | 'DRAW' => {
         if (!currentUserId) return 'DRAW';
 
         if (session.result === 'DRAW') return 'DRAW';
 
         if (session.result === 'PLAYER_WIN') {
-            // Check if current user is the winner
             return session.winnerId === currentUserId ? 'WIN' : 'LOSS';
         }
 
         if (session.result === 'AI_WIN') {
-            // User loses against AI, unless they're not a player (shouldn't happen)
             return 'LOSS';
         }
 

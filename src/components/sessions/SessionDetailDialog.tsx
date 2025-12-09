@@ -153,10 +153,8 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
 
     if (!session) return null;
 
-    // Determine if against AI
     const isAgainstAI = session.result === 'AI_WIN' || session.playerIds.length === 1;
 
-    // Determine user's result
     const getUserResult = (): 'WIN' | 'LOSS' | 'DRAW' => {
         if (!currentUserId) return 'DRAW';
 
@@ -361,7 +359,6 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                     </Box>
 
                     <List sx={{ p: 0 }}>
-                        {/* Human players */}
                         {session.playerIds?.map((playerId) => (
                             <PlayerListItem
                                 key={playerId}
@@ -372,7 +369,6 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                             />
                         ))}
 
-                        {/* AI opponent (if applicable) */}
                         {isAgainstAI && (
                             <PlayerListItem
                                 playerId="ai"

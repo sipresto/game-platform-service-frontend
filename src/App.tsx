@@ -12,8 +12,7 @@ import {ProfileEditPage} from "./pages/ProfileEditPage.tsx";
 import {GamePage} from "./pages/GamePage.tsx";
 import {UsersPage} from "./pages/UsersPage.tsx";
 import {PurchasePage} from "./pages/PurchasePage.tsx";
-import {SessionsPage} from "./pages/SessionsPage.tsx"; // Import the new page
-
+import {SessionsPage} from "./pages/SessionsPage.tsx";
 const queryClient = new QueryClient()
 
 function App() {
