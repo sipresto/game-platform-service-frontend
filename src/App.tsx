@@ -12,7 +12,6 @@ import {ProfileEditPage} from "./pages/ProfileEditPage.tsx";
 import {GamePage} from "./pages/GamePage.tsx";
 import {UsersPage} from "./pages/UsersPage.tsx";
 import {PurchasePage} from "./pages/PurchasePage.tsx";
-import {LobbyRoomPage} from "./pages/LobbyRoomPage.tsx";
 
 import {SessionsPage} from "./pages/SessionsPage.tsx";
 const queryClient = new QueryClient()
@@ -33,7 +32,6 @@ function App() {
                         {/* Protected routes - require authentication */}
                         <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
                             <Route path="/lobby/:gameId" element={<LobbyPage />} />
-                            <Route path="/game/:gameId/lobby/:lobbyId" element={<LobbyRoomPage />} />
                             <Route path="/library" element={<LibraryPage />} />
                             <Route path="/sessions" element={<SessionsPage />} />
                             <Route path="/profile/:keycloakId" element={<ProfilePage />} />

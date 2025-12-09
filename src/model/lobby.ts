@@ -28,18 +28,3 @@ export interface LobbyCreatedResponse {
 export interface GameUrlResponse {
     url: string;
 }
-
-export interface LobbyPlayer {
-    id: string;
-    username: string;
-}
-
-export interface LobbyDetail {
-    id: string;
-    gameId: string;
-    hostId: string;
-    currentPlayerCount: number;
-    maxPlayers: number;
-    isPrivate: boolean;
-    players: LobbyPlayer[];
-}
