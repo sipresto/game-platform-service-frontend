@@ -1,20 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useContext, useEffect, useState } from 'react';
 import SecurityContext from '../context/SecurityContext';
-import {
-    createLobby,
-    getLobbiesForGame,
-    getLobbyDetails,
-    joinLobby,
-    leaveLobby,
-    startGame
-} from '../services/lobbyApi';
-import type {
-    CreateLobbyRequest,
-    JoinLobbyRequest,
-    Lobby,
-    StartGameRequest
-} from '../model/lobby';
+import {createLobby, getLobbiesForGame, joinLobby, leaveLobby, startGame} from '../services/lobbyApi';
+import type { CreateLobbyRequest, JoinLobbyRequest, Lobby, StartGameRequest } from '../model/lobby';
 
 const useToken = () => {
     const { loggedInUser } = useContext(SecurityContext);
@@ -34,70 +22,26 @@ export function useLobbies(gameId: string | undefined) {
     });
 
     useEffect(() => {
-        if (!query.data || previousLobbies.length === 0 || hasRedirected) {
-            setPreviousLobbies(query.data ?? []);
-            return;
+        if (query.data && previousLobbies.length > 0 && !hasRedirected) {
+            const currentLobbyIds = new Set(query.data.map(lobby => lobby.id));
+            const joinedLobby = previousLobbies.find(lobby =>
+                !currentLobbyIds.has(lobby.id) &&
+                localStorage.getItem('currentLobbyId') === lobby.id
+            );
+
+            if (joinedLobby && gameId) {
+                setHasRedirected(true); 
+                const gameUrl = `/game/${gameId}/play?lobbyId=${joinedLobby.id}`;
+                console.log('Game started! Redirecting to:', gameUrl);
+                window.location.href = gameUrl;
+            }
         }
-
-        const currentLobbyIds = new Set(query.data.map(lobby => lobby.id));
-        const currentLobbyId = localStorage.getItem('currentLobbyId');
-
-        if (!currentLobbyId) {
-            setPreviousLobbies(query.data);
-            return;
-        }
-
-        const joinedLobby = previousLobbies.find(
-            lobby => !currentLobbyIds.has(lobby.id) && lobby.id === currentLobbyId
-        );
-
-        if (joinedLobby && gameId) {
-            setHasRedirected(true);
-            localStorage.removeItem('currentLobbyId');
-            window.location.href = `/game/${gameId}/play?lobbyId=${joinedLobby.id}`;
-        }
-
-        setPreviousLobbies(query.data);
+        setPreviousLobbies(query.data ?? []);
     }, [query.data, gameId, hasRedirected, previousLobbies]);
 
     return {
         ...query,
         lobbies: query.data ?? [],
-    };
-}
-
-export function useLobbyDetail(lobbyId: string | undefined) {
-    const { loggedInUser } = useContext(SecurityContext);
-
-    const query = useQuery({
-        queryKey: ['lobby', lobbyId],
-        queryFn: () => getLobbyDetails(lobbyId!),
-        enabled: !!lobbyId,
-        refetchInterval: 2000,
-    });
-
-    const myUserId = loggedInUser?.profile?.userId;
-    const myUsername = loggedInUser?.username;
-    const hostId = query.data?.hostId;
-
-    const isHost = !!(
-        query.data &&
-        loggedInUser &&
-        (
-            hostId === myUserId ||
-            hostId === myUsername ||
-            query.data.players?.some(
-                (player) =>
-                    player.id === hostId &&
-                    (player.id === myUserId || player.username === myUsername)
-            )
-        )
-    );
-
-    return {
-        ...query,
-        lobby: query.data,
-        isHost,
     };
 }
 
@@ -121,15 +65,19 @@ export function useLobbyActions(gameId: string | undefined) {
     });
 
     const leaveMutation = useMutation({
-        mutationFn: ({ lobbyId }: { lobbyId: string }) => leaveLobby(lobbyId),
+        mutationFn: ({lobbyId}: { lobbyId: string; }) =>
+            leaveLobby(lobbyId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
-        },
-    });
+            queryClient.invalidateQueries({queryKey: ['lobbies', gameId]});
+        }
+    })
 
     const startMutation = useMutation({
         mutationFn: ({ lobbyId, request }: { lobbyId: string; request: StartGameRequest }) =>
             startGame(lobbyId, request, token),
+        onSuccess: (data) => {
+            window.location.href = data.url;
+        },
     });
 
     return {
