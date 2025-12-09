@@ -8,14 +8,10 @@ interface LobbyGridProps {
         isPrivate: boolean;
     }>;
     onJoinLobby: (lobbyId: string, isPrivate: boolean) => void;
-    onLeaveLobby: (lobbyId: string) => void;
-    onStartGame: (lobbyId: string) => void;
     isJoining?: boolean;
-    isLeaving?: boolean;
-    isStarting?: boolean;
 }
 
-export const LobbyGrid = ({ lobbies, onJoinLobby, onLeaveLobby, onStartGame, isJoining, isLeaving, isStarting }: LobbyGridProps) => {
+export const LobbyGrid = ({ lobbies, onJoinLobby, isJoining }: LobbyGridProps) => {
     return (
         <Grid container spacing={3}>
             {lobbies.map((lobby) => (
@@ -23,11 +19,7 @@ export const LobbyGrid = ({ lobbies, onJoinLobby, onLeaveLobby, onStartGame, isJ
                     <LobbyCard
                         lobby={lobby}
                         onJoinLobby={onJoinLobby}
-                        onLeaveLobby={onLeaveLobby}
-                        onStartGame={onStartGame}
                         isJoining={isJoining}
-                        isLeaving={isLeaving}
-                        isStarting={isStarting}
                     />
                 </Grid>
             ))}
