@@ -153,6 +153,10 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
     const { profile } = useUserProfile();
     const currentUserId = profile?.id;
 
+    const opponentId = session?.playerIds?.find(id => id !== currentUserId);
+
+    const { data: opponentProfile } = useUserProfileById(opponentId || '');
+
     if (!session) return null;
 
     const isAgainstAI = session.result === 'AI_WIN' || (session.playerIds && session.playerIds.length === 1);
@@ -209,6 +213,8 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
         }
     };
 
+    const opponentDisplayName = opponentProfile?.profile?.displayName || opponentProfile?.username || 'Opponent';
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle sx={{ pb: 1 }}>
@@ -246,9 +252,19 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                         )}
                     </Box>
                     <Typography variant="body1">Tic Tac Toe {isAgainstAI && '(Single Player)'}</Typography>
+                    {!isAgainstAI && opponentId && (
+                        <Typography variant="body2" color="text.secondary">
+                            vs {opponentDisplayName}
+                        </Typography>
+                    )}
                 </Paper>
 
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 2 }}>
+                <Box sx={{
+                    display: 'grid',
+                    gridTemplateColumns: isAgainstAI ? '1fr 1fr' : '1fr',
+                    gap: 2,
+                    mb: 2
+                }}>
                     <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                             <CalendarToday sx={{ fontSize: 20, color: 'text.secondary' }} />
@@ -257,18 +273,20 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                         <Typography variant="body2" fontWeight={600}>{formatFullDate(session.completedAt)}</Typography>
                     </Paper>
 
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50' }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                            <Timer sx={{ fontSize: 20, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary">Difficulty</Typography>
-                        </Box>
-                        <Chip
-                            label={session.difficulty}
-                            color={difficultyConfig.color}
-                            size="small"
-                            icon={difficultyConfig.icon}
-                        />
-                    </Paper>
+                    {isAgainstAI && (
+                        <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                                <Timer sx={{ fontSize: 20, color: 'text.secondary' }} />
+                                <Typography variant="caption" color="text.secondary">Difficulty</Typography>
+                            </Box>
+                            <Chip
+                                label={session.difficulty}
+                                color={difficultyConfig.color}
+                                size="small"
+                                icon={difficultyConfig.icon}
+                            />
+                        </Paper>
+                    )}
                 </Box>
 
                 <Divider sx={{ my: 2 }} />

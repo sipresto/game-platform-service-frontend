@@ -175,12 +175,14 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
                         </Box>
 
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                            <Chip
-                                label={difficultyConfig.label}
-                                color={difficultyConfig.color}
-                                size="small"
-                                icon={difficultyConfig.icon}
-                            />
+                            {isAgainstAI && (
+                                <Chip
+                                    label={difficultyConfig.label}
+                                    color={difficultyConfig.color}
+                                    size="small"
+                                    icon={difficultyConfig.icon}
+                                />
+                            )}
                             {isAgainstAI && (
                                 <Chip
                                     label="vs AI"
