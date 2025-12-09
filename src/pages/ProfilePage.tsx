@@ -8,7 +8,7 @@ import {useOwnedGamesForUser} from "../hooks/useOwnedGames.ts";
 
 export function ProfilePage() {
     const { keycloakId } = useParams<{ keycloakId: string }>();
-    const { userId: currentUserKeycloakId } = useCurrentUser();
+    const { keycloakId: currentUserKeycloakId } = useCurrentUser();
     const { data: user, isLoading, error } = useUserProfileById(keycloakId || '');
     const { games, loading: gamesLoading } = useOwnedGamesForUser(keycloakId || '', '');
     const isOwnProfile = currentUserKeycloakId === keycloakId;

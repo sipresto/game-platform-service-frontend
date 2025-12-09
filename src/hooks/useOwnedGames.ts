@@ -4,7 +4,7 @@ import type {Game} from "../model/game.ts";
 import {useCurrentUser} from "./useUserProfile.ts";
 
 export function useOwnedGames(searchTerm: string) {
-    const { userId, isAuthenticated } = useCurrentUser();
+    const { keycloakId, isAuthenticated } = useCurrentUser();
 
     const {
         data: ownedGames = [],
@@ -12,9 +12,9 @@ export function useOwnedGames(searchTerm: string) {
         error,
         refetch: refresh,
     } = useQuery<Game[], Error>({
-        queryKey: ['ownedGames', userId],
-        queryFn: () => getOwnedGamesForUser(userId),
-        enabled: isAuthenticated && !!userId,
+        queryKey: ['ownedGames', keycloakId],
+        queryFn: () => getOwnedGamesForUser(keycloakId),
+        enabled: isAuthenticated && !!keycloakId,
     });
 
     const filteredGames = ownedGames.filter(game =>

@@ -13,6 +13,7 @@ import {GamePage} from "./pages/GamePage.tsx";
 import {UsersPage} from "./pages/UsersPage.tsx";
 import {PurchasePage} from "./pages/PurchasePage.tsx";
 
+import {SessionsPage} from "./pages/SessionsPage.tsx";
 const queryClient = new QueryClient()
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
                         <Route element={<RouteGuard><MainLayout /></RouteGuard>}>
                             <Route path="/lobby/:gameId" element={<LobbyPage />} />
                             <Route path="/library" element={<LibraryPage />} />
+                            <Route path="/sessions" element={<SessionsPage />} />
                             <Route path="/profile/:keycloakId" element={<ProfilePage />} />
                             <Route path="/profile/edit" element={<ProfileEditPage />} />
                             <Route path="/users" element={<UsersPage />} />
