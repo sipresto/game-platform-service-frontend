@@ -20,8 +20,8 @@ export const LobbyPage = () => {
     const navigate = useNavigate();
 
     const { lobbies, isLoading, error, refetch } = useLobbies(gameId);
-    const { createLobby, joinLobby } = useLobbyActions(gameId);
     const { game, loading: gameLoading, error: gameError } = useGameDetails(gameId);
+    const { createLobby, joinLobby } = useLobbyActions(gameId, game?.name ?? "unkown");
 
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [joinDialogOpen, setJoinDialogOpen] = useState(false);
@@ -92,7 +92,7 @@ export const LobbyPage = () => {
     };
 
     const handleCreateLobby = () => {
-        if (!gameId) return;
+        if (!gameId || !game) return;
 
         const request: CreateLobbyRequest = {
             gameId,
@@ -131,11 +131,11 @@ export const LobbyPage = () => {
         );
     }
 
-    if (gameError) {
+    if (gameError || !game) {
         return (
             <Container maxWidth="lg" sx={{ py: 4 }}>
                 <Alert severity="error">
-                    Failed to load game details: {gameError.message}
+                    Failed to load game details: {gameError?.message || 'Unknown error'}
                 </Alert>
             </Container>
         );
@@ -167,7 +167,7 @@ export const LobbyPage = () => {
             )}
 
             {!isLoading && !error && lobbies.length === 0 && (
-                <LobbyEmptyState gameName={game?.name} />
+                <LobbyEmptyState gameName={game.name} />
             )}
 
             {!isLoading && !error && lobbies.length > 0 && (
@@ -181,7 +181,7 @@ export const LobbyPage = () => {
             <CreateLobbyDialog
                 open={createDialogOpen}
                 onClose={() => setCreateDialogOpen(false)}
-                gameName={game?.name}
+                gameName={game.name}
                 maxPlayers={maxPlayers}
                 isPrivate={isPrivate}
                 password={password}
