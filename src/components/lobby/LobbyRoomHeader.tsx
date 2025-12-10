@@ -28,10 +28,6 @@ export const LobbyRoomHeader = ({ lobby, currentPlayerCount, maxPlayers }: Lobby
                 />
             </Box>
 
-            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                Lobby ID: {lobby.id}
-            </Typography>
-
             <Box sx={{ my: 4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                     <Typography variant="body2">Players Joined</Typography>

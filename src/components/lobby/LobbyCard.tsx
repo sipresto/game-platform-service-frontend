@@ -51,9 +51,6 @@ export const LobbyCard = ({ lobby, onJoinLobby, isJoining, children }: LobbyCard
                         variant="outlined"
                     />
                 </Box>
-                <Typography variant="caption" color="text.secondary">
-                    Lobby ID: {lobby.id.slice(0, 8)}...
-                </Typography>
             </CardContent>
             <CardActions sx={{ p: 2, pt: 0 }}>
                 <Button
