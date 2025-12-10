@@ -9,6 +9,7 @@ const useToken = () => {
     return loggedInUser?.accessToken ?? loggedInUser?.idToken ?? localStorage.getItem('accessToken');
 };
 
+
 export function useLobbies(gameId: string | undefined) {
     const token = useToken();
     const [previousLobbies, setPreviousLobbies] = useState<Lobby[]>([]);
