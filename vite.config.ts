@@ -43,6 +43,20 @@ export default defineConfig({
                 changeOrigin: true,
                 ws: true,
                 rewrite: (path) => path
+            },
+            '/api/games/quoridor': {
+                target: 'http://0.0.0.0:8097',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/games\/quoridor/, '/api/quoridor'),
+                headers: {
+                    'X-Forwarded-Host': 'localhost'
+                }
+            },
+            '/games/quoridor': {
+                target: 'http://0.0.0.0:5175',
+                changeOrigin: true,
+                ws: true,
+                rewrite: (path) => path
             }
         }
     },
