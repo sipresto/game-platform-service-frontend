@@ -22,6 +22,8 @@ export interface LobbyDetail {
     currentPlayerCount: number;
     maxPlayers: number;
     isPrivate: boolean;
+    started: boolean;
+    gameUrl?: string;
     players: LobbyPlayer[];
 }
 
