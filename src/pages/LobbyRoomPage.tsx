@@ -12,6 +12,7 @@ import {
 import { ExitToApp as ExitIcon, PlayArrow as PlayIcon } from '@mui/icons-material';
 
 import { useLobbyDetail, useLobbyActions } from "../hooks/useLobby";
+import { useGameDetails } from "../hooks/useGames";
 import { StartGameDialog } from '../components/lobby/StartGameDialog';
 import { LobbyRoomHeader } from '../components/lobby/LobbyRoomHeader';
 import { PlayerList } from '../components/lobby/PlayerList';
@@ -22,8 +23,9 @@ export const LobbyRoomPage = () => {
     const { gameId, lobbyId } = useParams<{ gameId: string; lobbyId: string }>();
     const navigate = useNavigate();
 
-    const { lobby, isHost, isLoading, error } = useLobbyDetail(lobbyId);
-    const { leaveLobby, startGame } = useLobbyActions(gameId);
+    const { game, loading: gameLoading, error: gameError } = useGameDetails(gameId);
+    const { lobby, isHost, isLoading, error } = useLobbyDetail(lobbyId, game?.name ?? "unkown");
+    const { leaveLobby, startGame } = useLobbyActions(gameId, game?.name ?? "unkown");
 
     const [startDialogOpen, setStartDialogOpen] = useState(false);
     const [difficulty, setDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
@@ -53,7 +55,7 @@ export const LobbyRoomPage = () => {
     };
 
     const handleStartGameConfirm = () => {
-        if (!lobbyId || !gameId || !lobby) return;
+        if (!lobbyId || !gameId || !lobby || !game) return;
 
         const aiDifficultyMap: Record<string, StartGameRequest['difficulty']> = {
             'EASY': 'EASY',
@@ -80,6 +82,35 @@ export const LobbyRoomPage = () => {
             }
         );
     };
+
+    if (gameLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (gameError || !game) {
+        return (
+            <Container maxWidth="sm" sx={{ mt: 4 }}>
+                <Alert
+                    severity="error"
+                    action={
+                        <Button
+                            color="inherit"
+                            size="small"
+                            onClick={() => navigate(`/game/${gameId}/lobbies`)}
+                        >
+                            Return to lobbies
+                        </Button>
+                    }
+                >
+                    Failed to load game details: {gameError?.message || 'Unknown error'}
+                </Alert>
+            </Container>
+        );
+    }
 
     if (isLoading) {
         return (

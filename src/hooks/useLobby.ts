@@ -14,11 +14,65 @@ import type {
     JoinLobbyRequest,
     StartGameRequest
 } from '../model/lobby';
-import {useUserProfile} from "./useUserProfile.ts";
+import { useUserProfile } from "./useUserProfile.ts";
 
 const useToken = () => {
     const { loggedInUser } = useContext(SecurityContext);
     return loggedInUser?.accessToken ?? loggedInUser?.idToken;
+};
+
+const normalizeGameUrl = (gameUrl: string, gameName: string): string => {
+    try {
+        const url = new URL(gameUrl);
+
+        const pathAndQuery = url.pathname + url.search + url.hash;
+
+        const gameBasePath = `/games/${gameName.toLowerCase()}/`;
+
+        let finalPath = pathAndQuery;
+
+        if (!finalPath.startsWith(gameBasePath)) {
+            if (finalPath.startsWith('/')) {
+                finalPath = gameBasePath + finalPath.substring(1);
+            } else {
+                finalPath = gameBasePath + finalPath;
+            }
+        }
+
+        return window.location.origin + finalPath;
+    } catch (error) {
+        console.warn(error);
+        let finalPath = gameUrl;
+        const gameBasePath = `/games/${gameName.toLowerCase()}/`;
+
+        if (!finalPath.startsWith(gameBasePath)) {
+            if (finalPath.startsWith('/')) {
+                finalPath = gameBasePath + finalPath.substring(1);
+            } else {
+                finalPath = gameBasePath + finalPath;
+            }
+        }
+
+        return window.location.origin + finalPath;
+    }
+};
+
+const extractGameNameFromUrl = (gameUrl: string): string | null => {
+    try {
+        const url = new URL(gameUrl);
+        const pathParts = url.pathname.split('/').filter(Boolean);
+
+        if (pathParts.length >= 2 && pathParts[0] === 'games') {
+            return pathParts[1];
+        }
+    } catch (error) {
+        console.warn(error);
+        const pathParts = gameUrl.split('/').filter(Boolean);
+        if (pathParts.length >= 2 && pathParts[0] === 'games') {
+            return pathParts[1];
+        }
+    }
+    return null;
 };
 
 export function useLobbies(gameId: string | undefined) {
@@ -37,7 +91,7 @@ export function useLobbies(gameId: string | undefined) {
     };
 }
 
-export function useLobbyDetail(lobbyId: string | undefined) {
+export function useLobbyDetail(lobbyId: string | undefined, gameName: string) {
     const { profile } = useUserProfile();
     const { loggedInUser } = useContext(SecurityContext);
     const redirectAttemptedRef = useRef(false);
@@ -59,18 +113,16 @@ export function useLobbyDetail(lobbyId: string | undefined) {
     );
 
     useEffect(() => {
-        if (!query.data || redirectAttemptedRef.current || !lobbyId) return;
+        if (!query.data || redirectAttemptedRef.current || !lobbyId || !gameName) return;
 
         const currentLobby = query.data;
 
         if (currentLobby.started && currentLobby.gameUrl && !redirectAttemptedRef.current) {
             redirectAttemptedRef.current = true;
 
-            let finalUrl = currentLobby.gameUrl;
+            const extractedGameName = extractGameNameFromUrl(currentLobby.gameUrl) || gameName;
 
-            if (finalUrl.includes('localhost:5174')) {
-                finalUrl = finalUrl.replace('http://localhost:5174', window.location.origin);
-            }
+            let finalUrl = normalizeGameUrl(currentLobby.gameUrl, extractedGameName);
 
             const token = loggedInUser?.accessToken ?? loggedInUser?.idToken;
             if (token) {
@@ -93,7 +145,7 @@ export function useLobbyDetail(lobbyId: string | undefined) {
                 window.location.href = finalUrl;
             }, 300);
         }
-    }, [query.data, lobbyId, loggedInUser]);
+    }, [query.data, lobbyId, loggedInUser, gameName]);
 
     return {
         ...query,
@@ -102,7 +154,7 @@ export function useLobbyDetail(lobbyId: string | undefined) {
     };
 }
 
-export function useLobbyActions(gameId: string | undefined) {
+export function useLobbyActions(gameId: string | undefined, gameName: string) {
     const token = useToken();
     const queryClient = useQueryClient();
 
@@ -132,11 +184,9 @@ export function useLobbyActions(gameId: string | undefined) {
         mutationFn: ({ lobbyId, request }: { lobbyId: string; request: StartGameRequest }) =>
             startGame(lobbyId, request, token),
         onSuccess: (data, variables) => {
-            let finalUrl = data.url;
+            const extractedGameName = extractGameNameFromUrl(data.url) || gameName;
 
-            if (finalUrl.includes('localhost:5174')) {
-                finalUrl = finalUrl.replace('http://localhost:5174', window.location.origin);
-            }
+            let finalUrl = normalizeGameUrl(data.url, extractedGameName);
 
             localStorage.setItem(`game_${variables.lobbyId}_url`, finalUrl);
             sessionStorage.setItem(`game_started_${variables.lobbyId}`, 'true');
