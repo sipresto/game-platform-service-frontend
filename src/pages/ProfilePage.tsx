@@ -5,12 +5,15 @@ import { ProfileHeader } from '../components/profile/ProfileHeader';
 import { GameLibrarySection } from '../components/profile/GameLibrarySection';
 import { ProfileSkeleton } from '../components/profile/ProfileSkeleton';
 import {useOwnedGamesForUser} from "../hooks/useOwnedGames.ts";
+import {AchievementsSection} from "../components/profile/AchievementsSection.tsx";
+import {useAchievementsForUser} from "../hooks/useAchievementProgress.ts";
 
 export function ProfilePage() {
     const { keycloakId } = useParams<{ keycloakId: string }>();
     const { keycloakId: currentUserKeycloakId } = useCurrentUser();
     const { data: user, isLoading, error } = useUserProfileById(keycloakId || '');
     const { games, loading: gamesLoading } = useOwnedGamesForUser(keycloakId || '', '');
+    const { achievements, loading: achievementsLoading } = useAchievementsForUser(keycloakId || "")
     const isOwnProfile = currentUserKeycloakId === keycloakId;
     const canViewProfile = user?.visibility === 'PUBLIC' || isOwnProfile;
 
@@ -56,6 +59,9 @@ export function ProfilePage() {
                 </Grid>
                 <Grid size={{ xs: 12, md: 8 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <GameLibrarySection games={games} loading={gamesLoading} isOwnProfile={isOwnProfile} />
+                </Grid>
+                <Grid size={{ xs: 12 }} sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+                    <AchievementsSection achievements={achievements} loading={achievementsLoading} />
                 </Grid>
             </Grid>
         </Container>
