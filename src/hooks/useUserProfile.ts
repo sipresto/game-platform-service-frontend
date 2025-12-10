@@ -78,14 +78,13 @@ export function useUpdateProfile(): UseMutationResult<
 export function useCurrentUser() {
     const { loggedInUser, isAuthenticated } = useContext(SecurityContext);
 
-    const userId = loggedInUser?.profile?.userId || '';
+    const userId = loggedInUser?.profile?.keycloakId || '';
 
     console.log('useCurrentUser: loggedInUser:', loggedInUser);
-    console.log('useCurrentUser: userId/keycloakId:', userId);
+    console.log('useCurrentUser: keycloakId:', userId);
     console.log('useCurrentUser: isAuthenticated:', isAuthenticated());
 
     return {
-        userId: userId,
         keycloakId: userId,
         token: loggedInUser?.accessToken,
         isAuthenticated: isAuthenticated() && !!userId,
@@ -99,11 +98,11 @@ export function usePrivacySettings(): UseMutationResult<
     PrivacyUpdateData
 > {
     const queryClient = useQueryClient();
-    const { userId } = useCurrentUser();
+    const { keycloakId } = useCurrentUser();
 
     return useMutation({
         mutationFn: async (privacyData: PrivacyUpdateData) => {
-            if (!userId) {
+            if (!keycloakId) {
                 throw new Error('User ID not found. Please log in again.');
             }
 
@@ -136,7 +135,7 @@ export function usePrivacySettings(): UseMutationResult<
 }
 
 export function useAllUsers() {
-    const { token, userId: currentUserKeycloakId } = useCurrentUser();
+    const { token, keycloakId: currentUserKeycloakId } = useCurrentUser();
 
     const publicUsersQuery = useQuery({
         queryKey: ['publicUsers'],
@@ -163,7 +162,7 @@ export function useAllUsers() {
 }
 
 export function useUserProfileById(targetKeycloakId: string) {
-    const { isAuthenticated, userId: currentUserKeycloakId } = useCurrentUser();
+    const { isAuthenticated, keycloakId: currentUserKeycloakId } = useCurrentUser();
 
     return useQuery<UserProfile | null, Error>({
         queryKey: ['userProfileById', targetKeycloakId],

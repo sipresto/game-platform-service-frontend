@@ -6,7 +6,7 @@ export interface User {
     accessToken?: string;
     idToken?: string;
     profile: {
-        userId: string;
+        keycloakId: string;
         username: string;
         email?: string;
         name: string;

@@ -1,13 +1,12 @@
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
-
-export type SessionResult = 'WIN' | 'LOSS' | 'DRAW';
-
 export interface Session {
     id: string;
     gameId: string;
     playerIds: string[];
-    difficulty: Difficulty;
-    winnerId?: string;
-    result: SessionResult;
+    difficulty: 'EASY' | 'HARD' | 'IMPOSSIBLE';
+    winnerId: string | null;
+    result: 'PLAYER_WIN' | 'AI_WIN' | 'DRAW';
     completedAt: string;
+    userResult?: 'WIN' | 'LOSS' | 'DRAW';
+    isAgainstAI?: boolean;
+    opponentName?: string;
 }
