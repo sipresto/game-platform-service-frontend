@@ -37,7 +37,7 @@ export function GamePage() {
                         </Button>
                     }
                 >
-                    {error.message}
+                    {error}
                 </Alert>
             </Box>
         );
