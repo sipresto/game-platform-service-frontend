@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import {
     Container,
@@ -22,7 +22,7 @@ export const LobbyRoomPage = () => {
     const { gameId, lobbyId } = useParams<{ gameId: string; lobbyId: string }>();
     const navigate = useNavigate();
 
-    const { lobby, isHost, isLoading, error, gameUrl, isFetchingGameUrl, refetchGameUrl } = useLobbyDetail(lobbyId);
+    const { lobby, isHost, isLoading, error } = useLobbyDetail(lobbyId);
     const { leaveLobby, startGame } = useLobbyActions(gameId);
 
     const [startDialogOpen, setStartDialogOpen] = useState(false);
@@ -32,50 +32,6 @@ export const LobbyRoomPage = () => {
         message: string;
     } | null>(null);
 
-    // Game started detection using the started flag from lobby details
-    useEffect(() => {
-        if (!lobbyId || isHost) return;
-
-        // If lobby shows started, try to get game URL and redirect
-        if (lobby?.started) {
-            const storedUrl = localStorage.getItem(`game_${lobbyId}_url`);
-
-            if (storedUrl) {
-                console.log(`Game started! Found URL in localStorage, redirecting to: ${storedUrl}`);
-
-                setNotification({
-                    type: 'success',
-                    message: 'Game started! Redirecting...'
-                });
-
-                setTimeout(() => {
-                    window.location.href = storedUrl;
-                }, 800);
-            } else if (gameUrl) {
-                // Use the URL fetched/constructed by the hook
-                console.log(`Game started! Using constructed URL, redirecting to: ${gameUrl}`);
-
-                setNotification({
-                    type: 'success',
-                    message: 'Game started! Redirecting...'
-                });
-
-                setTimeout(() => {
-                    window.location.href = gameUrl;
-                }, 800);
-            } else {
-                // No URL found, show error or try to fetch
-                setNotification({
-                    type: 'success',
-                    message: 'Game started but URL not found. Trying to fetch...'
-                });
-
-                // Try to fetch the URL
-                refetchGameUrl();
-            }
-        }
-    }, [lobby, lobbyId, isHost, gameUrl, refetchGameUrl]);
-
     const handleLeave = () => {
         if (!lobbyId) return;
 
@@ -83,9 +39,7 @@ export const LobbyRoomPage = () => {
             { lobbyId },
             {
                 onSuccess: () => {
-                    // Clean up stored URLs
                     localStorage.removeItem(`game_${lobbyId}_url`);
-                    localStorage.removeItem('currentLobbyId');
                     navigate(`/game/${gameId}/lobbies`);
                 },
                 onError: () => {
@@ -116,19 +70,6 @@ export const LobbyRoomPage = () => {
         startGame.mutate(
             { lobbyId, request },
             {
-                onSuccess: (data) => {
-                    console.log(`Host: Game started for lobby ${lobbyId}, URL: ${data.url}`);
-
-                    setNotification({
-                        type: 'success',
-                        message: 'Game started! Redirecting...',
-                    });
-
-                    // Small delay for UX
-                    setTimeout(() => {
-                        window.location.href = data.url;
-                    }, 800);
-                },
                 onError: () => {
                     setNotification({
                         type: 'error',
@@ -138,17 +79,6 @@ export const LobbyRoomPage = () => {
                 }
             }
         );
-    };
-
-    const handleRetryGameUrl = () => {
-        if (!lobbyId) return;
-
-        setNotification({
-            type: 'success',
-            message: 'Retrying to fetch game URL...'
-        });
-
-        refetchGameUrl();
     };
 
     if (isLoading) {
@@ -231,68 +161,14 @@ export const LobbyRoomPage = () => {
                         )}
                     </Box>
 
-                    {!isHost && (
-                        <>
-                            {lobby.started ? (
-                                <Box sx={{ textAlign: 'center', mt: 2 }}>
-                                    {isFetchingGameUrl ? (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <CircularProgress size={20} />
-                                            <Typography
-                                                variant="body2"
-                                                color="info.main"
-                                                sx={{ fontStyle: 'italic' }}
-                                            >
-                                                Fetching game URL...
-                                            </Typography>
-                                        </Box>
-                                    ) : gameUrl ? (
-                                        <>
-                                            <Typography
-                                                variant="body2"
-                                                color="success.main"
-                                                sx={{ fontStyle: 'italic', mb: 1 }}
-                                            >
-                                                Game has started! Redirecting to game...
-                                            </Typography>
-                                            <Typography
-                                                variant="caption"
-                                                color="text.secondary"
-                                                sx={{ display: 'block' }}
-                                            >
-                                                URL: {gameUrl}
-                                            </Typography>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Typography
-                                                variant="body2"
-                                                color="warning.main"
-                                                sx={{ fontStyle: 'italic', mb: 1 }}
-                                            >
-                                                Game started but URL not found.
-                                            </Typography>
-                                            <Button
-                                                variant="outlined"
-                                                size="small"
-                                                onClick={handleRetryGameUrl}
-                                                sx={{ mt: 1 }}
-                                            >
-                                                Retry Fetching URL
-                                            </Button>
-                                        </>
-                                    )}
-                                </Box>
-                            ) : (
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{ fontStyle: 'italic', mt: 1 }}
-                                >
-                                    Waiting for the host to start the game...
-                                </Typography>
-                            )}
-                        </>
+                    {!isHost && !lobby.started && (
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ fontStyle: 'italic', mt: 1 }}
+                        >
+                            Waiting for the host to start the game...
+                        </Typography>
                     )}
                 </Box>
             </Paper>

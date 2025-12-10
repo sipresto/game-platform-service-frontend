@@ -78,7 +78,6 @@ export async function startGame(
             }
             const urlObj = new URL(baseUrl);
             urlObj.searchParams.set('token', token);
-            console.log("redirecting too url: ", urlObj.toString());
             finalUrl = urlObj.toString();
         } catch (error) {
             console.warn('Failed to construct game URL with token:', error);
