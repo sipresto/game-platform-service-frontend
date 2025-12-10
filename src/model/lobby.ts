@@ -10,6 +10,21 @@ export interface CreateLobbyRequest {
     gameId: string;
 }
 
+export interface LobbyPlayer {
+    id: string;
+    username: string;
+}
+
+export interface LobbyDetail {
+    id: string;
+    gameId: string;
+    hostId: string;
+    currentPlayerCount: number;
+    maxPlayers: number;
+    isPrivate: boolean;
+    players: LobbyPlayer[];
+}
+
 export interface JoinLobbyRequest {
     password?: string | null;
 }

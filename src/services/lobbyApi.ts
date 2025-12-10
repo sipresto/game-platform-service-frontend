@@ -5,14 +5,21 @@ import type {
     JoinLobbyRequest,
     StartGameRequest,
     LobbyCreatedResponse,
-    GameUrlResponse
+    GameUrlResponse, LobbyDetail
 } from '../model/lobby';
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
 export async function getLobbiesForGame(gameId: string): Promise<Lobby[]> {
     const { data } = await apiClient.get<Lobby[]>(
-        `${BACKEND_URL}/lobbies/${gameId}`
+        `${BACKEND_URL}/lobbies/game/${gameId}`
+    );
+    return data;
+}
+
+export async function getLobbyDetails(lobbyId: string): Promise<LobbyDetail> {
+    const { data } = await apiClient.get<LobbyDetail>(
+        `${BACKEND_URL}/lobbies/${lobbyId}`
     );
     return data;
 }
