@@ -135,7 +135,7 @@ export const LobbyPage = () => {
         return (
             <Container maxWidth="lg" sx={{ py: 4 }}>
                 <Alert severity="error">
-                    Failed to load game details: {gameError?.message || 'Unknown error'}
+                    Failed to load game details: {gameError || 'Unknown error'}
                 </Alert>
             </Container>
         );
