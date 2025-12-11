@@ -251,7 +251,8 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                             <Chip label="vs AI" color="info" size="small" icon={<SmartToy />} sx={{ height: 24 }} />
                         )}
                     </Box>
-                    <Typography variant="body1">Tic Tac Toe {isAgainstAI && '(Single Player)'}</Typography>
+                    {/*TODO fix this hardcoded stuff*/}
+                    <Typography variant="body1">Tic Tac Toe or Quoridor {isAgainstAI && '(Single Player)'}</Typography>
                     {!isAgainstAI && opponentId && (
                         <Typography variant="body2" color="text.secondary">
                             vs {opponentDisplayName}
