@@ -8,6 +8,7 @@ interface AchievementCardProps {
 
 export function AchievementCard({ achievement }: AchievementCardProps) {
     const completedDate = achievement.completedAt ? new Date(achievement.completedAt).toLocaleDateString() : ""
+    const isCompleted = achievement.completedAt !== null;
 
     return (
         <Paper
@@ -23,10 +24,16 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
                     transform: "translateY(-4px)",
                     boxShadow: 4,
                 },
+                backgroundColor: isCompleted ? "white" : "grey.100",
+                opacity: isCompleted ? 1 : 0.7,
+                boxShadow: isCompleted ? 1 : 0,
             }}
         >
             <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1 }}>
-                <TrophyIcon sx={{ color: "primary.main", fontSize: 28, flexShrink: 0, position: "absolute" }} />
+                {isCompleted ?
+                    <TrophyIcon sx={{ color: "primary.main", fontSize: 28, flexShrink: 0, position: "absolute" }} />
+                    : null
+                }
                 <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                     <Typography
                         variant="subtitle1"
@@ -56,9 +63,15 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
             >
                 {achievement.achievementDescription}
             </Typography>
-            <Typography variant="caption" color="success.main" fontWeight={500}>
-                Completed {completedDate}
-            </Typography>
+            {isCompleted ?
+                <Typography variant="caption" color="success.main" fontWeight={500}>
+                    Completed {completedDate}
+                </Typography>
+                :
+                <Typography variant="caption" color="error" fontWeight={500}>
+                    Not completed yet
+                </Typography>
+            }
         </Paper>
     )
 }
