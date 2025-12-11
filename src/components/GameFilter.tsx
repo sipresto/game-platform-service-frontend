@@ -101,12 +101,12 @@ export function GameFilter({ filters, onFiltersChange }: GameFilterProps) {
                             min={0}
                             max={50}
                             marks={[
-                                { value: 0, label: "$0" },
-                                { value: 50, label: "$50+" },
+                                { value: 0, label: "€0" },
+                                { value: 50, label: "€50+" },
                             ]}
                         />
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                            ${priceRange[0]} - {priceRange[1] >= 50 ? "$50+" : `$${priceRange[1]}`}
+                            €{priceRange[0]} - {priceRange[1] >= 50 ? "€50+" : `€${priceRange[1]}`}
                         </Typography>
                     </Box>
 
