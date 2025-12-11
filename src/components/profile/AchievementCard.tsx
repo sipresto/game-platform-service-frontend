@@ -26,7 +26,7 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
             }}
         >
             <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1 }}>
-                <TrophyIcon sx={{ color: "primary.main", fontSize: 28, flexShrink: 0 }} />
+                <TrophyIcon sx={{ color: "primary.main", fontSize: 28, flexShrink: 0, position: "absolute" }} />
                 <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                     <Typography
                         variant="subtitle1"
