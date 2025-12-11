@@ -18,11 +18,17 @@ import {
     Login,
     Settings,
     Edit,
-    Gamepad
+    Gamepad,
+    Notifications,
+    PersonAdd,
+    EmojiEvents,
+    Autorenew
 } from '@mui/icons-material';
 
 import SecurityContext from '../../context/SecurityContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
+import {useNotifications} from "../../hooks/useNotifications.ts";
+import {markNotificationRead} from "../../services/notificationApi.ts";
 
 const DRAWER_WIDTH = 240;
 
@@ -31,13 +37,50 @@ export function MainLayout() {
     const location = useLocation();
     const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
     const { profile: userProfile } = useUserProfile();
+    const { notifications } = useNotifications();
+    let unreadCount = notifications.filter(n => !n.read).length;
 
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
     const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
+
+    const handleNotificationsOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setNotificationAnchor(event.currentTarget);
+    }
+
+    const handleNotificationsClose = () => {
+        setNotificationAnchor(null);
+    }
+
+    const notificationTitleMap: Record<string, string> = {
+        FRIEND_REQUEST: "You have a new friend request!",
+        ACHIEVEMENT: "New achievement unlocked!",
+        YOUR_TURN: "Your turn!",
+    };
+
+    const handleNotificationTitle = (type: string) => {
+        return notificationTitleMap[type] ?? "New notification";
+    }
+
+    function getNotificationIcon(type: string) {
+        switch (type) {
+            case "FRIEND_REQUEST":
+                return <PersonAdd fontSize="small" />;
+
+            case "ACHIEVEMENT":
+                return <EmojiEvents fontSize="small" />;
+
+            case "YOUR_TURN":
+                return <Autorenew fontSize="small" />;
+
+            default:
+                return <Notifications fontSize="small" />;
+        }
+    }
 
     const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setUserMenuAnchor(event.currentTarget);
@@ -194,6 +237,67 @@ export function MainLayout() {
 
                         {isAuthenticated() ? (
                             <>
+                                <IconButton
+                                    color="inherit"
+                                    size="small"
+                                    onClick={handleNotificationsOpen}
+                                    title="Notifications"
+                                    sx={{
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(255,255,255,0.1)'
+                                        }
+                                    }}
+                                >
+                                    <Badge badgeContent={unreadCount} color="error">
+                                        <Notifications fontSize="small"/>
+
+                                    </Badge>
+                                </IconButton>
+
+                                <Menu
+                                    anchorEl={notificationAnchor}
+                                    open={Boolean(notificationAnchor)}
+                                    onClose={handleNotificationsClose}
+                                    onClick={handleNotificationsClose}
+                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                                    slotProps={{
+                                        paper: {
+                                            sx: {
+                                                maxHeight: 350,
+                                                overflowY: 'auto',
+                                            }
+                                        }
+                                    }}
+                                >
+                                    {notifications.length === 0 && (
+                                        <MenuItem disabled>No notifications</MenuItem>
+                                    )}
+
+                                    {notifications
+                                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                                        .map((n) => (
+                                        <MenuItem key={n.notificationId}
+                                                  onMouseEnter={() => {
+                                                      if (!n.read) {
+                                                          n.read = true;
+                                                          unreadCount--;
+                                                          markNotificationRead(n.notificationId);
+                                                      }
+                                                  }}
+                                        >
+                                            <ListItemIcon sx={{ minWidth: 36 }}>
+                                                {getNotificationIcon(n.notificationType)}
+                                            </ListItemIcon>
+
+                                            <ListItemText
+                                                primary={handleNotificationTitle(n.notificationType)}
+                                                secondary={n.description}
+                                            />
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+
                                 <IconButton
                                     color="inherit"
                                     size="small"
