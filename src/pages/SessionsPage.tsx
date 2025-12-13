@@ -42,7 +42,6 @@ export function SessionsPage() {
         search: ''
     });
 
-    // Map difficulty values to user-friendly display names
     const getDifficultyDisplayName = (difficulty: string): string => {
         switch (difficulty) {
             case 'EASY': return 'Easy';
@@ -132,11 +131,9 @@ export function SessionsPage() {
     const filteredAndSortedSessions: EnhancedSession[] = useMemo(() => {
         let result = [...enhancedSessions];
 
-        // Only filter by game name, not IDs
         if (filters.search.trim()) {
             const searchLower = filters.search.toLowerCase().trim();
             result = result.filter(session => {
-                // Get game name from the map
                 const gameName = gameNamesMap[session.gameId] || '';
                 return gameName.toLowerCase().includes(searchLower);
             });

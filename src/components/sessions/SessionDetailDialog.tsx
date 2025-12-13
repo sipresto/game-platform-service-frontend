@@ -33,7 +33,7 @@ import {
 } from '@mui/icons-material';
 import type { Session } from "../../model/session.ts";
 import { useUserProfile, useUserProfileById } from '../../hooks/useUserProfile';
-import { useGameDetails } from '../../hooks/useGames.ts'; // Import the game hook
+import { useGameDetails } from '../../hooks/useGames.ts';
 
 interface SessionDetailDialogProps {
     open: boolean;
@@ -158,7 +158,6 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
 
     const { data: opponentProfile } = useUserProfileById(opponentId || '');
 
-    // Use the game details hook
     const { game, loading: gameLoading } = useGameDetails(session?.gameId);
 
     if (!session) return null;
@@ -191,7 +190,6 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
         }
     };
 
-    // Helper function to get user-friendly difficulty display name
     const getDifficultyDisplayName = (difficulty: string): string => {
         switch (difficulty) {
             case 'EASY': return 'Easy';

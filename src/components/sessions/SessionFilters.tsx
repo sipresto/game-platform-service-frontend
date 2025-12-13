@@ -42,14 +42,12 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
     const [internalDifficulty, setInternalDifficulty] = useState<string[]>(filters.difficulty || [])
     const [internalOpponent, setInternalOpponent] = useState<string[]>(filters.opponent || [])
 
-    // Map user-friendly difficulty labels to backend values
     const difficultyMapping = {
         'EASY': { display: 'Easy', icon: <SentimentVerySatisfied fontSize="small" /> },
         'HARD': { display: 'Medium', icon: <SentimentNeutral fontSize="small" /> },
         'IMPOSSIBLE': { display: 'Hard', icon: <SentimentVeryDissatisfied fontSize="small" /> }
     };
 
-    // Initialize internal state from props when popup opens
     useEffect(() => {
         if (open) {
             setInternalResult(filters.result || [])
@@ -66,7 +64,6 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
         setAnchorEl(null)
     }
 
-    // Auto-apply result filter change
     const handleResultToggle = (value: string) => {
         const newResult = internalResult.includes(value)
             ? internalResult.filter(v => v !== value)
@@ -74,7 +71,6 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
 
         setInternalResult(newResult);
 
-        // Auto-apply
         onFiltersChange({
             result: newResult,
             difficulty: internalDifficulty,
@@ -82,7 +78,6 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
         });
     }
 
-    // Auto-apply difficulty filter change
     const handleDifficultyToggle = (value: string) => {
         const newDifficulty = internalDifficulty.includes(value)
             ? internalDifficulty.filter(v => v !== value)
@@ -90,7 +85,6 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
 
         setInternalDifficulty(newDifficulty);
 
-        // Auto-apply
         onFiltersChange({
             result: internalResult,
             difficulty: newDifficulty,
@@ -98,7 +92,6 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
         });
     }
 
-    // Auto-apply opponent filter change
     const handleOpponentToggle = (value: string) => {
         const newOpponent = internalOpponent.includes(value)
             ? internalOpponent.filter(v => v !== value)
@@ -106,7 +99,6 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
 
         setInternalOpponent(newOpponent);
 
-        // Auto-apply
         onFiltersChange({
             result: internalResult,
             difficulty: internalDifficulty,
@@ -114,13 +106,11 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
         });
     }
 
-    // Clear all filters in popup and auto-apply
     const handleClearFilters = () => {
         setInternalResult([]);
         setInternalDifficulty([]);
         setInternalOpponent([]);
 
-        // Auto-apply empty filters
         onFiltersChange({
             result: [],
             difficulty: [],

@@ -98,7 +98,6 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
         }
     };
 
-    // Helper function to get user-friendly difficulty display name
     const getDifficultyDisplayName = (difficulty: string): string => {
         switch (difficulty) {
             case 'EASY': return 'Easy';
