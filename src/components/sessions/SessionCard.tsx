@@ -98,12 +98,23 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
         }
     };
 
-    const getDifficultyConfig = (difficulty: string) => {
+    // Helper function to get user-friendly difficulty display name
+    const getDifficultyDisplayName = (difficulty: string): string => {
         switch (difficulty) {
-            case 'EASY': return { color: 'success' as const, label: 'Easy', icon: <SentimentVerySatisfied /> };
-            case 'MEDIUM': return { color: 'warning' as const, label: 'Medium', icon: <SentimentNeutral /> };
-            case 'HARD': return { color: 'error' as const, label: 'Hard', icon: <SentimentVeryDissatisfied /> };
-            default: return { color: 'default' as const, label: difficulty, icon: <Gamepad /> };
+            case 'EASY': return 'Easy';
+            case 'HARD': return 'Medium';
+            case 'IMPOSSIBLE': return 'Hard';
+            default: return difficulty;
+        }
+    };
+
+    const getDifficultyConfig = (difficulty: string) => {
+        const displayName = getDifficultyDisplayName(difficulty);
+        switch (difficulty) {
+            case 'EASY': return { color: 'success' as const, label: displayName, icon: <SentimentVerySatisfied /> };
+            case 'HARD': return { color: 'warning' as const, label: displayName, icon: <SentimentNeutral /> };
+            case 'IMPOSSIBLE': return { color: 'error' as const, label: displayName, icon: <SentimentVeryDissatisfied /> };
+            default: return { color: 'default' as const, label: displayName, icon: <Gamepad /> };
         }
     };
 
@@ -165,12 +176,6 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
                                 <Typography variant="subtitle2" fontWeight={600}>
                                     {resultConfig.label}
                                 </Typography>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-                                    <CalendarToday sx={{ fontSize: 14 }} />
-                                    <Typography variant="caption">
-                                        {formatDate(session.completedAt)}
-                                    </Typography>
-                                </Box>
                             </Box>
                         </Box>
 
@@ -196,9 +201,12 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
                     </Box>
 
                     <Box sx={{ borderTop: 1, pt: 1, display: 'flex', justifyContent: 'space-between', borderColor: 'divider' }}>
-                        <Typography variant="caption" color="text.secondary">
-                            #{session.id?.slice(0, 8)}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+                            <CalendarToday sx={{ fontSize: 14 }} />
+                            <Typography variant="caption">
+                                {formatDate(session.completedAt)}
+                            </Typography>
+                        </Box>
                         <Chip label="View Details" size="small" variant="outlined" />
                     </Box>
 

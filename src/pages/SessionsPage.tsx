@@ -1,10 +1,24 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Box, Typography } from '@mui/material';
+import {
+    Box,
+    Typography,
+    Paper,
+    Grid,
+    TextField,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Button,
+    Chip
+} from '@mui/material';
+import { SortByAlpha, DateRange, ClearAll } from '@mui/icons-material';
 import { SessionList } from "../components/sessions/SessionList.tsx";
-import { SessionFilters } from "../components/sessions/SessionFilters.tsx";
 import { useSessions } from '../hooks/useSessions.ts';
 import type { Session } from '../model/session.ts';
 import {useUserProfile} from "../hooks/useUserProfile.ts";
+import {SessionFilterPopup} from "../components/sessions/SessionFilters.tsx";
+import { useAllGames } from '../hooks/useGames.ts';
 
 interface EnhancedSession extends Session {
     enhancedUserResult: 'WIN' | 'LOSS' | 'DRAW';
@@ -14,8 +28,10 @@ interface EnhancedSession extends Session {
 
 export function SessionsPage() {
     const { sessions, loading, error, refresh } = useSessions();
-    const { profile} = useUserProfile();
+    const { profile } = useUserProfile();
     const currentUserId = profile?.id;
+
+    const { gameNamesMap } = useAllGames();
 
     const [sortField, setSortField] = useState<'date' | 'result' | 'difficulty' | 'players'>('date');
     const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -25,6 +41,16 @@ export function SessionsPage() {
         opponent: [] as string[],
         search: ''
     });
+
+    // Map difficulty values to user-friendly display names
+    const getDifficultyDisplayName = (difficulty: string): string => {
+        switch (difficulty) {
+            case 'EASY': return 'Easy';
+            case 'HARD': return 'Medium';
+            case 'IMPOSSIBLE': return 'Hard';
+            default: return difficulty;
+        }
+    };
 
     const getEnhancedUserResult = useCallback((session: Session): 'WIN' | 'LOSS' | 'DRAW' => {
         if (!currentUserId) return 'DRAW';
@@ -38,7 +64,6 @@ export function SessionsPage() {
         }
 
         if (session.result === 'PLAYER_WIN') {
-
             if (session.winnerId === currentUserId) {
                 return 'WIN';
             }
@@ -88,6 +113,13 @@ export function SessionsPage() {
         }));
     };
 
+    const handlePopupFilterChange = (newFilters: { result: string[]; difficulty: string[]; opponent: string[] }) => {
+        setFilters(prev => ({
+            ...prev,
+            ...newFilters
+        }));
+    };
+
     const clearFilters = () => {
         setFilters({
             result: [],
@@ -100,12 +132,13 @@ export function SessionsPage() {
     const filteredAndSortedSessions: EnhancedSession[] = useMemo(() => {
         let result = [...enhancedSessions];
 
+        // Only filter by game name, not IDs
         if (filters.search.trim()) {
             const searchLower = filters.search.toLowerCase().trim();
             result = result.filter(session => {
-                if (session.id?.toLowerCase().includes(searchLower)) return true;
-                if (session.gameId?.toLowerCase().includes(searchLower)) return true;
-                return !!session.playerIds?.some(id => id?.toLowerCase().includes(searchLower));
+                // Get game name from the map
+                const gameName = gameNamesMap[session.gameId] || '';
+                return gameName.toLowerCase().includes(searchLower);
             });
         }
 
@@ -162,7 +195,12 @@ export function SessionsPage() {
         });
 
         return result;
-    }, [enhancedSessions, filters, sortField, sortDirection]);
+    }, [enhancedSessions, filters, sortField, sortDirection, gameNamesMap]);
+
+    const hasActiveFilters = filters.result.length > 0 ||
+        filters.difficulty.length > 0 ||
+        filters.opponent.length > 0 ||
+        filters.search.trim().length > 0;
 
     return (
         <Box sx={{ width: '100%', maxWidth: 1400, mx: 'auto', p: { xs: 1, sm: 2, md: 3 } }}>
@@ -175,18 +213,112 @@ export function SessionsPage() {
                 </Typography>
             </Box>
 
-            <SessionFilters
-                filters={filters}
-                onFilterChange={handleFilterChange}
-                onClearFilters={clearFilters}
-                sortField={sortField}
-                onSortFieldChange={handleSortFieldChange}
-                sortDirection={sortDirection}
-                onSortDirectionToggle={handleSortDirectionToggle}
-                enhancedSessions={enhancedSessions}
-                filteredAndSortedSessions={filteredAndSortedSessions}
-                currentUserId={currentUserId}
-            />
+            <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+                <Grid container spacing={1} alignItems="center">
+                    <Grid size={{xs: 12, sm: 12, md: 6}}>
+                        <TextField
+                            fullWidth
+                            placeholder="Search by game name..."
+                            value={filters.search}
+                            onChange={(e) => handleFilterChange('search', e.target.value)}
+                            size="small"
+                        />
+                    </Grid>
+
+                    <Grid size={{xs: 12, sm: 6, md: 3}}>
+                        <FormControl fullWidth size="small">
+                            <InputLabel>Sort By</InputLabel>
+                            <Select
+                                value={sortField}
+                                label="Sort By"
+                                onChange={(e) => handleSortFieldChange(e.target.value as 'date' | 'result' | 'difficulty' | 'players')}
+                            >
+                                <MenuItem value="date">Date</MenuItem>
+                                <MenuItem value="result">Your Result</MenuItem>
+                                <MenuItem value="difficulty">Difficulty</MenuItem>
+                                <MenuItem value="players">Player Count</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+
+                    <Grid size={{xs: 6, sm: 3, md: 1.5}}>
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            onClick={handleSortDirectionToggle}
+                            startIcon={sortDirection === 'asc' ? <SortByAlpha /> : <DateRange />}
+                            sx={{ height: '40px' }}
+                            size="small"
+                        >
+                            {sortDirection === 'asc' ? 'Asc' : 'Desc'}
+                        </Button>
+                    </Grid>
+
+                    <Grid size={{xs: 6, sm: 3, md: 1.5}}>
+                        <SessionFilterPopup
+                            filters={filters}
+                            onFiltersChange={handlePopupFilterChange}
+                            onClearFilters={() => {
+                                setFilters(prev => ({
+                                    ...prev,
+                                    result: [],
+                                    difficulty: [],
+                                    opponent: []
+                                }));
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+
+                {hasActiveFilters && (
+                    <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                            <Typography variant="caption" color="text.secondary">
+                                Active filters:
+                            </Typography>
+                            {filters.result.map(result => (
+                                <Chip
+                                    key={result}
+                                    label={`Result: ${result === 'WIN' ? 'Win' : result === 'LOSS' ? 'Loss' : 'Draw'}`}
+                                    size="small"
+                                    onDelete={() => handleFilterChange('result', filters.result.filter(r => r !== result))}
+                                />
+                            ))}
+                            {filters.difficulty.map(difficulty => (
+                                <Chip
+                                    key={difficulty}
+                                    label={`Difficulty: ${getDifficultyDisplayName(difficulty)}`}
+                                    size="small"
+                                    onDelete={() => handleFilterChange('difficulty', filters.difficulty.filter(d => d !== difficulty))}
+                                />
+                            ))}
+                            {filters.opponent.map(opponent => (
+                                <Chip
+                                    key={opponent}
+                                    label={`Opponent: ${opponent === 'ai' ? 'AI' : 'Player'}`}
+                                    size="small"
+                                    onDelete={() => handleFilterChange('opponent', filters.opponent.filter(o => o !== opponent))}
+                                />
+                            ))}
+                            {filters.search && (
+                                <Chip
+                                    label={`Search: "${filters.search}"`}
+                                    size="small"
+                                    onDelete={() => handleFilterChange('search', '')}
+                                />
+                            )}
+                            <Button
+                                size="small"
+                                startIcon={<ClearAll />}
+                                onClick={clearFilters}
+                                sx={{ ml: 'auto' }}
+                            >
+                                Clear All
+                            </Button>
+                        </Box>
+                    </Box>
+                )}
+            </Paper>
 
             <SessionList
                 sessions={filteredAndSortedSessions as unknown as Session[]}

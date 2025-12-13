@@ -61,3 +61,35 @@ export function useGameDetails(gameId: string | undefined) {
         refresh,
     };
 }
+
+export function useAllGames() {
+    const {
+        data: games = [],
+        isLoading: loading,
+        error,
+        refetch: refresh,
+    } = useQuery<Game[], Error>({
+        queryKey: ['games', 'all'],
+        queryFn: fetchGames,
+        enabled: true,
+        staleTime: 5 * 60 * 1000,
+    });
+
+    const gameNamesMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        games.forEach(game => {
+            if (game.gameId) {
+                map[game.gameId] = game.name;
+            }
+        });
+        return map;
+    }, [games]);
+
+    return {
+        games,
+        gameNamesMap,
+        loading,
+        error: error ? error.message : null,
+        refresh,
+    };
+}

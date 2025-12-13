@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import type { Session } from "../../model/session.ts";
 import { useUserProfile, useUserProfileById } from '../../hooks/useUserProfile';
+import { useGameDetails } from '../../hooks/useGames.ts'; // Import the game hook
 
 interface SessionDetailDialogProps {
     open: boolean;
@@ -157,6 +158,9 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
 
     const { data: opponentProfile } = useUserProfileById(opponentId || '');
 
+    // Use the game details hook
+    const { game, loading: gameLoading } = useGameDetails(session?.gameId);
+
     if (!session) return null;
 
     const isAgainstAI = session.result === 'AI_WIN' || (session.playerIds && session.playerIds.length === 1);
@@ -187,12 +191,23 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
         }
     };
 
-    const getDifficultyConfig = (difficulty: string) => {
+    // Helper function to get user-friendly difficulty display name
+    const getDifficultyDisplayName = (difficulty: string): string => {
         switch (difficulty) {
-            case 'EASY': return { color: 'success' as const, icon: <SentimentVerySatisfied /> };
-            case 'MEDIUM': return { color: 'warning' as const, icon: <SentimentNeutral /> };
-            case 'HARD': return { color: 'error' as const, icon: <SentimentVeryDissatisfied /> };
-            default: return { color: 'default' as const, icon: <Gamepad /> };
+            case 'EASY': return 'Easy';
+            case 'HARD': return 'Medium';
+            case 'IMPOSSIBLE': return 'Hard';
+            default: return difficulty;
+        }
+    };
+
+    const getDifficultyConfig = (difficulty: string) => {
+        const displayName = getDifficultyDisplayName(difficulty);
+        switch (difficulty) {
+            case 'EASY': return { color: 'success' as const, icon: <SentimentVerySatisfied />, displayName };
+            case 'HARD': return { color: 'warning' as const, icon: <SentimentNeutral />, displayName };
+            case 'IMPOSSIBLE': return { color: 'error' as const, icon: <SentimentVeryDissatisfied />, displayName };
+            default: return { color: 'default' as const, icon: <Gamepad />, displayName: difficulty };
         }
     };
 
@@ -251,8 +266,13 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                             <Chip label="vs AI" color="info" size="small" icon={<SmartToy />} sx={{ height: 24 }} />
                         )}
                     </Box>
-                    {/*TODO fix this hardcoded stuff*/}
-                    <Typography variant="body1">Tic Tac Toe or Quoridor {isAgainstAI && '(Single Player)'}</Typography>
+                    {gameLoading ? (
+                        <Skeleton width={200} height={24} />
+                    ) : (
+                        <Typography variant="body1">
+                            {game?.name || 'Unknown Game'} {isAgainstAI && '(Single Player)'}
+                        </Typography>
+                    )}
                     {!isAgainstAI && opponentId && (
                         <Typography variant="body2" color="text.secondary">
                             vs {opponentDisplayName}
@@ -281,7 +301,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                                 <Typography variant="caption" color="text.secondary">Difficulty</Typography>
                             </Box>
                             <Chip
-                                label={session.difficulty}
+                                label={difficultyConfig.displayName}
                                 color={difficultyConfig.color}
                                 size="small"
                                 icon={difficultyConfig.icon}
