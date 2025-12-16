@@ -5,22 +5,17 @@ import {
     Box,
     Alert,
     CircularProgress,
-    Grid,
+    Tabs,
+    Tab,
 } from '@mui/material';
+import React, { useState, useContext } from 'react';
 import { useUserProfile } from '../hooks/useUserProfile';
-import {useContext} from 'react';
 import SecurityContext from '../context/SecurityContext';
 import { useProfileForm } from '../hooks/useProfileForm';
-import { ActionButtons } from "../components/profileEdit/ActionButtons.tsx";
-import { FormAlerts } from "../components/profileEdit/FormAlerts.tsx";
-import { ProfileForm } from "../components/profileEdit/ProfileForm.tsx";
-import type {UseMutationResult} from "@tanstack/react-query";
-import type {PrivacyUpdateData} from "../model/userProfile.ts";
-import type {ApiError} from "../services/keycloakService.ts";
-
-interface PrivacyAlertProps {
-    mutation: UseMutationResult<void, Error, PrivacyUpdateData>;
-}
+import { ProfileTab } from "../components/profileEdit/ProfileTab.tsx";
+import { PrivacyTab } from "../components/profileEdit/PrivacyTab.tsx";
+import { NotificationPreferencesSection } from "../components/profileEdit/NotificationPreferencesSection.tsx";
+import type { FormState } from '../hooks/useProfileForm';
 
 function LoadingState() {
     return (
@@ -34,7 +29,7 @@ function LoadingState() {
 
 function ErrorState({ error }: { error: Error }) {
     const formatErrorMessage = (errorInstance: Error): string => {
-        const apiError = errorInstance as ApiError;
+        const apiError = errorInstance as { status?: number; statusText?: string; message: string };
         if (apiError.status) {
             const statusText = apiError.statusText ? ` ${apiError.statusText}` : '';
             return `(HTTP ${apiError.status}${statusText}) ${apiError.message}`;
@@ -49,52 +44,27 @@ function ErrorState({ error }: { error: Error }) {
     );
 }
 
-function PrivacyAlert({ mutation }: PrivacyAlertProps) {
-    const formatErrorMessage = (errorInstance: Error | null): string => {
-        if (!errorInstance) return '';
+interface TabPanelProps {
+    children?: React.ReactNode;
+    index: number;
+    value: number;
+}
 
-        const apiError = errorInstance as ApiError;
-        if (apiError.status) {
-            const statusText = apiError.statusText ? ` ${apiError.statusText}` : '';
-            return `(HTTP ${apiError.status}${statusText}) ${apiError.message}`;
-        }
-        return errorInstance.message;
-    };
-
-    if (mutation.isError) {
-        return (
-            <Grid size={{ xs: 12 }}>
-                <Alert severity="error" sx={{ mt: 2 }}>
-                    Failed to update privacy settings: {formatErrorMessage(mutation.error)}
-                </Alert>
-            </Grid>
-        );
-    }
-
-    if (mutation.isPending) {
-        return (
-            <Grid size={{ xs: 12 }}>
-                <Alert severity="info" sx={{ mt: 2 }}>
-                    Updating privacy settings...
-                </Alert>
-            </Grid>
-        );
-    }
-
-    if (mutation.isSuccess) {
-        return (
-            <Grid size={{ xs: 12 }}>
-                <Alert severity="success" sx={{ mt: 2 }}>
-                    Privacy settings updated successfully!
-                </Alert>
-            </Grid>
-        );
-    }
-
-    return null;
+function TabPanel({ children, value, index }: TabPanelProps) {
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`profile-tabpanel-${index}`}
+            aria-labelledby={`profile-tab-${index}`}
+        >
+            {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+        </div>
+    );
 }
 
 export function ProfileEditPage() {
+    const [currentTab, setCurrentTab] = useState(0);
     const { profile: userProfile, isLoading, error } = useUserProfile();
     const { loggedInUser } = useContext(SecurityContext);
 
@@ -120,42 +90,68 @@ export function ProfileEditPage() {
         return <ErrorState error={error} />;
     }
 
+    const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+        setCurrentTab(newValue);
+    };
+
+    const adaptedHandleFieldChange = (field: string, value: string) => {
+        handleFieldChange(field as keyof FormState, value);
+    };
+
+    const handleBooleanPrivacyChange = (field: string, value: boolean) => {
+        console.log(`Privacy field changed: ${field} = ${value}`);
+    };
+
+    const handleVisibilityChange = (visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE') => {
+        handlePrivacyChange(visibility);
+    };
+
     return (
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-                Edit Profile
+                Settings
             </Typography>
 
-            <Paper sx={{ p: 3 }}>
-                <Box component="form" onSubmit={handleSubmit}>
-                    <Grid container spacing={3}>
-                        <ProfileForm
-                            formState={formState}
-                            loggedInUser={loggedInUserOrNull}
-                            isLoading={isLoading}
-                            error={error}
-                            isSubmitting={updateProfileMutation.isPending}
-                            isPrivacyUpdating={isPrivacyUpdating}
-                            onFieldChange={handleFieldChange}
-                            onPrivacyChange={handlePrivacyChange}
-                        />
+            <Paper sx={{ mt: 3 }}>
+                <Tabs
+                    value={currentTab}
+                    onChange={handleTabChange}
+                    aria-label="profile settings tabs"
+                    sx={{ borderBottom: 1, borderColor: 'divider' }}
+                >
+                    <Tab label="Profile" id="profile-tab-0" aria-controls="profile-tabpanel-0" />
+                    <Tab label="Privacy" id="profile-tab-1" aria-controls="profile-tabpanel-1" />
+                    <Tab label="Notifications" id="profile-tab-2" aria-controls="profile-tabpanel-2" />
+                </Tabs>
 
-                        <PrivacyAlert mutation={updatePrivacyMutation} />
+                <TabPanel value={currentTab} index={0}>
+                    <ProfileTab
+                        formState={formState}
+                        loggedInUser={loggedInUserOrNull}
+                        isLoading={isLoading}
+                        error={error}
+                        isDirty={isDirty}
+                        updateProfileMutation={updateProfileMutation}
+                        onFieldChange={adaptedHandleFieldChange}
+                        onReset={handleReset}
+                        onSubmit={handleSubmit}
+                    />
+                </TabPanel>
 
-                        <FormAlerts
-                            isLoading={isLoading}
-                            error={error}
-                            updateProfileMutation={updateProfileMutation}
-                        />
+                <TabPanel value={currentTab} index={1}>
+                    <PrivacyTab
+                        formState={formState}
+                        isLoading={isLoading}
+                        isPrivacyUpdating={isPrivacyUpdating}
+                        updatePrivacyMutation={updatePrivacyMutation}
+                        onPrivacyChange={handleBooleanPrivacyChange}
+                        onVisibilityChange={handleVisibilityChange}
+                    />
+                </TabPanel>
 
-                        <ActionButtons
-                            isDirty={isDirty}
-                            isSubmitting={updateProfileMutation.isPending}
-                            formState={formState}
-                            onReset={handleReset}
-                        />
-                    </Grid>
-                </Box>
+                <TabPanel value={currentTab} index={2}>
+                    <NotificationPreferencesSection />
+                </TabPanel>
             </Paper>
         </Container>
     );

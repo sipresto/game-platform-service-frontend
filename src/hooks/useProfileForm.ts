@@ -3,7 +3,7 @@ import { useUpdateProfile, usePrivacySettings } from './useUserProfile';
 import type { ProfileUpdateData, UserProfile } from "../model/userProfile.ts";
 import type { User } from "../model/user.ts";
 
-interface FormState {
+export interface FormState {
     username: string;
     firstName: string;
     lastName: string;
