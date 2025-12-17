@@ -92,7 +92,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
                 primary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant="body1" fontWeight={isWinner || isCurrentUser ? 600 : 400}>
-                            {isCurrentUser ? 'You' : (profile?.profile?.displayName || 'Unknown Player')}
+                            {profile?.profile?.displayName ?? 'Unknown Player'}
                         </Typography>
                         {isWinner && (
                             <Chip
