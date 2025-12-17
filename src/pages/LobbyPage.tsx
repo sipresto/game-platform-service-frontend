@@ -21,7 +21,7 @@ export const LobbyPage = () => {
 
     const { lobbies, isLoading, error, refetch } = useLobbies(gameId);
     const { game, loading: gameLoading, error: gameError } = useGameDetails(gameId);
-    const { createLobby, joinLobby } = useLobbyActions(gameId, game?.name ?? "unkown");
+    const { createLobby, joinLobby } = useLobbyActions(gameId);
 
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [joinDialogOpen, setJoinDialogOpen] = useState(false);
