@@ -1,5 +1,5 @@
 import {useMutation, type UseMutationResult, useQuery, useQueryClient} from '@tanstack/react-query';
-import {getUserProfile, updateUserProfile} from '../services/api';
+import {getUser, getUserProfile, updateUserProfile} from '../services/api';
 import {useContext} from 'react';
 import SecurityContext from '../context/SecurityContext';
 import type {PrivacyUpdateData, ProfileUpdateData, UserProfile} from '../model/userProfile';
@@ -161,17 +161,25 @@ export function useAllUsers() {
     };
 }
 
-export function useUserProfileById(targetKeycloakId: string) {
+export function useUserProfileById(userId: string) {
     const { isAuthenticated, keycloakId: currentUserKeycloakId } = useCurrentUser();
 
     return useQuery<UserProfile | null, Error>({
-        queryKey: ['userProfileById', targetKeycloakId],
+        queryKey: ['userProfileById', userId],
         queryFn: async () => {
-            if (targetKeycloakId === currentUserKeycloakId) {
+            if (userId === currentUserKeycloakId) {
                 try {
                     return await getUserProfile();
                 } catch (error) {
                     console.error('useUserProfileById: Failed to get current user:', error);
+                }
+            }
+            else{
+                try {
+                    return await getUser(userId);
+                }
+                catch (error) {
+                    console.error(`useUserProfileById: Failed to get user by ID ${userId}:`, error);
                 }
             }
 
@@ -179,7 +187,7 @@ export function useUserProfileById(targetKeycloakId: string) {
 
             try {
                 const publicUsers = await getPublicUsers();
-                foundUser = publicUsers.find(user => user.keycloakId === targetKeycloakId) || null;
+                foundUser = publicUsers.find(user => user.keycloakId === userId) || null;
 
                 if (foundUser) {
                     return foundUser;
@@ -191,7 +199,7 @@ export function useUserProfileById(targetKeycloakId: string) {
             if (!foundUser && isAuthenticated) {
                 try {
                     const friends = await getFriendsList();
-                    foundUser = friends.find(user => user.keycloakId === targetKeycloakId) || null;
+                    foundUser = friends.find(user => user.keycloakId === userId) || null;
 
                     if (foundUser) {
                         return foundUser;
@@ -203,7 +211,7 @@ export function useUserProfileById(targetKeycloakId: string) {
 
             return null;
         },
-        enabled: !!targetKeycloakId,
+        enabled: !!userId,
         staleTime: 0,
         refetchOnMount: true,
         refetchOnWindowFocus: true,

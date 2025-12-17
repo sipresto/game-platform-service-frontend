@@ -11,7 +11,7 @@ import {
     MenuItem,
     Button
 } from '@mui/material';
-import { SortByAlpha, DateRange } from '@mui/icons-material';
+import { SortByAlpha } from '@mui/icons-material';
 import { SessionList } from "../components/sessions/SessionList";
 import { FilterChips } from "../components/sessions/FilterChips";
 import { useSessions } from '../hooks/useSessions';
@@ -120,7 +120,7 @@ export function SessionsPage() {
                             fullWidth
                             variant="outlined"
                             onClick={handleSortDirectionToggle}
-                            startIcon={sortDirection === 'asc' ? <SortByAlpha /> : <DateRange />}
+                            startIcon={sortDirection === 'asc' ? <SortByAlpha /> : <SortByAlpha />}
                             sx={{ height: '40px' }}
                             size="small"
                         >

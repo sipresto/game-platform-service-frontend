@@ -19,6 +19,7 @@ interface PlayerListItemProps {
 }
 
 export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false }: PlayerListItemProps) {
+
     const { data: profile, isLoading } = useUserProfileById(isAI ? '' : playerId);
 
     if (isAI) {

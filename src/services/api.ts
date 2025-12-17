@@ -8,6 +8,11 @@ export async function getUserProfile(): Promise<UserProfile> {
     return data;
 }
 
+export async function getUser(id: string): Promise<UserProfile> {
+    const { data } = await apiClient.get<UserProfile>(`${BACKEND_URL}/user/${id}`);
+    return data;
+}
+
 export async function updateUserProfile(profileData: { displayName: string; bio: string }): Promise<UserProfile> {
     const { data } = await apiClient.put<UserProfile>(
         `${BACKEND_URL}/user/profile`,
