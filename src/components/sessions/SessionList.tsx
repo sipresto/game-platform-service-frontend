@@ -1,22 +1,22 @@
 import { Box, CircularProgress, Alert, Button, Typography } from '@mui/material';
 import { Gamepad } from '@mui/icons-material';
 import { useState } from 'react';
-import { SessionCard } from "./SessionCard.tsx";
-import { SessionDetailDialog } from "./SessionDetailDialog.tsx";
-import type { Session } from "../../model/session.ts";
+import { SessionCard } from "./SessionCard";
+import { SessionDetailDialog } from "./SessionDetailDialog";
+import type { EnhancedSession } from "../../utils/sessionEnhancer";
 
 interface SessionListProps {
-    sessions: Session[];
+    sessions: EnhancedSession[];
     loading: boolean;
     error: string | null;
     refresh: () => void;
 }
 
 export function SessionList({ sessions, loading, error, refresh }: SessionListProps) {
-    const [selectedSession, setSelectedSession] = useState<Session | null>(null);
+    const [selectedSession, setSelectedSession] = useState<EnhancedSession | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
 
-    const handleCardClick = (session: Session) => {
+    const handleCardClick = (session: EnhancedSession) => {
         setSelectedSession(session);
         setDialogOpen(true);
     };

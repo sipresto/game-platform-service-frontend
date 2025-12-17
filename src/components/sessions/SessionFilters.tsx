@@ -1,278 +1,278 @@
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
 import {
-    Box,
-    Paper,
-    Typography,
-    Chip,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    ToggleButton,
-    ToggleButtonGroup,
     Button,
-    TextField,
-    Grid
-} from '@mui/material';
+    Menu,
+    Box,
+    Typography,
+    FormGroup,
+    FormControlLabel,
+    Checkbox,
+    Divider
+} from "@mui/material"
+import FilterListIcon from "@mui/icons-material/FilterList"
 import {
-    SortByAlpha,
-    DateRange,
     MilitaryTech,
     Block,
     Handshake,
     SentimentVerySatisfied,
+    SentimentNeutral,
     SentimentVeryDissatisfied,
-    Dangerous,
-    FilterList,
-    ClearAll,
     SmartToy,
     Person
 } from '@mui/icons-material';
-import type {Session} from "../../model/session.ts";
 
-interface SessionFiltersProps {
+interface SessionFilterPopupProps {
     filters: {
         result: string[];
         difficulty: string[];
         opponent: string[];
-        search: string;
     };
-    onFilterChange: (type: 'result' | 'difficulty' | 'opponent' | 'search', value: string | string[]) => void;
+    onFiltersChange: (filters: { result: string[]; difficulty: string[]; opponent: string[] }) => void;
     onClearFilters: () => void;
-    sortField: 'date' | 'result' | 'difficulty' | 'players';
-    onSortFieldChange: (field: 'date' | 'result' | 'difficulty' | 'players') => void;
-    sortDirection: 'asc' | 'desc';
-    onSortDirectionToggle: () => void;
-    enhancedSessions: EnhancedSession[];
-    filteredAndSortedSessions: EnhancedSession[];
-    currentUserId?: string;
 }
 
-interface EnhancedSession extends Session {
-    enhancedUserResult: 'WIN' | 'LOSS' | 'DRAW';
-    isAgainstAI: boolean;
-    _userResultLabel: string;
-}
+export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPopupProps) {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const open = Boolean(anchorEl)
 
-export function SessionFilters({
-                                   filters,
-                                   onFilterChange,
-                                   onClearFilters,
-                                   sortField,
-                                   onSortFieldChange,
-                                   sortDirection,
-                                   onSortDirectionToggle,
-                                   enhancedSessions,
-                                   filteredAndSortedSessions,
-                                   currentUserId
-                               }: SessionFiltersProps) {
+    const [internalResult, setInternalResult] = useState<string[]>(filters.result || [])
+    const [internalDifficulty, setInternalDifficulty] = useState<string[]>(filters.difficulty || [])
+    const [internalOpponent, setInternalOpponent] = useState<string[]>(filters.opponent || [])
 
-    const getSortLabel = () => {
-        const labels = {
-            date: 'Date',
-            result: 'Your Result',
-            difficulty: 'Difficulty',
-            players: 'Player Count'
-        };
-        return `${labels[sortField]} (${sortDirection === 'asc' ? 'Ascending' : 'Descending'})`;
+    const difficultyMapping = {
+        'EASY': { display: 'Easy', icon: <SentimentVerySatisfied fontSize="small" /> },
+        'HARD': { display: 'Medium', icon: <SentimentNeutral fontSize="small" /> },
+        'IMPOSSIBLE': { display: 'Hard', icon: <SentimentVeryDissatisfied fontSize="small" /> }
     };
+
+    useEffect(() => {
+        if (open) {
+            setInternalResult(filters.result || [])
+            setInternalDifficulty(filters.difficulty || [])
+            setInternalOpponent(filters.opponent || [])
+        }
+    }, [open, filters])
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget)
+    }
+
+    const handleClose = () => {
+        setAnchorEl(null)
+    }
+
+    const handleResultToggle = (value: string) => {
+        const newResult = internalResult.includes(value)
+            ? internalResult.filter(v => v !== value)
+            : [...internalResult, value];
+
+        setInternalResult(newResult);
+
+        onFiltersChange({
+            result: newResult,
+            difficulty: internalDifficulty,
+            opponent: internalOpponent
+        });
+    }
+
+    const handleDifficultyToggle = (value: string) => {
+        const newDifficulty = internalDifficulty.includes(value)
+            ? internalDifficulty.filter(v => v !== value)
+            : [...internalDifficulty, value];
+
+        setInternalDifficulty(newDifficulty);
+
+        onFiltersChange({
+            result: internalResult,
+            difficulty: newDifficulty,
+            opponent: internalOpponent
+        });
+    }
+
+    const handleOpponentToggle = (value: string) => {
+        const newOpponent = internalOpponent.includes(value)
+            ? internalOpponent.filter(v => v !== value)
+            : [...internalOpponent, value];
+
+        setInternalOpponent(newOpponent);
+
+        onFiltersChange({
+            result: internalResult,
+            difficulty: internalDifficulty,
+            opponent: newOpponent
+        });
+    }
+
+    const handleClearFilters = () => {
+        setInternalResult([]);
+        setInternalDifficulty([]);
+        setInternalOpponent([]);
+
+        onFiltersChange({
+            result: [],
+            difficulty: [],
+            opponent: []
+        });
+    }
+
+    const activeFilterCount =
+        (filters.result?.length || 0) +
+        (filters.difficulty?.length || 0) +
+        (filters.opponent?.length || 0)
 
     return (
-        <>
-            <Paper sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                <Grid container spacing={3}>
-                    <Grid size={{xs: 12, md: 6}}>
-                        <TextField
-                            fullWidth
-                            placeholder="Search by session ID, game ID, or player ID..."
-                            value={filters.search}
-                            onChange={(e) => onFilterChange('search', e.target.value)}
-                        />
-                    </Grid>
-
-                    <Grid size={{xs: 12, sm: 6, md: 3}}>
-                        <FormControl fullWidth>
-                            <InputLabel>Sort By</InputLabel>
-                            <Select
-                                value={sortField}
-                                label="Sort By"
-                                onChange={(e) => onSortFieldChange(e.target.value as 'date' | 'result' | 'difficulty' | 'players')}
-                            >
-                                <MenuItem value="date">Date</MenuItem>
-                                <MenuItem value="result">Your Result</MenuItem>
-                                <MenuItem value="difficulty">Difficulty</MenuItem>
-                                <MenuItem value="players">Player Count</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid size={{xs: 12, sm: 6, md: 3}}>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            onClick={onSortDirectionToggle}
-                            startIcon={sortDirection === 'asc' ? <SortByAlpha /> : <DateRange />}
-                            sx={{ height: '56px' }}
-                        >
-                            {getSortLabel()}
-                        </Button>
-                    </Grid>
-
-                    <Grid size={{xs: 12}}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                            <FilterList sx={{ color: 'text.secondary' }} />
-                            <Typography variant="subtitle2" color="text.secondary">
-                                Filter by:
-                            </Typography>
-                        </Box>
-
-                        <Box sx={{ mb: 2 }}>
-                            <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                                Your Result
-                            </Typography>
-                            <ToggleButtonGroup
-                                value={filters.result}
-                                onChange={(_, value) => onFilterChange('result', value)}
-                                aria-label="result filter"
-                                size="small"
-                                sx={{ flexWrap: 'wrap', gap: 1 }}
-                            >
-                                <ToggleButton value="WIN" aria-label="win">
-                                    <MilitaryTech sx={{ mr: 1 }} />
-                                    Win
-                                </ToggleButton>
-                                <ToggleButton value="LOSS" aria-label="loss">
-                                    <Block sx={{ mr: 1 }} />
-                                    Loss
-                                </ToggleButton>
-                                <ToggleButton value="DRAW" aria-label="draw">
-                                    <Handshake sx={{ mr: 1 }} />
-                                    Draw
-                                </ToggleButton>
-                            </ToggleButtonGroup>
-                        </Box>
-
-                        <Box sx={{ mb: 2 }}>
-                            <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                                Difficulty
-                            </Typography>
-                            <ToggleButtonGroup
-                                value={filters.difficulty}
-                                onChange={(_, value) => onFilterChange('difficulty', value)}
-                                aria-label="difficulty filter"
-                                size="small"
-                                sx={{ flexWrap: 'wrap', gap: 1 }}
-                            >
-                                <ToggleButton value="EASY" aria-label="easy">
-                                    <SentimentVerySatisfied sx={{ mr: 1 }} />
-                                    Easy
-                                </ToggleButton>
-
-                                <ToggleButton value="HARD" aria-label="hard">
-                                    <SentimentVeryDissatisfied sx={{ mr: 1 }} />
-                                    Hard
-                                </ToggleButton>
-                                <ToggleButton value="IMPOSSIBLE" aria-label="impossible">
-                                    <Dangerous sx={{ mr: 1 }} />
-                                    Impossible
-                                </ToggleButton>
-                            </ToggleButtonGroup>
-                        </Box>
-
-                        <Box sx={{ mb: 2 }}>
-                            <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                                Opponent
-                            </Typography>
-                            <ToggleButtonGroup
-                                value={filters.opponent}
-                                onChange={(_, value) => onFilterChange('opponent', value)}
-                                aria-label="opponent filter"
-                                size="small"
-                                sx={{ flexWrap: 'wrap', gap: 1 }}
-                            >
-                                <ToggleButton value="ai" aria-label="ai">
-                                    <SmartToy sx={{ mr: 1 }} />
-                                    vs AI
-                                </ToggleButton>
-                                <ToggleButton value="player" aria-label="player">
-                                    <Person sx={{ mr: 1 }} />
-                                    vs Player
-                                </ToggleButton>
-                            </ToggleButtonGroup>
-                        </Box>
-
-                        {(filters.result.length > 0 || filters.difficulty.length > 0 ||
-                            filters.opponent.length > 0 || filters.search) && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2, flexWrap: 'wrap' }}>
-                                <Typography variant="caption" color="text.secondary">
-                                    Active filters:
-                                </Typography>
-                                {filters.result.map(result => (
-                                    <Chip
-                                        key={result}
-                                        label={`Result: ${result === 'WIN' ? 'Win' : result === 'LOSS' ? 'Loss' : 'Draw'}`}
-                                        size="small"
-                                        onDelete={() => onFilterChange('result', filters.result.filter(r => r !== result))}
-                                    />
-                                ))}
-                                {filters.difficulty.map(difficulty => (
-                                    <Chip
-                                        key={difficulty}
-                                        label={`Difficulty: ${difficulty}`}
-                                        size="small"
-                                        onDelete={() => onFilterChange('difficulty', filters.difficulty.filter(d => d !== difficulty))}
-                                    />
-                                ))}
-                                {filters.opponent.map(opponent => (
-                                    <Chip
-                                        key={opponent}
-                                        label={`Opponent: ${opponent === 'ai' ? 'AI' : 'Player'}`}
-                                        size="small"
-                                        onDelete={() => onFilterChange('opponent', filters.opponent.filter(o => o !== opponent))}
-                                    />
-                                ))}
-                                {filters.search && (
-                                    <Chip
-                                        label={`Search: "${filters.search}"`}
-                                        size="small"
-                                        onDelete={() => onFilterChange('search', '')}
-                                    />
-                                )}
-                                <Button
-                                    size="small"
-                                    startIcon={<ClearAll />}
-                                    onClick={onClearFilters}
-                                    sx={{ ml: 'auto' }}
-                                >
-                                    Clear All
-                                </Button>
-                            </Box>
-                        )}
-                    </Grid>
-                </Grid>
-            </Paper>
-
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Box>
-                    <Typography variant="h6">
-                        {filteredAndSortedSessions.length} {filteredAndSortedSessions.length === 1 ? 'session' : 'sessions'} found
+        <Box>
+            <Button
+                variant="outlined"
+                startIcon={<FilterListIcon />}
+                onClick={handleClick}
+                size="small"
+                sx={{
+                    height: '40px',
+                    minWidth: 'auto',
+                    px: 1.2,
+                    whiteSpace: 'nowrap'
+                }}
+            >
+                Filters
+                {activeFilterCount > 0 && ` (${activeFilterCount})`}
+            </Button>
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            width: 320,
+                            maxHeight: 500,
+                            p: 2,
+                        },
+                    },
+                }}
+            >
+                <Box sx={{ px: 1 }}>
+                    <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        Your Result
                     </Typography>
-                    {currentUserId && (
-                        <Typography variant="caption" color="text.secondary">
-                            Showing sessions for user: {currentUserId.slice(0, 8)}...
-                        </Typography>
-                    )}
+                    <FormGroup sx={{ mb: 2 }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={internalResult.includes('WIN')}
+                                    onChange={() => handleResultToggle('WIN')}
+                                />
+                            }
+                            label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <MilitaryTech fontSize="small" />
+                                    Win
+                                </Box>
+                            }
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={internalResult.includes('LOSS')}
+                                    onChange={() => handleResultToggle('LOSS')}
+                                />
+                            }
+                            label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Block fontSize="small" />
+                                    Loss
+                                </Box>
+                            }
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={internalResult.includes('DRAW')}
+                                    onChange={() => handleResultToggle('DRAW')}
+                                />
+                            }
+                            label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Handshake fontSize="small" />
+                                    Draw
+                                </Box>
+                            }
+                        />
+                    </FormGroup>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        Difficulty
+                    </Typography>
+                    <FormGroup sx={{ mb: 2 }}>
+                        {Object.entries(difficultyMapping).map(([backendValue, config]) => (
+                            <FormControlLabel
+                                key={backendValue}
+                                control={
+                                    <Checkbox
+                                        checked={internalDifficulty.includes(backendValue)}
+                                        onChange={() => handleDifficultyToggle(backendValue)}
+                                    />
+                                }
+                                label={
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        {config.icon}
+                                        {config.display}
+                                    </Box>
+                                }
+                            />
+                        ))}
+                    </FormGroup>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                        Opponent
+                    </Typography>
+                    <FormGroup sx={{ mb: 2 }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={internalOpponent.includes('ai')}
+                                    onChange={() => handleOpponentToggle('ai')}
+                                />
+                            }
+                            label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <SmartToy fontSize="small" />
+                                    vs AI
+                                </Box>
+                            }
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={internalOpponent.includes('player')}
+                                    onChange={() => handleOpponentToggle('player')}
+                                />
+                            }
+                            label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <Person fontSize="small" />
+                                    vs Player
+                                </Box>
+                            }
+                        />
+                    </FormGroup>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                        <Button onClick={handleClearFilters} size="small">
+                            Clear All Filters
+                        </Button>
+                    </Box>
                 </Box>
-                {filteredAndSortedSessions.length !== enhancedSessions.length && (
-                    <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={onClearFilters}
-                        startIcon={<ClearAll />}
-                    >
-                        Showing filtered results
-                    </Button>
-                )}
-            </Box>
-        </>
-    );
+            </Menu>
+        </Box>
+    )
 }
