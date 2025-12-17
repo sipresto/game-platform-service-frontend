@@ -3,7 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router';
 import {
     Box, AppBar, Toolbar, Typography, Drawer, List, ListItem,
     ListItemButton, ListItemIcon, ListItemText, IconButton, Badge,
-    CssBaseline, Button, Menu, MenuItem
+    CssBaseline, Button, Menu, MenuItem, Avatar
 } from '@mui/material';
 import {
     Diversity3,
@@ -12,7 +12,6 @@ import {
     ChatBubble,
     VerticalSplit,
     ArrowLeft,
-    AccountCircle,
     Menu as MenuIcon,
     Logout,
     Login,
@@ -27,12 +26,13 @@ import {
 
 import SecurityContext from '../../context/SecurityContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
-import {useNotifications} from "../../hooks/useNotifications.ts";
-import {markNotificationRead} from "../../services/notificationApi.ts";
+import { useNotifications } from "../../hooks/useNotifications.ts";
+import { markNotificationRead } from "../../services/notificationApi.ts";
 
 const DRAWER_WIDTH = 240;
 
 export function MainLayout() {
+    const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
     const location = useLocation();
     const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
@@ -50,11 +50,11 @@ export function MainLayout() {
 
     const handleNotificationsOpen = (event: React.MouseEvent<HTMLElement>) => {
         setNotificationAnchor(event.currentTarget);
-    }
+    };
 
     const handleNotificationsClose = () => {
         setNotificationAnchor(null);
-    }
+    };
 
     const notificationTitleMap: Record<string, string> = {
         FRIEND_REQUEST: "You have a new friend request!",
@@ -64,19 +64,16 @@ export function MainLayout() {
 
     const handleNotificationTitle = (type: string) => {
         return notificationTitleMap[type] ?? "New notification";
-    }
+    };
 
     function getNotificationIcon(type: string) {
         switch (type) {
             case "FRIEND_REQUEST":
                 return <PersonAdd fontSize="small" />;
-
             case "ACHIEVEMENT":
                 return <EmojiEvents fontSize="small" />;
-
             case "YOUR_TURN":
                 return <Autorenew fontSize="small" />;
-
             default:
                 return <Notifications fontSize="small" />;
         }
@@ -106,16 +103,20 @@ export function MainLayout() {
 
     const handleViewProfile = () => {
         handleUserMenuClose();
-        const userId = userProfile?.id || userProfile?.id || loggedInUser?.profile?.keycloakId;
+        const userId = userProfile?.id || userProfile?.keycloakId || loggedInUser?.profile?.keycloakId;
         if (userId) {
             navigate(`/profile/${userId}`);
         }
     };
 
     const displayName = userProfile?.profile?.displayName ||
-        userProfile?.profile?.displayName ||
         loggedInUser?.name ||
         'Gamer';
+
+    const getUserAvatarUrl = () => {
+        const userId = userProfile?.id || userProfile?.keycloakId || loggedInUser?.profile?.keycloakId;
+        return userId ? `${BACKEND_URL}/${userId}/profile-image?t=${Date.now()}` : null;
+    };
 
     const publicMenuItems = [
         { text: 'Store', path: '/store', icon: <Store /> },
@@ -127,7 +128,7 @@ export function MainLayout() {
         { text: 'Library', path: '/library', icon: <VerticalSplit /> },
         { text: 'Sessions', path: '/sessions', icon: <Gamepad /> },
         { text: 'Profile', path: `/profile/${keycloakId}`, icon: <Person /> },
-        { text: 'Users', path: '/users', icon: <Diversity3/> },
+        { text: 'Users', path: '/users', icon: <Diversity3 /> },
         { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
     ];
 
@@ -249,8 +250,7 @@ export function MainLayout() {
                                     }}
                                 >
                                     <Badge badgeContent={unreadCount} color="error">
-                                        <Notifications fontSize="small"/>
-
+                                        <Notifications fontSize="small" />
                                     </Badge>
                                 </IconButton>
 
@@ -277,25 +277,25 @@ export function MainLayout() {
                                     {notifications
                                         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                                         .map((n) => (
-                                        <MenuItem key={n.notificationId}
-                                                  onMouseEnter={() => {
-                                                      if (!n.read) {
-                                                          n.read = true;
-                                                          unreadCount--;
-                                                          markNotificationRead(n.notificationId);
-                                                      }
-                                                  }}
-                                        >
-                                            <ListItemIcon sx={{ minWidth: 36 }}>
-                                                {getNotificationIcon(n.notificationType)}
-                                            </ListItemIcon>
+                                            <MenuItem key={n.notificationId}
+                                                      onMouseEnter={() => {
+                                                          if (!n.read) {
+                                                              n.read = true;
+                                                              unreadCount--;
+                                                              markNotificationRead(n.notificationId);
+                                                          }
+                                                      }}
+                                            >
+                                                <ListItemIcon sx={{ minWidth: 36 }}>
+                                                    {getNotificationIcon(n.notificationType)}
+                                                </ListItemIcon>
 
-                                            <ListItemText
-                                                primary={handleNotificationTitle(n.notificationType)}
-                                                secondary={n.description}
-                                            />
-                                        </MenuItem>
-                                    ))}
+                                                <ListItemText
+                                                    primary={handleNotificationTitle(n.notificationType)}
+                                                    secondary={n.description}
+                                                />
+                                            </MenuItem>
+                                        ))}
                                 </Menu>
 
                                 <IconButton
@@ -323,7 +323,17 @@ export function MainLayout() {
                                         }
                                     }}
                                 >
-                                    <AccountCircle fontSize="small" />
+                                    <Avatar
+                                        src={getUserAvatarUrl() || undefined}
+                                        sx={{
+                                            width: 32,
+                                            height: 32,
+                                            fontSize: 14,
+                                            bgcolor: 'primary.main',
+                                        }}
+                                    >
+                                        {displayName?.charAt(0)?.toUpperCase() || 'U'}
+                                    </Avatar>
                                 </IconButton>
 
                                 <Menu
