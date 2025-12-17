@@ -64,8 +64,6 @@ export const LobbyRoomPage = () => {
         };
 
         const request: StartGameRequest = {
-            gameId,
-            players: lobby.players.map((player) => player.id),
             difficulty: aiDifficultyMap[difficulty],
         };
 
