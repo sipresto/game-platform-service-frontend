@@ -1,6 +1,5 @@
 import { Alert } from '@mui/material';
 import { Check, Error as ErrorIcon } from '@mui/icons-material';
-import React from "react";
 
 interface StatusAlertsProps {
     validationError: string | null;
@@ -10,13 +9,13 @@ interface StatusAlertsProps {
     onClearUploadStatus: () => void;
 }
 
-export const StatusAlerts: React.FC<StatusAlertsProps> = ({
+export const StatusAlerts = ({
                                                               validationError,
                                                               uploadError,
                                                               uploadStatus,
                                                               onClearValidationError,
                                                               onClearUploadStatus
-                                                          }) => {
+                                                          }: StatusAlertsProps) => {
     return (
         <>
             {validationError && (

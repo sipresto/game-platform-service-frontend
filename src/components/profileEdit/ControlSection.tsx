@@ -13,7 +13,7 @@ interface ControlSectionProps {
     supportedImageTypes: readonly string[];
 }
 
-export const ControlSection: React.FC<ControlSectionProps> = ({
+export const ControlSection = ({
                                                                   fileInputRef,
                                                                   handleUploadClick,
                                                                   handleRemoveClick,
@@ -22,7 +22,7 @@ export const ControlSection: React.FC<ControlSectionProps> = ({
                                                                   isUploading,
                                                                   isRemoving,
                                                                   supportedImageTypes
-                                                              }) => {
+                                                              } : ControlSectionProps) => {
     return (
         <>
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>

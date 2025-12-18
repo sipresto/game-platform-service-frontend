@@ -6,7 +6,6 @@ import {
     DialogTitle,
     Button,
 } from '@mui/material';
-import React from "react";
 
 interface RemoveConfirmationDialogProps {
     open: boolean;
@@ -15,12 +14,12 @@ interface RemoveConfirmationDialogProps {
     isRemoving: boolean;
 }
 
-export const RemoveConfirmationDialog: React.FC<RemoveConfirmationDialogProps> = ({
+export const RemoveConfirmationDialog = ({
                                                                                       open,
                                                                                       onConfirm,
                                                                                       onCancel,
                                                                                       isRemoving
-                                                                                  }) => {
+                                                                                  }: RemoveConfirmationDialogProps) => {
     return (
         <Dialog
             open={open}

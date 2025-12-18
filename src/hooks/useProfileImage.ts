@@ -46,3 +46,4 @@ export function useProfileImage(): UseProfileImageReturn {
         error: uploadMutation.error || removeMutation.error,
     };
 }
+

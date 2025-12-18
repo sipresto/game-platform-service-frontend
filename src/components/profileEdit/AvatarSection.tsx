@@ -1,5 +1,4 @@
 import { Box, Avatar, CircularProgress } from '@mui/material';
-import React from "react";
 
 interface AvatarSectionProps {
     profileImageUrl: string | null;
@@ -9,13 +8,13 @@ interface AvatarSectionProps {
     getInitials: (name: string) => string;
 }
 
-export const AvatarSection: React.FC<AvatarSectionProps> = ({
+export const AvatarSection = ({
                                                                 profileImageUrl,
                                                                 displayName,
                                                                 size,
                                                                 isUploading,
                                                                 getInitials
-                                                            }) => {
+                                                            }: AvatarSectionProps) => {
     return (
         <Box sx={{ position: 'relative' }}>
             <Avatar
