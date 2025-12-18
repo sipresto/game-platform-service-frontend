@@ -33,8 +33,6 @@ export interface JoinLobbyRequest {
 
 
 export interface StartGameRequest {
-    gameId: string;
-    players: string[];
     difficulty: 'EASY' | 'HARD' | 'IMPOSSIBLE';
 }
 

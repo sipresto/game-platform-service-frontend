@@ -21,60 +21,6 @@ const useToken = () => {
     return loggedInUser?.accessToken ?? loggedInUser?.idToken;
 };
 
-const normalizeGameUrl = (gameUrl: string, gameName: string): string => {
-    try {
-        const url = new URL(gameUrl);
-
-        const pathAndQuery = url.pathname + url.search + url.hash;
-
-        const gameBasePath = `/games/${gameName.toLowerCase()}/`;
-
-        let finalPath = pathAndQuery;
-
-        if (!finalPath.startsWith(gameBasePath)) {
-            if (finalPath.startsWith('/')) {
-                finalPath = gameBasePath + finalPath.substring(1);
-            } else {
-                finalPath = gameBasePath + finalPath;
-            }
-        }
-
-        return window.location.origin + finalPath;
-    } catch (error) {
-        console.warn(error);
-        let finalPath = gameUrl;
-        const gameBasePath = `/games/${gameName.toLowerCase()}/`;
-
-        if (!finalPath.startsWith(gameBasePath)) {
-            if (finalPath.startsWith('/')) {
-                finalPath = gameBasePath + finalPath.substring(1);
-            } else {
-                finalPath = gameBasePath + finalPath;
-            }
-        }
-
-        return window.location.origin + finalPath;
-    }
-};
-
-const extractGameNameFromUrl = (gameUrl: string): string | null => {
-    try {
-        const url = new URL(gameUrl);
-        const pathParts = url.pathname.split('/').filter(Boolean);
-
-        if (pathParts.length >= 2 && pathParts[0] === 'games') {
-            return pathParts[1];
-        }
-    } catch (error) {
-        console.warn(error);
-        const pathParts = gameUrl.split('/').filter(Boolean);
-        if (pathParts.length >= 2 && pathParts[0] === 'games') {
-            return pathParts[1];
-        }
-    }
-    return null;
-};
-
 export function useLobbies(gameId: string | undefined) {
     const token = useToken();
 
@@ -91,7 +37,7 @@ export function useLobbies(gameId: string | undefined) {
     };
 }
 
-export function useLobbyDetail(lobbyId: string | undefined, gameName: string) {
+export function useLobbyDetail(lobbyId: string | undefined) {
     const { profile } = useUserProfile();
     const { loggedInUser } = useContext(SecurityContext);
     const redirectAttemptedRef = useRef(false);
@@ -113,16 +59,14 @@ export function useLobbyDetail(lobbyId: string | undefined, gameName: string) {
     );
 
     useEffect(() => {
-        if (!query.data || redirectAttemptedRef.current || !lobbyId || !gameName) return;
+        if (!query.data || redirectAttemptedRef.current || !lobbyId) return;
 
         const currentLobby = query.data;
 
         if (currentLobby.started && currentLobby.gameUrl && !redirectAttemptedRef.current) {
             redirectAttemptedRef.current = true;
 
-            const extractedGameName = extractGameNameFromUrl(currentLobby.gameUrl) || gameName;
-
-            let finalUrl = normalizeGameUrl(currentLobby.gameUrl, extractedGameName);
+            let finalUrl = window.location.origin + currentLobby.gameUrl;
 
             const token = loggedInUser?.accessToken ?? loggedInUser?.idToken;
             if (token) {
@@ -145,7 +89,7 @@ export function useLobbyDetail(lobbyId: string | undefined, gameName: string) {
                 window.location.href = finalUrl;
             }, 300);
         }
-    }, [query.data, lobbyId, loggedInUser, gameName]);
+    }, [query.data, lobbyId, loggedInUser]);
 
     return {
         ...query,
@@ -154,7 +98,7 @@ export function useLobbyDetail(lobbyId: string | undefined, gameName: string) {
     };
 }
 
-export function useLobbyActions(gameId: string | undefined, gameName: string) {
+export function useLobbyActions(gameId: string | undefined) {
     const token = useToken();
     const queryClient = useQueryClient();
 
@@ -182,11 +126,9 @@ export function useLobbyActions(gameId: string | undefined, gameName: string) {
 
     const startMutation = useMutation({
         mutationFn: ({ lobbyId, request }: { lobbyId: string; request: StartGameRequest }) =>
-            startGame(lobbyId, request, token),
-        onSuccess: (data, variables) => {
-            const extractedGameName = extractGameNameFromUrl(data.url) || gameName;
-
-            let finalUrl = normalizeGameUrl(data.url, extractedGameName);
+            startGame(lobbyId, request),
+        onSuccess: (gameUrl, variables) => {
+            let finalUrl = window.location.origin + gameUrl;
 
             localStorage.setItem(`game_${variables.lobbyId}_url`, finalUrl);
             sessionStorage.setItem(`game_started_${variables.lobbyId}`, 'true');

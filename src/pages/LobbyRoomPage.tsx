@@ -24,8 +24,8 @@ export const LobbyRoomPage = () => {
     const navigate = useNavigate();
 
     const { game, loading: gameLoading, error: gameError } = useGameDetails(gameId);
-    const { lobby, isHost, isLoading, error } = useLobbyDetail(lobbyId, game?.name ?? "unkown");
-    const { leaveLobby, startGame } = useLobbyActions(gameId, game?.name ?? "unkown");
+    const { lobby, isHost, isLoading, error } = useLobbyDetail(lobbyId);
+    const { leaveLobby, startGame } = useLobbyActions(gameId);
 
     const [startDialogOpen, setStartDialogOpen] = useState(false);
     const [difficulty, setDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
@@ -64,8 +64,6 @@ export const LobbyRoomPage = () => {
         };
 
         const request: StartGameRequest = {
-            gameId,
-            players: lobby.players.map((player) => player.id),
             difficulty: aiDifficultyMap[difficulty],
         };
 
