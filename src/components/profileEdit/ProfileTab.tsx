@@ -2,11 +2,13 @@ import { Box, Grid } from '@mui/material';
 import { ProfileForm } from "./ProfileForm.tsx";
 import { FormAlerts } from "./FormAlerts.tsx";
 import { ActionButtons } from "./ActionButtons.tsx";
+import { ProfileImageUpload } from "./ProfileImageUpload.tsx";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { FormState } from '../../hooks/useProfileForm';
 import type { User } from "../../model/user.ts";
 import type { UserProfile, ProfileUpdateData } from "../../model/userProfile.ts";
 import React from "react";
+import {useUserProfile} from "../../hooks/useUserProfile.ts";
 
 interface ProfileTabProps {
     formState: FormState;
@@ -31,9 +33,20 @@ export function ProfileTab({
                                onReset,
                                onSubmit
                            }: ProfileTabProps) {
+    const displayName = formState.displayName || formState.username || 'User';
+    const { profile } = useUserProfile();
+
     return (
         <Box component="form" onSubmit={onSubmit}>
             <Grid container spacing={3}>
+                <Grid size={{ xs: 12 }}>
+                    <ProfileImageUpload
+                        userId={profile?.id ?? ''}
+                        displayName={displayName}
+                        size={120}
+                    />
+                </Grid>
+
                 <ProfileForm
                     formState={formState}
                     loggedInUser={loggedInUser}

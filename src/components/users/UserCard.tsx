@@ -2,71 +2,58 @@ import {
     Card,
     CardContent,
     CardActions,
-    Typography,
-    Avatar,
     Button,
-    Chip,
     Box
 } from '@mui/material';
-import { Visibility as VisibilityIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router';
 import type { UserProfile } from '../../model/userProfile';
+import { UserAvatar } from './UserAvatar';
+import { UserInfoSection } from './UserInfoSection';
+import { UserBio } from './UserBio';
+import { VisibilityChip } from './VisibilityChip';
+import {useProfileImageLoader} from "../../utils/useProfileImageLoader.ts";
 
 interface UserCardProps {
     user: UserProfile;
 }
 
 export function UserCard({ user }: UserCardProps) {
-    const getVisibilityInfo = () => {
-        switch (user.visibility) {
-            case 'PUBLIC': return { label: 'Public', color: 'success' as const };
-            case 'FRIENDS_ONLY': return { label: 'Friends Only', color: 'warning' as const };
-            case 'PRIVATE': return { label: 'Private', color: 'default' as const };
-            default: return { label: 'Unknown', color: 'default' as const };
-        }
-    };
-
-    const visibilityInfo = getVisibilityInfo();
+    const userId = user.id;
+    const { profileImageUrl, isLoading, hasError } = useProfileImageLoader(userId);
     const displayName = user.profile?.displayName || user.username;
-    const userInitials = displayName.charAt(0).toUpperCase();
 
     return (
-        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Card sx={{
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+            '&:hover': {
+                transform: 'translateY(-4px)',
+                boxShadow: 6
+            }
+        }}>
             <CardContent sx={{ flexGrow: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                        {userInitials}
-                    </Avatar>
-                    <Box>
-                        <Typography variant="h6" component="div">
-                            {displayName}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            @{user.username}
-                        </Typography>
-                    </Box>
+                    <UserAvatar
+                        userId={userId}
+                        displayName={displayName}
+                        profileImageUrl={profileImageUrl}
+                        isLoading={isLoading}
+                        hasError={hasError}
+                        size={56}
+                    />
+                    <UserInfoSection user={user} />
                 </Box>
 
                 {user.profile?.bio && (
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        {user.profile.bio.length > 100
-                            ? `${user.profile.bio.substring(0, 100)}...`
-                            : user.profile.bio}
-                    </Typography>
+                    <UserBio bio={user.profile.bio} />
                 )}
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <VisibilityIcon fontSize="small" color="action" />
-                    <Chip
-                        label={visibilityInfo.label}
-                        size="small"
-                        color={visibilityInfo.color}
-                        variant="outlined"
-                    />
-                </Box>
+                <VisibilityChip visibility={user.visibility} />
             </CardContent>
 
-            <CardActions>
+            <CardActions sx={{ mt: 'auto' }}>
                 <Button
                     size="small"
                     component={RouterLink}

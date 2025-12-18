@@ -3,6 +3,8 @@ import { Edit as EditIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router';
 
 interface User {
+    id?: string;
+    keycloakId?: string;
     username: string;
     visibility: string;
     profile?: {
@@ -17,15 +19,22 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
+    const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
+    const userId = user.id || user.keycloakId || '';
     const displayName = user.profile?.displayName || user.username;
     const initial = displayName.charAt(0).toUpperCase();
     const visibilityColor =
         user.visibility === 'PUBLIC' ? 'success' : user.visibility === 'FRIENDS_ONLY' ? 'warning' : 'default';
 
+    const profileImageUrl = userId
+        ? `${BACKEND_URL}/${userId}/profile-image`
+        : null;
+
     return (
         <Paper elevation={2} sx={{ p: 4, borderRadius: 2, flexGrow: 1 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', flexGrow: 1 }}>
                 <Avatar
+                    src={profileImageUrl || undefined}
                     sx={{
                         width: 120,
                         height: 120,
