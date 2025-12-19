@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { Button, CircularProgress, Box } from '@mui/material';
 import { PersonAdd, Check, Close, HourglassEmpty } from '@mui/icons-material';
 import {
     useAcceptFriendRequest,
     useSendFriendRequest,
-    useRejectFriendRequest
+    useRejectFriendRequest,
+    useFriendshipStatus
 } from "../hooks/useFriendRequests.ts";
 import { useAllUsers, useUserProfile } from "../hooks/useUserProfile.ts";
 
@@ -25,62 +25,56 @@ export function FriendRequestButton({
                                     }: FriendRequestButtonProps) {
     const { profile: currentUser } = useUserProfile();
     const { friends } = useAllUsers();
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [requestSent, setRequestSent] = useState(false);
+
+    const {
+        isCurrentUser,
+        isFriend,
+        hasIncomingRequest,
+        hasOutgoingRequest
+    } = useFriendshipStatus(targetUserId);
 
     const sendMutation = useSendFriendRequest();
     const acceptMutation = useAcceptFriendRequest();
     const rejectMutation = useRejectFriendRequest();
 
-    const isCurrentUser = currentUser?.id === targetUserId || currentUser?.keycloakId === targetUserKeycloakId;
-
-    const isFriend = friends.some(friend =>
-        friend.id === targetUserId || friend.keycloakId === targetUserKeycloakId
-    );
-
-    const hasIncomingRequest = currentUser?.friendRequests?.some(
-        request => request.senderId === targetUserId
-    );
-
     const handleAccept = async () => {
-        setIsProcessing(true);
         try {
             await acceptMutation.mutateAsync(targetUserId);
-        } finally {
-            setIsProcessing(false);
+        } catch (error) {
+            console.error('Failed to accept friend request:', error);
         }
     };
 
     const handleReject = async () => {
-        setIsProcessing(true);
         try {
             await rejectMutation.mutateAsync(targetUserId);
-        } finally {
-            setIsProcessing(false);
+        } catch (error) {
+            console.error('Failed to reject friend request:', error);
         }
     };
 
     const handleSendRequest = async () => {
         if (!currentUser?.id) return;
 
-        setIsProcessing(true);
         try {
             await sendMutation.mutateAsync({
                 receiverId: targetUserId,
                 senderId: currentUser.id
             });
-            setRequestSent(true);
-        } finally {
-            setIsProcessing(false);
+        } catch (error) {
+            console.error('Failed to send friend request:', error);
         }
     };
 
-    // Early returns for non-actionable states
     if (isCurrentUser || !currentUser) {
         return null;
     }
 
-    if (isFriend) {
+    const isAlreadyFriend = friends.some(friend =>
+        friend.id === targetUserId || friend.keycloakId === targetUserKeycloakId
+    ) || isFriend;
+
+    if (isAlreadyFriend) {
         return (
             <Button
                 size={size}
@@ -94,7 +88,7 @@ export function FriendRequestButton({
         );
     }
 
-    if (requestSent) {
+    if (hasOutgoingRequest) {
         return (
             <Button
                 size={size}
@@ -108,24 +102,23 @@ export function FriendRequestButton({
         );
     }
 
-    // Handle incoming friend requests with reject button
     if (hasIncomingRequest) {
         return (
             <Box sx={{
                 display: 'flex',
                 gap: 1,
                 width: fullWidth ? '100%' : 'auto',
-                flexDirection: { xs: 'column', sm: 'row' } // Responsive: column on mobile, row on desktop
+                flexDirection: { xs: 'column', sm: 'row' }
             }}>
                 <Button
                     size={size}
                     variant="contained"
                     color="success"
                     fullWidth={fullWidth}
-                    startIcon={isProcessing ? <CircularProgress size={16} /> : <Check />}
-                    disabled={isProcessing}
+                    startIcon={acceptMutation.isPending ? <CircularProgress size={16} /> : <Check />}
+                    disabled={acceptMutation.isPending || rejectMutation.isPending}
                     onClick={handleAccept}
-                    sx={{ flex: 1 }} // Equal flex value for both buttons
+                    sx={{ flex: 1 }}
                 >
                     Accept
                 </Button>
@@ -134,10 +127,10 @@ export function FriendRequestButton({
                     variant="outlined"
                     color="error"
                     fullWidth={fullWidth}
-                    startIcon={isProcessing ? <CircularProgress size={16} /> : <Close />}
-                    disabled={isProcessing}
+                    startIcon={rejectMutation.isPending ? <CircularProgress size={16} /> : <Close />}
+                    disabled={acceptMutation.isPending || rejectMutation.isPending}
                     onClick={handleReject}
-                    sx={{ flex: 1 }} // Equal flex value for both buttons
+                    sx={{ flex: 1 }}
                 >
                     Reject
                 </Button>
@@ -145,14 +138,13 @@ export function FriendRequestButton({
         );
     }
 
-    // No existing relationship - show "Add Friend" button
     return (
         <Button
             size={size}
             variant={variant}
             fullWidth={fullWidth}
-            startIcon={isProcessing ? <CircularProgress size={16} /> : <PersonAdd />}
-            disabled={isProcessing}
+            startIcon={sendMutation.isPending ? <CircularProgress size={16} /> : <PersonAdd />}
+            disabled={sendMutation.isPending}
             onClick={handleSendRequest}
         >
             Add Friend

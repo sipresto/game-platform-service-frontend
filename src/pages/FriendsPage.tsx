@@ -83,10 +83,6 @@ export function FriendsPage() {
                     onChange={handleTabChange}
                     aria-label="friends tabs"
                     variant="fullWidth"
-                    sx={{
-                        borderBottom: 1,
-                        borderColor: 'divider',
-                    }}
                 >
                     <Tab
                         icon={<Group />}
