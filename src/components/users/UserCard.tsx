@@ -11,7 +11,8 @@ import { UserAvatar } from './UserAvatar';
 import { UserInfoSection } from './UserInfoSection';
 import { UserBio } from './UserBio';
 import { VisibilityChip } from './VisibilityChip';
-import {useProfileImageLoader} from "../../utils/useProfileImageLoader.ts";
+import { useProfileImageLoader } from "../../utils/useProfileImageLoader.ts";
+import {FriendRequestButton} from "../FriendRequestButton.tsx";
 
 interface UserCardProps {
     user: UserProfile;
@@ -53,12 +54,17 @@ export function UserCard({ user }: UserCardProps) {
                 <VisibilityChip visibility={user.visibility} />
             </CardContent>
 
-            <CardActions sx={{ mt: 'auto' }}>
+            <CardActions sx={{ mt: 'auto', flexDirection: 'column', gap: 1, alignItems: 'stretch' }}>
+                <FriendRequestButton
+                    targetUserId={user.id}
+                    targetUserKeycloakId={user.keycloakId}
+                    size="small"
+                    fullWidth
+                />
                 <Button
                     size="small"
                     component={RouterLink}
                     to={`/profile/${user.keycloakId}`}
-                    sx={{ ml: 'auto' }}
                 >
                     View Profile
                 </Button>

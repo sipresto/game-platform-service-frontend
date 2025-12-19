@@ -10,6 +10,11 @@ export interface UserProfile {
         displayName?: string;
         bio?: string;
     };
+    friendRequests: {
+        senderId: string;
+        createdAt: string;
+    }[];
+    friends: string[];
 }
 
 export interface ProfileUpdateData {

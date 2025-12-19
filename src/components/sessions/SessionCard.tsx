@@ -10,7 +10,7 @@ import {
 import { CalendarToday, Gamepad, SmartToy } from '@mui/icons-material';
 import { ResultBadge } from './ResultBadge';
 import { DifficultyChip } from './DifficultyChip';
-import { formatDate } from '../../utils/dateFormatter';
+import { formatDate } from '../../utils/dateUtils';
 import type { EnhancedSession } from '../../utils/sessionEnhancer';
 import { useGameDetails } from "../../hooks/useGames";
 

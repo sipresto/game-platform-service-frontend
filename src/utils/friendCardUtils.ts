@@ -1,0 +1,44 @@
+import type {SxProps} from '@mui/material';
+import type {Theme} from '@mui/material/styles';
+
+export const getVisibilityLabel = (visibility: string) => {
+    switch (visibility) {
+        case 'PUBLIC':
+            return 'Public';
+        case 'FRIENDS_ONLY':
+            return 'Friends Only';
+        case 'PRIVATE':
+            return 'Private';
+        default:
+            return visibility;
+    }
+};
+
+export const getFriendCountText = (count: number) => {
+    return `${count} friend${count !== 1 ? 's' : ''}`;
+};
+
+export const cardStyles = (theme: Theme): SxProps => ({
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: 2,
+    border: `1px solid ${theme.palette.divider}08`,
+    background: theme.palette.background.paper,
+    transition: 'all 0.2s ease',
+    position: 'relative',
+    overflow: 'hidden',
+    '&:hover': {
+        transform: 'translateY(-2px)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+    }
+});
+
+export const contentStyles = (showActions: boolean): SxProps => ({
+    flexGrow: 1,
+    pt: 2,
+    pb: showActions ? 1 : 2,
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+});

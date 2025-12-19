@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useUserProfile, useCurrentUser } from './useUserProfile';
 import { useProfileImage } from './useProfileImage';
 import {ERROR_MESSAGE_DURATION, SUCCESS_MESSAGE_DURATION, type UploadStatus} from "../utils/types.ts";
-import {getProfileImageUrl, validateImageFile} from "../utils/utils.ts";
+import {getProfileImageUrl, validateImageFile} from "../utils/imageUtils.ts";
 
 interface UseProfileImageManagerProps {
     userId: string;
