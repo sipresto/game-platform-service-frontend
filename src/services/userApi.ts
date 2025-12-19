@@ -64,20 +64,10 @@ export async function removeProfileImage(): Promise<void> {
 
 export async function sendFriendRequest(
     receiverId: string,
-    senderId: string
 ): Promise<void> {
     try {
         await apiClient.post(
-            `${BACKEND_URL}/sendFriendRequest`,
-            {
-                receiverId,
-                senderId
-            },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
+            `${BACKEND_URL}/user/${receiverId}/send-friend-request`
         );
     } catch (error) {
         const axiosError = error as AxiosError;
@@ -87,7 +77,7 @@ export async function sendFriendRequest(
 
 export async function acceptFriendRequest(senderId: string): Promise<void> {
     try {
-        await apiClient.put(`${BACKEND_URL}/acceptFriendRequest/${senderId}`);
+        await apiClient.put(`${BACKEND_URL}/user/${senderId}/friend-request/accept`);
     } catch (error) {
         const axiosError = error as AxiosError;
         throw new Error(`Failed to accept friend request: ${axiosError.response?.statusText || axiosError.message}`);
@@ -96,7 +86,7 @@ export async function acceptFriendRequest(senderId: string): Promise<void> {
 
 export async function rejectFriendRequest(senderId: string): Promise<void> {
     try {
-        await apiClient.put(`${BACKEND_URL}/rejectFriendRequest/${senderId}`);
+        await apiClient.put(`${BACKEND_URL}/user/${senderId}/friend-request/reject`);
     } catch (error) {
         const axiosError = error as AxiosError;
         throw new Error(`Failed to reject friend request: ${axiosError.response?.statusText || axiosError.message}`);

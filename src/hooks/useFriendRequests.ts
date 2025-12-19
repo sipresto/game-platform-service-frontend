@@ -6,8 +6,8 @@ export function useSendFriendRequest() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ receiverId, senderId }: { receiverId: string; senderId: string }) =>
-            sendFriendRequest(receiverId, senderId),
+        mutationFn: ({ receiverId }: { receiverId: string; senderId: string }) =>
+            sendFriendRequest(receiverId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['userProfile'] });
             queryClient.invalidateQueries({ queryKey: ['publicUsers'] });
