@@ -14,10 +14,6 @@ export const getVisibilityLabel = (visibility: string) => {
     }
 };
 
-export const getFriendCountText = (count: number) => {
-    return `${count} friend${count !== 1 ? 's' : ''}`;
-};
-
 export const cardStyles = (theme: Theme): SxProps => ({
     height: '100%',
     display: 'flex',

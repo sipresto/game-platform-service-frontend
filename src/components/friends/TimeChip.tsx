@@ -10,10 +10,13 @@ export function TimeChip({ createdAt }: TimeChipProps) {
     return (
         <Chip
             icon={<Person />}
-            label={`Sent ${timeAgo(createdAt)}`}
+            label={timeAgo(createdAt)}
             size="small"
             variant="outlined"
-            sx={{ mt: 1 }}
+            sx={{
+                fontSize: '0.75rem',
+                height: 24
+            }}
         />
     );
 }

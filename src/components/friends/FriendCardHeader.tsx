@@ -6,7 +6,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { UserAvatar } from '../users/UserAvatar';
 import type { UserProfile } from '../../model/userProfile';
-import {getFriendCountText, getVisibilityLabel} from "../../utils/friendCardUtils.ts";
+import {getVisibilityLabel} from "../../utils/friendCardUtils.ts";
 
 interface FriendCardHeaderProps {
     user: UserProfile;
@@ -37,7 +37,6 @@ export function FriendCardHeader({
                                      displayName
                                  }: FriendCardHeaderProps) {
     const theme = useTheme();
-    const friendCount = user.friends?.length || 0;
 
     return (
         <Box sx={{
@@ -92,22 +91,6 @@ export function FriendCardHeader({
                             }}
                         />
                     </Tooltip>
-
-                    {friendCount > 0 && (
-                        <Tooltip title="Friends">
-                            <Chip
-                                label={getFriendCountText(friendCount)}
-                                size="small"
-                                variant="outlined"
-                                sx={{
-                                    height: 22,
-                                    fontSize: '0.65rem',
-                                    borderColor: alpha(theme.palette.secondary.main, 0.2),
-                                    color: theme.palette.text.secondary,
-                                }}
-                            />
-                        </Tooltip>
-                    )}
                 </Box>
             </Box>
         </Box>

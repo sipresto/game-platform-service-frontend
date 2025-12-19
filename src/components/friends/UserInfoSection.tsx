@@ -20,17 +20,17 @@ export function UserInfoSection({
     const displayName = user.profile?.displayName || user.username;
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <UserAvatar
                 userId={userId}
                 displayName={displayName}
                 profileImageUrl={profileImageUrl ?? null}
                 isLoading={imageLoading}
                 hasError={hasError}
-                size={56}
+                size={40}
             />
             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                <Typography variant="h6" noWrap fontWeight="bold" align="left">
+                <Typography variant="subtitle2" noWrap fontWeight="bold" align="left">
                     {displayName}
                 </Typography>
             </Box>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, CardContent } from '@mui/material';
+import { Card, CardContent, Box } from '@mui/material';
 import type { UserProfile } from '../../model/userProfile';
 import { useProfileImageLoader } from '../../utils/useProfileImageLoader';
 import { useAcceptFriendRequest, useRejectFriendRequest } from '../../hooks/useFriendRequests';
@@ -40,38 +40,52 @@ export function FriendRequestCard({ user, createdAt }: FriendRequestCardProps) {
 
     return (
         <Card sx={cardStyles}>
-            <CardContent sx={{ flexGrow: 1 }}>
-                <UserInfoSection
-                    userId={userId}
-                    user={user}
-                    profileImageUrl={profileImageUrl ?? undefined}
-                    imageLoading={imageLoading}
-                    hasError={hasError}
-                />
+            <CardContent sx={{ flexGrow: 1, p: 2 }}>
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 1,
+                    mb: 1
+                }}>
+                    {/* User info on the left */}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <UserInfoSection
+                            userId={userId}
+                            user={user}
+                            profileImageUrl={profileImageUrl ?? undefined}
+                            imageLoading={imageLoading}
+                            hasError={hasError}
+                        />
+                    </Box>
 
-                <TimeChip createdAt={createdAt} />
+                    {/* Time on the right */}
+                    <Box>
+                        <TimeChip createdAt={createdAt} />
+                    </Box>
+                </Box>
+
+                {/* Actions */}
+                <Box sx={{ mt: 1 }}>
+                    <FriendRequestActions
+                        userId={userId}
+                        keycloakId={user.keycloakId}
+                        isProcessing={isProcessing}
+                        onAccept={handleAccept}
+                        onReject={handleReject}
+                    />
+                </Box>
             </CardContent>
-
-            <FriendRequestActions
-                userId={userId}
-                keycloakId={user.keycloakId}
-                isProcessing={isProcessing}
-                onAccept={handleAccept}
-                onReject={handleReject}
-            />
         </Card>
     );
 }
 
 const cardStyles = {
-    height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    border: '2px solid',
-    borderColor: 'primary.main',
     transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
     '&:hover': {
-        transform: 'translateY(-4px)',
-        boxShadow: 6
+        transform: 'translateY(-2px)',
+        boxShadow: 4
     }
 };
