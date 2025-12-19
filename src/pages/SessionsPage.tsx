@@ -77,13 +77,10 @@ export function SessionsPage() {
     const sortedSessions = sortSessions(filteredSessions, sortField, sortDirection);
 
     return (
-        <Box sx={{ width: '100%', maxWidth: 1400, mx: 'auto', p: { xs: 1, sm: 2, md: 3 } }}>
+        <Box sx={{ width: '100%', p: { xs: 1, sm: 2, md: 3 } }}>
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h4" fontWeight={600} gutterBottom>
                     Game Sessions
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    View your game session history
                 </Typography>
             </Box>
 

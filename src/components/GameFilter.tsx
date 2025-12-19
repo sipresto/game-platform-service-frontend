@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useState } from "react"
 import { Button, Menu, Box, Typography, Slider, FormGroup, FormControlLabel, Checkbox, Divider } from "@mui/material"
@@ -71,7 +69,13 @@ export function GameFilter({ filters, onFiltersChange }: GameFilterProps) {
 
     return (
         <Box>
-            <Button variant="outlined" startIcon={<FilterListIcon />} onClick={handleClick} sx={{ mb: 4 }}>
+            <Button
+                variant="outlined"
+                startIcon={<FilterListIcon />}
+                onClick={handleClick}
+                size="small"
+                sx={{ height: '40px' }}
+            >
                 Filters
                 {activeFilterCount > 0 && ` (${activeFilterCount})`}
             </Button>

@@ -15,6 +15,7 @@ import {PurchasePage} from "./pages/PurchasePage.tsx";
 
 import {SessionsPage} from "./pages/SessionsPage.tsx";
 import {LobbyRoomPage} from "./pages/LobbyRoomPage.tsx";
+import {PerksShopPage} from "./pages/PerkPage.tsx";
 const queryClient = new QueryClient()
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
                             <Route path="/profile/edit" element={<ProfileEditPage />} />
                             <Route path="/users" element={<UsersPage />} />
                             <Route path="/purchase/:gameId" element={<PurchasePage />} />
+                            <Route path="/perks" element={<PerksShopPage />} />
                         </Route>
 
                         {/* Catch all - redirect to store (public) */}
