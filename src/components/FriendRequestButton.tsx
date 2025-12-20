@@ -6,7 +6,7 @@ import {
     useRejectFriendRequest,
     useFriendshipStatus
 } from "../hooks/useFriendRequests.ts";
-import { useAllUsers, useUserProfile } from "../hooks/useUserProfile.ts";
+import { useUserProfile } from "../hooks/useUserProfile.ts";
 
 interface FriendRequestButtonProps {
     targetUserId: string;
@@ -18,14 +18,11 @@ interface FriendRequestButtonProps {
 
 export function FriendRequestButton({
                                         targetUserId,
-                                        targetUserKeycloakId,
                                         size = 'medium',
                                         variant = 'outlined',
                                         fullWidth = false
                                     }: FriendRequestButtonProps) {
     const { profile: currentUser } = useUserProfile();
-    const { friends } = useAllUsers();
-
     const {
         isCurrentUser,
         isFriend,
@@ -70,11 +67,7 @@ export function FriendRequestButton({
         return null;
     }
 
-    const isAlreadyFriend = friends.some(friend =>
-        friend.id === targetUserId || friend.keycloakId === targetUserKeycloakId
-    ) || isFriend;
-
-    if (isAlreadyFriend) {
+    if (isFriend) {
         return (
             <Button
                 size={size}

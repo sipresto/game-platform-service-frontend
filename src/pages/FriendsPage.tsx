@@ -44,7 +44,7 @@ export function FriendsPage() {
         setCurrentTab(newValue);
     };
 
-    const friendRequests = profile?.friendRequests || [];
+    const friendRequests = profile?.incomingFriendRequests || [];
     const pendingCount = friendRequests.length;
 
     if (friendsLoading || profileLoading) {
