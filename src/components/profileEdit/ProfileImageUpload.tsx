@@ -8,7 +8,7 @@ import {
     type ProfileImageUploadProps,
     SUPPORTED_IMAGE_TYPES,
 } from "../../utils/types.ts";
-import { getInitials } from "../../utils/utils.ts";
+import { getInitials } from "../../utils/imageUtils.ts";
 import { useProfileImageManager } from '../../hooks/useProfileImageManager';
 
 export const ProfileImageUpload = ({

@@ -1,19 +1,20 @@
 import { useParams } from 'react-router';
-import { Container, Grid, Alert, Typography } from '@mui/material';
+import {Container, Alert, Typography, Grid} from '@mui/material';
 import { useCurrentUser, useUserProfileById } from '../hooks/useUserProfile';
 import { ProfileHeader } from '../components/profile/ProfileHeader';
 import { GameLibrarySection } from '../components/profile/GameLibrarySection';
 import { ProfileSkeleton } from '../components/profile/ProfileSkeleton';
-import {useOwnedGamesForUser} from "../hooks/useOwnedGames.ts";
-import {AchievementsSection} from "../components/profile/AchievementsSection.tsx";
-import {useAchievementsForUser} from "../hooks/useAchievementProgress.ts";
+import { useOwnedGamesForUser } from "../hooks/useOwnedGames.ts";
+import { AchievementsSection } from "../components/profile/AchievementsSection.tsx";
+import { useAchievementsForUser } from "../hooks/useAchievementProgress.ts";
+import { ProfileActions } from '../components/profile/ProfileActions';
 
 export function ProfilePage() {
     const { keycloakId } = useParams<{ keycloakId: string }>();
     const { keycloakId: currentUserKeycloakId } = useCurrentUser();
     const { data: user, isLoading, error } = useUserProfileById(keycloakId || '');
     const { games, loading: gamesLoading } = useOwnedGamesForUser(keycloakId || '', '');
-    const { achievements, loading: achievementsLoading } = useAchievementsForUser(keycloakId || "")
+    const { achievements, loading: achievementsLoading } = useAchievementsForUser(keycloakId || "");
     const isOwnProfile = currentUserKeycloakId === keycloakId;
     const canViewProfile = user?.visibility === 'PUBLIC' || isOwnProfile;
 
@@ -56,6 +57,7 @@ export function ProfilePage() {
             <Grid container spacing={3} sx={{ width: '100%' }}>
                 <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <ProfileHeader user={user} isOwnProfile={isOwnProfile} />
+                    <ProfileActions user={user} isOwnProfile={isOwnProfile} />
                 </Grid>
                 <Grid size={{ xs: 12, md: 8 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <GameLibrarySection games={games} loading={gamesLoading} isOwnProfile={isOwnProfile} />

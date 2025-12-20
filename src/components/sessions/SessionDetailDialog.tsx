@@ -25,7 +25,7 @@ import {
 } from '@mui/icons-material';
 import { DifficultyChip } from './DifficultyChip';
 import { PlayerListItem } from './PlayerListItem';
-import { formatFullDate } from '../../utils/dateFormatter';
+import { formatFullDate } from '../../utils/dateUtils';
 import type { EnhancedSession } from '../../utils/sessionEnhancer';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useGameDetails } from '../../hooks/useGames';
