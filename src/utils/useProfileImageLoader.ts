@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getProfileImageUrl } from './userCardUtils.ts';
+import { getProfileImageUrl } from './userUtils.ts';
 
 export const useProfileImageLoader = (userId: string) => {
     const [imageTimestamp, setImageTimestamp] = useState(Date.now());

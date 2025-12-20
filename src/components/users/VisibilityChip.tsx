@@ -1,6 +1,6 @@
 import { Chip, Box } from '@mui/material';
 import { Visibility as VisibilityIcon } from '@mui/icons-material';
-import { getVisibilityInfo } from '../../utils/userCardUtils';
+import { getVisibilityInfo } from '../../utils/userUtils.ts';
 
 interface VisibilityChipProps {
     visibility: string;

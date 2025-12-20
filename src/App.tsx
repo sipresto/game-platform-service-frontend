@@ -12,10 +12,10 @@ import {ProfileEditPage} from "./pages/ProfileEditPage.tsx";
 import {GamePage} from "./pages/GamePage.tsx";
 import {UsersPage} from "./pages/UsersPage.tsx";
 import {PurchasePage} from "./pages/PurchasePage.tsx";
-
 import {SessionsPage} from "./pages/SessionsPage.tsx";
 import {LobbyRoomPage} from "./pages/LobbyRoomPage.tsx";
 import {PerksShopPage} from "./pages/PerkPage.tsx";
+import {FriendsPage} from "./pages/FriendsPage.tsx";
 const queryClient = new QueryClient()
 
 function App() {
@@ -40,6 +40,7 @@ function App() {
                             <Route path="/profile/:keycloakId" element={<ProfilePage />} />
                             <Route path="/profile/edit" element={<ProfileEditPage />} />
                             <Route path="/users" element={<UsersPage />} />
+                            <Route path="/friends" element={<FriendsPage />} />
                             <Route path="/purchase/:gameId" element={<PurchasePage />} />
                             <Route path="/perks" element={<PerksShopPage />} />
                         </Route>

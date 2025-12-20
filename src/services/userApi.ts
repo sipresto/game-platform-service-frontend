@@ -61,3 +61,34 @@ export async function removeProfileImage(): Promise<void> {
         throw new Error(`Failed to remove profile image: ${axiosError.response?.statusText || axiosError.message}`);
     }
 }
+
+export async function sendFriendRequest(
+    receiverId: string,
+): Promise<void> {
+    try {
+        await apiClient.post(
+            `${BACKEND_URL}/user/${receiverId}/send-friend-request`
+        );
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        throw new Error(`Failed to send friend request: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
+
+export async function acceptFriendRequest(senderId: string): Promise<void> {
+    try {
+        await apiClient.put(`${BACKEND_URL}/user/${senderId}/friend-request/accept`);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        throw new Error(`Failed to accept friend request: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
+
+export async function rejectFriendRequest(senderId: string): Promise<void> {
+    try {
+        await apiClient.put(`${BACKEND_URL}/user/${senderId}/friend-request/reject`);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        throw new Error(`Failed to reject friend request: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
