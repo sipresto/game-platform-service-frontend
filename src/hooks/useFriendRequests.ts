@@ -9,7 +9,6 @@ export function useSendFriendRequest() {
         mutationFn: ({ receiverId }: { receiverId: string; senderId: string }) =>
             sendFriendRequest(receiverId),
         onSuccess: () => {
-            // Invalidate to refresh with updated outgoingFriendRequests
             queryClient.invalidateQueries({ queryKey: ['userProfile'] });
             queryClient.invalidateQueries({ queryKey: ['publicUsers'] });
             queryClient.invalidateQueries({ queryKey: ['friends'] });
@@ -67,12 +66,10 @@ export function useFriendshipStatus(targetUserId: string) {
 
     const isFriend = profile.friends?.some(friendId => friendId === targetUserId) ?? false;
 
-    // Check if target user sent a request to current user
     const hasIncomingRequest = profile.incomingFriendRequests?.some(
         request => request.senderId === targetUserId
     ) ?? false;
 
-    // Check if current user sent a request to target user
     const hasOutgoingRequest = profile.outgoingFriendRequests?.some(
         request => request.receiverId === targetUserId
     ) ?? false;
