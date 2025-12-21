@@ -131,6 +131,7 @@ export function MainLayout() {
         { text: 'Profile', path: `/profile/${keycloakId}`, icon: <Person /> },
         { text: 'Friends', path: '/friends', icon: <Group /> },
         { text: 'Users', path: '/users', icon: <Diversity3 /> },
+        { text: 'Perks', path: '/perks', icon: <EmojiEvents /> },
         { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
     ];
 

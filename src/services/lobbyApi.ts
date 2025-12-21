@@ -56,7 +56,7 @@ export async function leaveLobby(
 export async function startGame(
     lobbyId: string,
     request: StartGameRequest
-): Promise<String> {
+): Promise<string> {
     const { data } = await apiClient.post<GameUrlResponse>(
         `${BACKEND_URL}/lobbies/${lobbyId}/start`,
         request

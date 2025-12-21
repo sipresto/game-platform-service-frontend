@@ -3,33 +3,30 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Alert, Box, Button, CircularProgress, Container, Typography } from '@mui/material';
 import { LibraryGameList } from "../components/GameList";
 import { GameSearch } from "../components/Searchbar.tsx";
+import {useState} from 'react';
+import {Box, Paper, Typography} from '@mui/material';
+import {GameList} from "../components/GameList";
+import type {GameFilterRequest} from "../model/gameRequest";
+import {GameSearch} from "../components/Searchbar.tsx";
 
 export function LibraryPage() {
     const [searchTerm, setSearchTerm] = useState('');
 
     return (
-        <Container maxWidth="xl" sx={{ p: 0 }}>
-            <Box
-                sx={{
-                    mx: 'auto',
-                    px: 2,
-                    width: '100%',
-                    maxWidth: 1200,
-                    overflowX: 'hidden',
-                }}
-            >
-                <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3 }}>
+        <Box sx={{ width: '100%', p: { xs: 1, sm: 2, md: 3 } }}>
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="h4" fontWeight={600} gutterBottom>
                     Library
                 </Typography>
-
-                <Box sx={{ display: "flex", gap: 2, mb: 3, alignItems: "center" }}>
-                    <Box sx={{ flexGrow: 1 }}>
-                        <GameSearch
-                            searchTerm={searchTerm}
-                            onSearchTermChange={setSearchTerm}
-                        />
-                    </Box>
+            </Box>
+            <Paper sx={{ p: 3, mb: 3, borderRadius: 2 }}>
+                <Box sx={{ flexGrow: 1 }}>
+                    <GameSearch
+                        searchTerm={searchTerm}
+                        onSearchTermChange={setSearchTerm}
+                    />
                 </Box>
+                </Paper>
 
                 <ErrorBoundary
                     fallbackRender={({ error, resetErrorBoundary }) => (
