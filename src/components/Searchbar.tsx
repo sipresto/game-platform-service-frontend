@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, InputAdornment, Box } from '@mui/material';
+import { TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 interface GameSearchProps {
@@ -13,23 +13,22 @@ export function GameSearch({ searchTerm, onSearchTermChange }: GameSearchProps) 
     };
 
     return (
-        <Box sx={{ mb: 4 }}>
-            <TextField
-                fullWidth
-                label="Search for games by name"
-                variant="outlined"
-                value={searchTerm}
-                onChange={handleChange}
-                slotProps={{
-                    input: {
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
-                    },
-                }}
-            />
-        </Box>
+        <TextField
+            fullWidth
+            size="small"
+            label="Search for games by name"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleChange}
+            slotProps={{
+                input: {
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    ),
+                },
+            }}
+        />
     );
 }

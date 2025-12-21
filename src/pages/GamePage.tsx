@@ -58,7 +58,7 @@ export function GamePage() {
                 </Typography>
 
                 <Grid container spacing={4}>
-                    <Grid size={{ xs: 12, md: 7 }}>
+                    <Grid size={{ xs: 12, md: 7}}>
                         <CardMedia
                             component="img"
                             image={
