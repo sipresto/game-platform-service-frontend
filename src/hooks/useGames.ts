@@ -1,45 +1,33 @@
-import {useMemo} from 'react';
-import {useQuery} from '@tanstack/react-query';
-import {fetchGames, filterGames, getGameById} from '../services/gameApi.ts';
-import type {Game} from '../model/game.ts';
-import type {GameFilterRequest} from '../model/gameRequest.ts';
+import { useMemo } from 'react';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { getGameById, getGames } from '../services/gameApi.ts';
+import type { Game } from '../model/game.ts';
+import type { GameFilterRequest } from '../model/gameRequest.ts';
 
-export function useFilteredStoreGames(
-    searchTerm: string,
-    activeFilters: GameFilterRequest
+export function useFilteredGames(
+    filters: GameFilterRequest,
+    searchText: string
 ) {
-    const isFilterEmpty = useMemo(() => {
-        return !activeFilters.minPrice &&
-            !activeFilters.maxPrice &&
-            (!activeFilters.categories || activeFilters.categories.length === 0);
-    }, [activeFilters]);
+    const queryKey = filters
+        ? ['games', filters]
+        : ['games'];
 
-    const {
-        data: games = [],
-        isLoading: loading,
-        error,
-        refetch: refresh,
-    } = useQuery<Game[], Error>({
-        queryKey: ['games', isFilterEmpty ? 'all' : activeFilters],
-        queryFn: () => isFilterEmpty ? fetchGames() : filterGames(activeFilters),
-        enabled: true,
-    });
+    const { data: games } = useSuspenseQuery<Game[]>({
+        queryKey: queryKey,
+        queryFn: () => getGames(filters ?? null),
+    })
 
     const filteredGames = useMemo(() => {
-        if (!searchTerm) return games;
+        if (!searchText) return games;
 
-        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        const lowerCaseSearchTerm = searchText.toLowerCase();
+
         return games.filter(game =>
             game.name.toLowerCase().includes(lowerCaseSearchTerm)
         );
-    }, [games, searchTerm]);
+    }, [games, searchText]);
 
-    return {
-        games: filteredGames,
-        loading,
-        error: error ? error.message : null,
-        refresh,
-    };
+    return { games: filteredGames };
 }
 
 export function useGameDetails(gameId: string | undefined) {
@@ -63,15 +51,9 @@ export function useGameDetails(gameId: string | undefined) {
 }
 
 export function useAllGames() {
-    const {
-        data: games = [],
-        isLoading: loading,
-        error,
-        refetch: refresh,
-    } = useQuery<Game[], Error>({
-        queryKey: ['games', 'all'],
-        queryFn: fetchGames,
-        enabled: true,
+    const { data: games = [] } = useQuery<Game[], Error>({
+        queryKey: ['games'],
+        queryFn: () => getGames(null),
         staleTime: 5 * 60 * 1000,
     });
 
@@ -85,11 +67,5 @@ export function useAllGames() {
         return map;
     }, [games]);
 
-    return {
-        games,
-        gameNamesMap,
-        loading,
-        error: error ? error.message : null,
-        refresh,
-    };
+    return { games, gameNamesMap };
 }

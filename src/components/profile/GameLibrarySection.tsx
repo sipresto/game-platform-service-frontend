@@ -1,4 +1,4 @@
-import { Paper, Box, Typography, Chip, Grid, Skeleton } from '@mui/material';
+import { Box, Chip, Grid, Paper, Typography } from '@mui/material';
 import { Games as GamesIcon } from '@mui/icons-material';
 import type { Game } from '../../model/game';
 import { ProfileGameCard } from './ProfileGameCard';
@@ -6,11 +6,10 @@ import { EmptyGameLibrary } from './EmptyGameLibrary';
 
 interface GameLibrarySectionProps {
     games: Game[];
-    loading: boolean;
     isOwnProfile: boolean;
 }
 
-export function GameLibrarySection({ games, loading, isOwnProfile }: GameLibrarySectionProps) {
+export function GameLibrarySection({ games, isOwnProfile }: GameLibrarySectionProps) {
     return (
         <Paper elevation={1} sx={{ p: 3, borderRadius: 2, flexGrow: 1 }}>
             <Box
@@ -32,15 +31,7 @@ export function GameLibrarySection({ games, loading, isOwnProfile }: GameLibrary
                 </Box>
                 <Chip label={`${games.length} ${games.length === 1 ? 'game' : 'games'}`} color="primary" />
             </Box>
-            {loading ? (
-                <Grid container spacing={2}>
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <Grid key={i} size={{ xs: 6, sm: 4, md: 4, lg: 3 }}>
-                            <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 1 }} />
-                        </Grid>
-                    ))}
-                </Grid>
-            ) : games.length > 0 ? (
+            {games.length > 0 ? (
                 <Grid container spacing={2}>
                     {games.map((game) => (
                         <Grid key={game.gameId} size={{ xs: 6, sm: 4, md: 4, lg: 3 }}>
