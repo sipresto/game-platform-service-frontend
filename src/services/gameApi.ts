@@ -29,7 +29,7 @@ export const fetchGames = async (): Promise<Game[]> => {
     }
 };
 
-export const filterGames = async (
+export const getGames = async (
     filter: GameFilterRequest
 ): Promise<Game[]> => {
     try {

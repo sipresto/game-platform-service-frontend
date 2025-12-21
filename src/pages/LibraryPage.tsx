@@ -1,12 +1,11 @@
-import {useState} from 'react';
-import {Box, Container, Typography} from '@mui/material';
-import {GameList} from "../components/GameList";
-import type {GameFilterRequest} from "../model/gameRequest";
-import {GameSearch} from "../components/Searchbar.tsx";
+import { Suspense, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Alert, Box, Button, CircularProgress, Container, Typography } from '@mui/material';
+import { LibraryGameList } from "../components/GameList";
+import { GameSearch } from "../components/Searchbar.tsx";
 
 export function LibraryPage() {
     const [searchTerm, setSearchTerm] = useState('');
-    const [filters] = useState<GameFilterRequest>({});
 
     return (
         <Container maxWidth="xl" sx={{ p: 0 }}>
@@ -32,7 +31,30 @@ export function LibraryPage() {
                     </Box>
                 </Box>
 
-                <GameList searchTerm={searchTerm} filters={filters} isLibrary={true} />
+                <ErrorBoundary
+                    fallbackRender={({ error, resetErrorBoundary }) => (
+                        <Box sx={{ mt: 4 }}>
+                            <Alert
+                                severity="error"
+                                action={
+                                    <Button color="inherit" size="small" onClick={resetErrorBoundary}>
+                                        Retry
+                                    </Button>
+                                }
+                            >
+                                {error.message}
+                            </Alert>
+                        </Box>
+                    )}
+                >
+                    <Suspense fallback={
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+                            <CircularProgress />
+                        </Box>
+                    }>
+                        <LibraryGameList searchText={searchTerm} />
+                    </Suspense>
+                </ErrorBoundary>
             </Box>
         </Container>
     );

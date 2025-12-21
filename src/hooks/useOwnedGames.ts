@@ -1,54 +1,41 @@
-import {useQuery} from "@tanstack/react-query";
-import {getOwnedGamesForUser} from "../services/gameApi.ts";
-import type {Game} from "../model/game.ts";
-import {useCurrentUser} from "./useUserProfile.ts";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getOwnedGamesForUser } from "../services/gameApi.ts";
+import type { Game } from "../model/game.ts";
+import { useCurrentUser } from "./useUserProfile.ts";
+import { useMemo } from "react";
 
-export function useOwnedGames(searchTerm: string) {
-    const { keycloakId, isAuthenticated } = useCurrentUser();
+export function useOwnedGames(searchText: string) {
+    const { keycloakId } = useCurrentUser();
 
-    const {
-        data: ownedGames = [],
-        isLoading: loading,
-        error,
-        refetch: refresh,
-    } = useQuery<Game[], Error>({
-        queryKey: ['ownedGames', keycloakId],
-        queryFn: () => getOwnedGamesForUser(keycloakId),
-        enabled: isAuthenticated && !!keycloakId,
-    });
+    if (!keycloakId) {
+        return { games: [] };
+    }
 
-    const filteredGames = ownedGames.filter(game =>
-        game.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    return {
-        games: filteredGames,
-        loading,
-        error: error ? error.message : null,
-        refresh,
-    };
+    return useOwnedGamesForUser(keycloakId, searchText);
 }
 
-export function useOwnedGamesForUser(userId: string, searchTerm: string = "") {
+export function useOwnedGamesForUser(userId: string, searchText: string) {
     const { isAuthenticated } = useCurrentUser();
 
-    const {
-        data: ownedGames = [],
-        isLoading: loading,
-        error,
-    } = useQuery<Game[], Error>({
+    if (!isAuthenticated) {
+        return { games: [] };
+    }
+
+    const { data: ownedGames } = useSuspenseQuery<Game[]>({
         queryKey: ['ownedGames', userId],
         queryFn: () => getOwnedGamesForUser(userId),
-        enabled: isAuthenticated && !!userId,
-    });
+    })
 
-    const filteredGames = ownedGames.filter(game =>
-        game.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredGames = useMemo(() => {
+        if (!searchText) return ownedGames;
 
-    return {
-        games: filteredGames,
-        loading,
-        error: error ? error.message : null,
-    };
+        const lowerCaseSearchTerm = searchText.toLowerCase();
+
+        return ownedGames.filter(game =>
+            game.name.toLowerCase().includes(lowerCaseSearchTerm)
+        );
+    }, [ownedGames, searchText]);
+
+
+    return { games: filteredGames };
 }

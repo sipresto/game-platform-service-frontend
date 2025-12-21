@@ -1,9 +1,10 @@
-import {useState} from 'react';
-import {Box, Container, Typography} from '@mui/material';
-import {GameSearch} from "../components/Searchbar";
-import {GameList} from "../components/GameList";
-import type {GameFilterRequest} from "../model/gameRequest";
-import {GameFilter} from "../components/GameFilter.tsx";
+import { Suspense, useState } from 'react';
+import { Alert, Box, Button, CircularProgress, Container, Typography } from '@mui/material';
+import { GameSearch } from "../components/Searchbar";
+import { StoreGameList } from "../components/GameList";
+import type { GameFilterRequest } from "../model/gameRequest";
+import { GameFilter } from "../components/GameFilter.tsx";
+import { ErrorBoundary } from "react-error-boundary";
 
 export function StorePage() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -38,7 +39,30 @@ export function StorePage() {
                     />
                 </Box>
 
-                <GameList searchTerm={searchTerm} filters={filters} />
+                <ErrorBoundary
+                    fallbackRender={({ error, resetErrorBoundary }) => (
+                        <Box sx={{ mt: 4 }}>
+                            <Alert
+                                severity="error"
+                                action={
+                                    <Button color="inherit" size="small" onClick={resetErrorBoundary}>
+                                        Retry
+                                    </Button>
+                                }
+                            >
+                                {error.message}
+                            </Alert>
+                        </Box>
+                    )}
+                >
+                    <Suspense fallback={
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+                            <CircularProgress />
+                        </Box>
+                    }>
+                        <StoreGameList searchText={searchTerm} filters={filters} />
+                    </Suspense>
+                </ErrorBoundary>
             </Box>
         </Container>
     );

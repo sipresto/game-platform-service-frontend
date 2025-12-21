@@ -1,46 +1,39 @@
 import {useMemo} from 'react';
-import {useQuery} from '@tanstack/react-query';
-import {fetchGames, filterGames, getGameById} from '../services/gameApi.ts';
+import {useQuery, useSuspenseQuery} from '@tanstack/react-query';
+import {fetchGames, getGames, getGameById} from '../services/gameApi.ts';
 import type {Game} from '../model/game.ts';
 import type {GameFilterRequest} from '../model/gameRequest.ts';
 
-export function useFilteredStoreGames(
-    searchTerm: string,
-    activeFilters: GameFilterRequest
+export function useFilteredGames(
+    serverFilters: GameFilterRequest,
+    searchText: string
 ) {
-    const isFilterEmpty = useMemo(() => {
-        return !activeFilters.minPrice &&
-            !activeFilters.maxPrice &&
-            (!activeFilters.categories || activeFilters.categories.length === 0);
-    }, [activeFilters]);
-
-    const {
-        data: games = [],
-        isLoading: loading,
-        error,
-        refetch: refresh,
-    } = useQuery<Game[], Error>({
-        queryKey: ['games', isFilterEmpty ? 'all' : activeFilters],
-        queryFn: () => isFilterEmpty ? fetchGames() : filterGames(activeFilters),
-        enabled: true,
-    });
+    const { games } = useGames(serverFilters);
 
     const filteredGames = useMemo(() => {
-        if (!searchTerm) return games;
+        if (!searchText) return games;
 
-        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        const lowerCaseSearchTerm = searchText.toLowerCase();
+
         return games.filter(game =>
             game.name.toLowerCase().includes(lowerCaseSearchTerm)
         );
-    }, [games, searchTerm]);
+    }, [games, searchText]);
 
-    return {
-        games: filteredGames,
-        loading,
-        error: error ? error.message : null,
-        refresh,
-    };
+    return { games: filteredGames };
 }
+
+function useGames(filters: GameFilterRequest | null) {
+    const { data } = useSuspenseQuery<Game[]>({
+        queryKey: ['games', filters ?? {}],
+        queryFn: () => getGames(filters ?? {}),
+    })
+    return { games: data }
+}
+
+
+
+
 
 export function useGameDetails(gameId: string | undefined) {
     const {
