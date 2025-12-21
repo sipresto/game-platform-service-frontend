@@ -12,7 +12,6 @@ import { getInitials } from "../../utils/imageUtils.ts";
 import { useProfileImageManager } from '../../hooks/useProfileImageManager';
 
 export const ProfileImageUpload = ({
-                                       userId,
                                        displayName = 'User',
                                        size = 120
                                    }: ProfileImageUploadProps) => {
@@ -34,7 +33,7 @@ export const ProfileImageUpload = ({
         handleUploadClick,
         handleClearValidationError,
         handleClearUploadStatus,
-    } = useProfileImageManager({ userId });
+    } = useProfileImageManager();
 
     return (
         <>

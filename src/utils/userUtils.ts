@@ -2,7 +2,7 @@ export const getProfileImageUrl = (userId: string, timestamp?: number): string |
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL as string;
     if (!BACKEND_URL || !userId) return null;
 
-    const url = `${BACKEND_URL}/${userId}/profile-image`;
+    const url = `${BACKEND_URL}/users/${userId}/profile-image`;
     return timestamp ? `${url}?t=${timestamp}` : url;
 };
 

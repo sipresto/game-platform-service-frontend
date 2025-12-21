@@ -2,11 +2,8 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useUserProfile, useCurrentUser } from './useUserProfile';
 import { useProfileImage } from './useProfileImage';
 import {ERROR_MESSAGE_DURATION, SUCCESS_MESSAGE_DURATION, type UploadStatus} from "../utils/types.ts";
-import {getProfileImageUrl, validateImageFile} from "../utils/imageUtils.ts";
-
-interface UseProfileImageManagerProps {
-    userId: string;
-}
+import {validateImageFile} from "../utils/imageUtils.ts";
+import {useProfileImageLoader} from "../utils/useProfileImageLoader.ts";
 
 interface UseProfileImageManagerReturn {
     uploadStatus: UploadStatus;
@@ -32,10 +29,7 @@ interface UseProfileImageManagerReturn {
     uploadError: Error | null;
 }
 
-export const useProfileImageManager = ({
-                                           userId
-                                       }: UseProfileImageManagerProps): UseProfileImageManagerReturn => {
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+export const useProfileImageManager = (): UseProfileImageManagerReturn => {
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -50,9 +44,8 @@ export const useProfileImageManager = ({
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
 
     const isOwnProfile = userProfile?.keycloakId === currentUserKeycloakId;
-    const profileImageUrl = BACKEND_URL
-        ? getProfileImageUrl(userId, BACKEND_URL, imageTimestamp)
-        : null;
+    const profileImageUrl = useProfileImageLoader(userProfile?.id || '').profileImageUrl;
+
 
     const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
