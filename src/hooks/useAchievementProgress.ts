@@ -1,24 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
-import { useCurrentUser } from "./useUserProfile.ts";
-import {getAchievementProgressByUserId} from "../services/achievementProgressApi.ts";
-import type {AchievementProgress} from "../model/achievementProgress.ts";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getAchievementProgressByUserId } from "../services/achievementProgressApi.ts";
+import type { AchievementProgress } from "../model/achievementProgress.ts";
 
 export function useAchievementsForUser(userId: string) {
-    const { isAuthenticated } = useCurrentUser();
+    if (!userId) {
+        throw new Error("userId required");
+    }
 
-    const {
-        data: achievements = [],
-        isLoading: loading,
-        error
-    } = useQuery<AchievementProgress[], Error>({
+    const { data } = useSuspenseQuery<AchievementProgress[]>({
         queryKey: ['achievements', userId],
         queryFn: () => getAchievementProgressByUserId(userId),
-        enabled: isAuthenticated && !!userId,
     });
 
-    return {
-        achievements,
-        loading,
-        error: error ? error.message : null
-    };
+    return { achievements: data };
 }

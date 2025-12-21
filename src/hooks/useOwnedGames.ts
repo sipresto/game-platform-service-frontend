@@ -15,12 +15,6 @@ export function useOwnedGames(searchText: string) {
 }
 
 export function useOwnedGamesForUser(userId: string, searchText: string) {
-    const { isAuthenticated } = useCurrentUser();
-
-    if (!isAuthenticated) {
-        return { games: [] };
-    }
-
     const { data: ownedGames } = useSuspenseQuery<Game[]>({
         queryKey: ['ownedGames', userId],
         queryFn: () => getOwnedGamesForUser(userId),
