@@ -12,9 +12,7 @@ export async function getSessionsByUserId(userId: string): Promise<Session[]> {
         return data;
     } catch (error) {
         const axiosError = error as AxiosError;
-        if (axiosError.response?.status === 404) {
-            return [];
-        }
+
         throw new Error(`Failed to fetch sessions: ${axiosError.response?.statusText || axiosError.message}`);
     }
 }

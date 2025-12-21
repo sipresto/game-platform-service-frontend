@@ -14,36 +14,20 @@ function extractError(error: unknown): { status?: number; statusText?: string; m
     };
 }
 
-export const fetchGames = async (): Promise<Game[]> => {
-    try {
-        const response = await apiClient.get<Game[]>(
-            `${BACKEND_URL}/games`
-        );
-        return response.data;
-    } catch (error) {
-        const err = extractError(error);
-        if (err.status === 404) {
-            return [];
-        }
-        throw new Error(`Failed to fetch games: ${err.statusText || err.message}`);
-    }
-};
-
 export const getGames = async (
-    filter: GameFilterRequest
+    filter: GameFilterRequest | null
 ): Promise<Game[]> => {
     try {
         const response = await apiClient.post<Game[]>(
             `${BACKEND_URL}/games/filter`,
-            filter
+            filter ?? {}
         );
+
         return response.data;
     } catch (error) {
         const err = extractError(error);
-        if (err.status === 404) {
-            return [];
-        }
-        throw new Error(`Failed to filter games: ${err.statusText || err.message}`);
+
+        throw new Error(`Failed to fetch games: ${err.statusText || err.message}`);
     }
 };
 
@@ -52,12 +36,11 @@ export const getGameById = async (gameId: string): Promise<Game> => {
         const response = await apiClient.get<Game>(
             `${BACKEND_URL}/games/${gameId}`
         );
+
         return response.data;
     } catch (error) {
         const err = extractError(error);
-        if (err.status === 401) {
-            throw new Error('Authentication required to access game details');
-        }
+
         throw new Error(`Failed to fetch game: ${err.statusText || err.message}`);
     }
 };
@@ -67,12 +50,11 @@ export async function getOwnedGamesForUser(userId: string): Promise<Game[]> {
         const { data } = await apiClient.get<Game[]>(
             `${BACKEND_URL}/games/user/${userId}`
         );
+
         return data;
     } catch (error) {
         const axiosError = error as AxiosError;
-        if (axiosError.response?.status === 404) {
-            return [];
-        }
+
         throw new Error(`Failed to fetch owned games: ${axiosError.response?.statusText || axiosError.message}`);
     }
 }

@@ -1,14 +1,21 @@
-import {useMemo} from 'react';
-import {useQuery, useSuspenseQuery} from '@tanstack/react-query';
-import {fetchGames, getGames, getGameById} from '../services/gameApi.ts';
-import type {Game} from '../model/game.ts';
-import type {GameFilterRequest} from '../model/gameRequest.ts';
+import { useMemo } from 'react';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { getGameById, getGames } from '../services/gameApi.ts';
+import type { Game } from '../model/game.ts';
+import type { GameFilterRequest } from '../model/gameRequest.ts';
 
 export function useFilteredGames(
-    serverFilters: GameFilterRequest,
+    filters: GameFilterRequest,
     searchText: string
 ) {
-    const { games } = useGames(serverFilters);
+    const queryKey = filters
+        ? ['games', filters]
+        : ['games'];
+
+    const { data: games } = useSuspenseQuery<Game[]>({
+        queryKey: queryKey,
+        queryFn: () => getGames(filters ?? null),
+    })
 
     const filteredGames = useMemo(() => {
         if (!searchText) return games;
@@ -22,18 +29,6 @@ export function useFilteredGames(
 
     return { games: filteredGames };
 }
-
-function useGames(filters: GameFilterRequest | null) {
-    const { data } = useSuspenseQuery<Game[]>({
-        queryKey: ['games', filters ?? {}],
-        queryFn: () => getGames(filters ?? {}),
-    })
-    return { games: data }
-}
-
-
-
-
 
 export function useGameDetails(gameId: string | undefined) {
     const {
@@ -56,15 +51,9 @@ export function useGameDetails(gameId: string | undefined) {
 }
 
 export function useAllGames() {
-    const {
-        data: games = [],
-        isLoading: loading,
-        error,
-        refetch: refresh,
-    } = useQuery<Game[], Error>({
-        queryKey: ['games', 'all'],
-        queryFn: fetchGames,
-        enabled: true,
+    const { data: games = [] } = useQuery<Game[], Error>({
+        queryKey: ['games'],
+        queryFn: () => getGames(null),
         staleTime: 5 * 60 * 1000,
     });
 
@@ -78,11 +67,5 @@ export function useAllGames() {
         return map;
     }, [games]);
 
-    return {
-        games,
-        gameNamesMap,
-        loading,
-        error: error ? error.message : null,
-        refresh,
-    };
+    return { games, gameNamesMap };
 }
