@@ -1,13 +1,8 @@
 import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Alert, Box, Button, CircularProgress, Container, Typography } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Paper, Typography } from '@mui/material';
 import { LibraryGameList } from "../components/GameList";
 import { GameSearch } from "../components/Searchbar.tsx";
-import {useState} from 'react';
-import {Box, Paper, Typography} from '@mui/material';
-import {GameList} from "../components/GameList";
-import type {GameFilterRequest} from "../model/gameRequest";
-import {GameSearch} from "../components/Searchbar.tsx";
 
 export function LibraryPage() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -26,33 +21,32 @@ export function LibraryPage() {
                         onSearchTermChange={setSearchTerm}
                     />
                 </Box>
-                </Paper>
+            </Paper>
 
-                <ErrorBoundary
-                    fallbackRender={({ error, resetErrorBoundary }) => (
-                        <Box sx={{ mt: 4 }}>
-                            <Alert
-                                severity="error"
-                                action={
-                                    <Button color="inherit" size="small" onClick={resetErrorBoundary}>
-                                        Retry
-                                    </Button>
-                                }
-                            >
-                                {error.message}
-                            </Alert>
-                        </Box>
-                    )}
-                >
-                    <Suspense fallback={
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-                            <CircularProgress />
-                        </Box>
-                    }>
-                        <LibraryGameList searchText={searchTerm} />
-                    </Suspense>
-                </ErrorBoundary>
-            </Box>
-        </Container>
+            <ErrorBoundary
+                fallbackRender={({ error, resetErrorBoundary }) => (
+                    <Box sx={{ mt: 4 }}>
+                        <Alert
+                            severity="error"
+                            action={
+                            <Button color="inherit" size="small" onClick={resetErrorBoundary}>
+                                Retry
+                            </Button>
+                        }
+                        >
+                            {error.message}
+                        </Alert>
+                    </Box>
+                )}
+            >
+                <Suspense fallback={
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+                        <CircularProgress />
+                    </Box>
+                }>
+                    <LibraryGameList searchText={searchTerm} />
+                </Suspense>
+            </ErrorBoundary>
+        </Box>
     );
 }
