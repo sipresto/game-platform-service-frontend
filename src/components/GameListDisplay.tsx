@@ -35,7 +35,7 @@ export function GameListDisplay({ games, searchText, filters, isLibrary = false 
     return (
         <Grid container spacing={2} sx={{ overflowX: 'hidden' }}>
             {games.map((game: Game) => (
-                <Grid key={game.gameId} size={{xs: 12, md: 6, lg: 4}}>
+                <Grid key={game.gameId} size={{xs: 12, md: 6, lg: 3}}>
                     <GameCard game={game} isLibrary={isLibrary} />
                 </Grid>
             ))}
