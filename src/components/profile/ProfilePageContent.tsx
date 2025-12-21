@@ -6,6 +6,7 @@ import { Alert, Container, Grid, Typography } from "@mui/material";
 import { ProfileHeader } from "./ProfileHeader.tsx";
 import { GameLibrarySection } from "./GameLibrarySection.tsx";
 import { AchievementsSection } from "./AchievementsSection.tsx";
+import { ProfileActions } from "./ProfileActions.tsx";
 
 export function ProfilePageContent({ keycloakId }: { keycloakId: string }) {
     const { keycloakId: currentUserKeycloakId } = useCurrentUser();
@@ -55,6 +56,7 @@ export function ProfilePageContent({ keycloakId }: { keycloakId: string }) {
             <Grid container spacing={3} sx={{ width: '100%' }}>
                 <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <ProfileHeader user={user} isOwnProfile={isOwnProfile} />
+                    <ProfileActions user={user} isOwnProfile={isOwnProfile} />
                 </Grid>
                 <Grid size={{ xs: 12, md: 8 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                     <GameLibrarySection games={games} isOwnProfile={isOwnProfile} />
