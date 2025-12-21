@@ -10,6 +10,15 @@ export interface UserProfile {
         displayName?: string;
         bio?: string;
     };
+    incomingFriendRequests: {
+        senderId: string;
+        createdAt: string;
+    }[];
+    friends: string[];
+    outgoingFriendRequests: {
+        receiverId: string;
+        createdAt: string;
+    }[];
 }
 
 export interface ProfileUpdateData {

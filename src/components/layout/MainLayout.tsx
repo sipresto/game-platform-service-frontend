@@ -21,7 +21,8 @@ import {
     Notifications,
     PersonAdd,
     EmojiEvents,
-    Autorenew
+    Autorenew,
+    Group
 } from '@mui/icons-material';
 
 import SecurityContext from '../../context/SecurityContext';
@@ -128,6 +129,7 @@ export function MainLayout() {
         { text: 'Library', path: '/library', icon: <VerticalSplit /> },
         { text: 'Sessions', path: '/sessions', icon: <Gamepad /> },
         { text: 'Profile', path: `/profile/${keycloakId}`, icon: <Person /> },
+        { text: 'Friends', path: '/friends', icon: <Group /> },
         { text: 'Users', path: '/users', icon: <Diversity3 /> },
         { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
     ];

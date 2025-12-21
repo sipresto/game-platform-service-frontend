@@ -1,5 +1,5 @@
 import { Avatar, Box, CircularProgress } from '@mui/material';
-import { getInitials } from '../../utils/userCardUtils';
+import { getInitials } from '../../utils/userUtils.ts';
 
 interface UserAvatarProps {
     userId: string;
