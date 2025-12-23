@@ -20,7 +20,6 @@ export function MessageList({ messages, participants }: Props) {
         return participants.find(p => p.id === msg.senderId)?.username ?? 'User';
     };
 
-    // 🔽 Auto scroll
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
