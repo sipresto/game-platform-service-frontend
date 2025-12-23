@@ -15,7 +15,6 @@ import SecurityContext from '../../context/SecurityContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useNotifications } from "../../hooks/useNotifications.ts";
 import { markNotificationRead } from "../../services/notificationApi.ts";
-import { ChatsButton } from "./chat/ChatsButton.tsx";
 
 const DRAWER_WIDTH = 240;
 
@@ -118,6 +117,7 @@ export function MainLayout() {
         { text: 'Profile', path: `/profile/${keycloakId}`, icon: <Person /> },
         { text: 'Friends', path: '/friends', icon: <Group /> },
         { text: 'Users', path: '/users', icon: <Diversity3 /> },
+        { text: 'Chats', path: '/chat', icon: <ChatBubble /> },
         { text: 'Perks', path: '/perks', icon: <EmojiEvents /> },
         { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
     ];
@@ -426,8 +426,6 @@ export function MainLayout() {
                 }}
             >
                 <Outlet />
-
-                {isAuthenticated() && <ChatsButton />}
             </Box>
         </Box>
     );

@@ -37,7 +37,6 @@ export function ChatPage() {
                             <CircularProgress />
                         </Box>
                     }>
-                        {/* 3. Ensure ChatScreen takes remaining height explicitly */}
                         <Box sx={{ height: '100%', minHeight: 0, flex: 1 }}>
                             <ChatScreen />
                         </Box>

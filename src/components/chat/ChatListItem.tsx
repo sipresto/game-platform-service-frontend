@@ -1,8 +1,9 @@
 import { Box, ListItemButton, Typography } from '@mui/material';
 import { formatDistanceToNowStrict } from 'date-fns';
+import type { ChatList } from "../../model/chat.ts";
 
 type Props = {
-    chat: any;
+    chat: ChatList;
     onClick: () => void;
     selected?: boolean;
 };

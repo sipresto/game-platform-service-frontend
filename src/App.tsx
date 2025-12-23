@@ -44,7 +44,7 @@ function App() {
                             <Route path="/friends" element={<FriendsPage />} />
                             <Route path="/purchase/:gameId" element={<PurchasePage />} />
                             <Route path="/perks" element={<PerksShopPage />} />
-                            <Route path="/chat/:id" element={<ChatPage />} />
+                            <Route path="/chat/:id?" element={<ChatPage />} />
                         </Route>
 
                         {/* Catch all - redirect to store (public) */}
