@@ -189,7 +189,7 @@ export function MainLayout() {
     );
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
             <CssBaseline />
 
             <AppBar
@@ -420,7 +420,8 @@ export function MainLayout() {
                     p: 3,
                     mt: '64px',
                     bgcolor: '#FFFFFF',
-                    minHeight: '100vh',
+                    height: 'calc(100vh - 64px)',
+                    overflow: 'auto',
                     width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` }
                 }}
             >
