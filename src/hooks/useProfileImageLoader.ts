@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getProfileImageUrl } from './userUtils.ts';
+import { getProfileImageUrl } from '../utils/userUtils.ts';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const useProfileImageLoader = (userId: string) => {

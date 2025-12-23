@@ -29,7 +29,7 @@ import SecurityContext from '../../context/SecurityContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useNotifications } from "../../hooks/useNotifications.ts";
 import { markNotificationRead } from "../../services/notificationApi.ts";
-import {useProfileImageLoader} from "../../utils/useProfileImageLoader.ts";
+import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
 
 const DRAWER_WIDTH = 240;
 

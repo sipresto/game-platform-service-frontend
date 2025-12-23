@@ -3,7 +3,7 @@ import { useUserProfile, useCurrentUser } from './useUserProfile';
 import { useProfileImage } from './useProfileImage';
 import {ERROR_MESSAGE_DURATION, SUCCESS_MESSAGE_DURATION, type UploadStatus} from "../utils/types.ts";
 import {validateImageFile} from "../utils/imageUtils.ts";
-import {useProfileImageLoader} from "../utils/useProfileImageLoader.ts";
+import {useProfileImageLoader} from "./useProfileImageLoader.ts";
 
 interface UseProfileImageManagerReturn {
     uploadStatus: UploadStatus;

@@ -1,7 +1,7 @@
 import { Paper, Box, Avatar, Typography, Chip, Button } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router';
-import {useProfileImageLoader} from "../../utils/useProfileImageLoader.ts";
+import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
 
 interface User {
     id?: string;
