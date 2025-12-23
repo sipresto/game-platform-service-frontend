@@ -1,28 +1,14 @@
-import React, { useState, useContext } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router';
+import React, { useContext, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import {
     Box, AppBar, Toolbar, Typography, Drawer, List, ListItem,
     ListItemButton, ListItemIcon, ListItemText, IconButton, Badge,
     CssBaseline, Button, Menu, MenuItem, Avatar
 } from '@mui/material';
 import {
-    Diversity3,
-    Store,
-    Person,
-    ChatBubble,
-    VerticalSplit,
-    ArrowLeft,
-    Menu as MenuIcon,
-    Logout,
-    Login,
-    Settings,
-    Edit,
-    Gamepad,
-    Notifications,
-    PersonAdd,
-    EmojiEvents,
-    Autorenew,
-    Group
+    ArrowLeft, Autorenew, ChatBubble, Diversity3, Edit, EmojiEvents,
+    Gamepad, Group, Login, Logout, Menu as MenuIcon, Notifications,
+    Person, PersonAdd, Settings, Store, VerticalSplit
 } from '@mui/icons-material';
 
 import SecurityContext from '../../context/SecurityContext';
@@ -127,6 +113,7 @@ export function MainLayout() {
         { text: 'Profile', path: `/profile/${keycloakId}`, icon: <Person /> },
         { text: 'Friends', path: '/friends', icon: <Group /> },
         { text: 'Users', path: '/users', icon: <Diversity3 /> },
+        { text: 'Chats', path: '/chat', icon: <ChatBubble /> },
         { text: 'Perks', path: '/perks', icon: <EmojiEvents /> },
         { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
     ];
@@ -198,7 +185,7 @@ export function MainLayout() {
     );
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
             <CssBaseline />
 
             <AppBar
@@ -429,7 +416,8 @@ export function MainLayout() {
                     p: 3,
                     mt: '64px',
                     bgcolor: '#FFFFFF',
-                    minHeight: '100vh',
+                    height: 'calc(100vh - 64px)',
+                    overflow: 'auto',
                     width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` }
                 }}
             >

@@ -19,6 +19,7 @@
     "@stripe/stripe-js": "^8.5.3",
     "@tanstack/react-query": "^5.90.2",
     "axios": "^1.12.2",
+    "date-fns": "^4.1.0",
     "keycloak-js": "^26.2.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

@@ -1,6 +1,7 @@
 import { Paper, Box, Avatar, Typography, Chip, Button } from '@mui/material';
-import { Edit as EditIcon } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router';
+import { ChatBubble, Edit as EditIcon } from '@mui/icons-material';
+import { Link as RouterLink, useNavigate } from 'react-router';
+import { useCreateChat } from "../../hooks/useChats.ts";
 import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
 
 interface User {
@@ -25,8 +26,19 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
     const initial = displayName.charAt(0).toUpperCase();
     const visibilityColor =
         user.visibility === 'PUBLIC' ? 'success' : user.visibility === 'FRIENDS_ONLY' ? 'warning' : 'default';
+    const navigate = useNavigate();
+    const { createNewChat } = useCreateChat();
 
     const profileImageUrl = useProfileImageLoader(userId).profileImageUrl;
+
+    const handleStartChat = () => {
+        createNewChat(
+            { participantUserIds: [userId] },
+            {
+                onSuccess: (chat) => navigate(`/chat/${chat.id}`),
+            }
+        );
+    };
 
     return (
         <Paper elevation={2} sx={{ p: 4, borderRadius: 2, flexGrow: 1 }}>
@@ -81,6 +93,23 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
                         }}
                     >
                         Edit Profile
+                    </Button>
+                )}
+                {!isOwnProfile && (
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        startIcon={<ChatBubble />}
+                        onClick={handleStartChat}
+                        sx={{
+                            mt: 2,
+                            '&:hover': {
+                                backgroundColor: 'primary.dark',
+                                color: 'white',
+                            }
+                        }}
+                    >
+                        Send message
                     </Button>
                 )}
             </Box>
