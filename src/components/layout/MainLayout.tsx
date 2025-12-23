@@ -1,34 +1,21 @@
-import React, { useState, useContext } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router';
+import React, { useContext, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import {
     Box, AppBar, Toolbar, Typography, Drawer, List, ListItem,
     ListItemButton, ListItemIcon, ListItemText, IconButton, Badge,
     CssBaseline, Button, Menu, MenuItem, Avatar
 } from '@mui/material';
 import {
-    Diversity3,
-    Store,
-    Person,
-    ChatBubble,
-    VerticalSplit,
-    ArrowLeft,
-    Menu as MenuIcon,
-    Logout,
-    Login,
-    Settings,
-    Edit,
-    Gamepad,
-    Notifications,
-    PersonAdd,
-    EmojiEvents,
-    Autorenew,
-    Group
+    ArrowLeft, Autorenew, ChatBubble, Diversity3, Edit, EmojiEvents,
+    Gamepad, Group, Login, Logout, Menu as MenuIcon, Notifications,
+    Person, PersonAdd, Settings, Store, VerticalSplit
 } from '@mui/icons-material';
 
 import SecurityContext from '../../context/SecurityContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useNotifications } from "../../hooks/useNotifications.ts";
 import { markNotificationRead } from "../../services/notificationApi.ts";
+import { ChatsButton } from "./chat/ChatsButton.tsx";
 
 const DRAWER_WIDTH = 240;
 
@@ -438,6 +425,8 @@ export function MainLayout() {
                 }}
             >
                 <Outlet />
+
+                {isAuthenticated() && <ChatsButton />}
             </Box>
         </Box>
     );
