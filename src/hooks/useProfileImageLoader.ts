@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
-import { getProfileImageUrl } from './userUtils.ts';
+import { useState, useEffect, useCallback } from 'react';
+import { getProfileImageUrl } from '../utils/userUtils.ts';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useProfileImageLoader = (userId: string) => {
+    const queryClient = useQueryClient();
     const [imageTimestamp, setImageTimestamp] = useState(Date.now());
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
@@ -38,9 +40,35 @@ export const useProfileImageLoader = (userId: string) => {
         };
     }, [profileImageUrl]);
 
-    const refreshImage = () => {
+    useEffect(() => {
+        const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
+            if (
+                event?.type === 'updated' &&
+                event.query &&
+                event.query.queryKey.includes('userProfile')
+            ) {
+                setImageTimestamp(Date.now());
+            }
+        });
+
+        return () => {
+            unsubscribe();
+        };
+    }, [queryClient]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setImageTimestamp(Date.now());
+        }, 30000);
+
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
+
+    const refreshImage = useCallback(() => {
         setImageTimestamp(Date.now());
-    };
+    }, []);
 
     return {
         profileImageUrl,

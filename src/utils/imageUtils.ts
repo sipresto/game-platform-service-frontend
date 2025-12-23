@@ -1,10 +1,5 @@
 import {type SupportedImageType, SUPPORTED_IMAGE_TYPES, MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB, type ValidationResult } from './types';
 
-export const getProfileImageUrl = (userId: string, backendUrl: string, timestamp: number): string | null => {
-    if (!backendUrl || !userId) return null;
-    return `${backendUrl}/${userId}/profile-image?t=${timestamp}`;
-};
-
 export const validateImageFile = (file: File): ValidationResult => {
     if (!SUPPORTED_IMAGE_TYPES.includes(file.type as SupportedImageType)) {
         return {

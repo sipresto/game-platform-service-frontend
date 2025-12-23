@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, Box } from '@mui/material';
 import type { UserProfile } from '../../model/userProfile';
-import { useProfileImageLoader } from '../../utils/useProfileImageLoader';
+import { useProfileImageLoader } from '../../hooks/useProfileImageLoader.ts';
 import { useAcceptFriendRequest, useRejectFriendRequest } from '../../hooks/useFriendRequests';
 import { UserInfoSection } from './UserInfoSection';
 import { TimeChip } from './TimeChip';
