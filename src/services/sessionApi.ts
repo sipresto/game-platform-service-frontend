@@ -7,7 +7,7 @@ const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 export async function getSessionsByUserId(userId: string): Promise<Session[]> {
     try {
         const { data } = await apiClient.get<Session[]>(
-            `${BACKEND_URL}/session/${userId}`
+            `${BACKEND_URL}/sessions/user/${userId}`
         );
         return data;
     } catch (error) {

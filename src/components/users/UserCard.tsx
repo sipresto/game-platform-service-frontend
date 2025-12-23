@@ -11,7 +11,7 @@ import { UserAvatar } from './UserAvatar';
 import { UserInfoSection } from './UserInfoSection';
 import { UserBio } from './UserBio';
 import { VisibilityChip } from './VisibilityChip';
-import { useProfileImageLoader } from "../../utils/useProfileImageLoader.ts";
+import { useProfileImageLoader } from "../../hooks/useProfileImageLoader.ts";
 import {FriendRequestButton} from "../FriendRequestButton.tsx";
 
 interface UserCardProps {

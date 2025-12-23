@@ -2,6 +2,7 @@ import { Paper, Box, Avatar, Typography, Chip, Button } from '@mui/material';
 import { ChatBubble, Edit as EditIcon } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router';
 import { useCreateChat } from "../../hooks/useChats.ts";
+import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
 
 interface User {
     id?: string;
@@ -20,7 +21,6 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
-    const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
     const userId = user.id || user.keycloakId || '';
     const displayName = user.profile?.displayName || user.username;
     const initial = displayName.charAt(0).toUpperCase();
@@ -29,9 +29,7 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
     const navigate = useNavigate();
     const { createNewChat } = useCreateChat();
 
-    const profileImageUrl = userId
-        ? `${BACKEND_URL}/${userId}/profile-image`
-        : null;
+    const profileImageUrl = useProfileImageLoader(userId).profileImageUrl;
 
     const handleStartChat = () => {
         createNewChat(

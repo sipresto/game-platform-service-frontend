@@ -15,17 +15,18 @@ import SecurityContext from '../../context/SecurityContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useNotifications } from "../../hooks/useNotifications.ts";
 import { markNotificationRead } from "../../services/notificationApi.ts";
+import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
 
 const DRAWER_WIDTH = 240;
 
 export function MainLayout() {
-    const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate();
     const location = useLocation();
     const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
     const { profile: userProfile } = useUserProfile();
     const { notifications } = useNotifications();
     let unreadCount = notifications.filter(n => !n.read).length;
+    const imageUrl = useProfileImageLoader(userProfile?.id || '').profileImageUrl;
 
     const [mobileOpen, setMobileOpen] = useState(false);
     const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
@@ -99,11 +100,6 @@ export function MainLayout() {
     const displayName = userProfile?.profile?.displayName ||
         loggedInUser?.name ||
         'Gamer';
-
-    const getUserAvatarUrl = () => {
-        const userId = userProfile?.id || userProfile?.keycloakId || loggedInUser?.profile?.keycloakId;
-        return userId ? `${BACKEND_URL}/${userId}/profile-image?t=${Date.now()}` : null;
-    };
 
     const publicMenuItems = [
         { text: 'Store', path: '/store', icon: <Store /> },
@@ -314,7 +310,7 @@ export function MainLayout() {
                                     }}
                                 >
                                     <Avatar
-                                        src={getUserAvatarUrl() || undefined}
+                                        src={imageUrl || undefined}
                                         sx={{
                                             width: 32,
                                             height: 32,

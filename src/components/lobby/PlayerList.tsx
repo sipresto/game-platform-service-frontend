@@ -7,6 +7,7 @@ import {
     ListItemText
 } from '@mui/material';
 import { Star as HostIcon } from '@mui/icons-material';
+import {getProfileImageUrl} from "../../utils/userUtils.ts";
 
 interface Player {
     id: string;
@@ -19,13 +20,11 @@ interface PlayerListProps {
 }
 
 export const PlayerList = ({ players, hostId }: PlayerListProps) => {
-    const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
-
     return (
         <Paper variant="outlined" sx={{ mb: 4, maxHeight: 300, overflow: 'auto' }}>
             <List>
                 {players.map((player) => {
-                    const profileImageUrl = `${BACKEND_URL}/${player.id}/profile-image`;
+                    const profileImageUrl = getProfileImageUrl(player.id, Date.now() as number) || undefined;
                     const initials = player.username.charAt(0).toUpperCase();
 
                     return (

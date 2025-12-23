@@ -1,10 +1,16 @@
 import {useMutation, type UseMutationResult, useQuery, useQueryClient} from '@tanstack/react-query';
-import {getUser, getUserProfile, updateUserProfile} from '../services/api';
 import {useContext} from 'react';
 import SecurityContext from '../context/SecurityContext';
 import type {PrivacyUpdateData, ProfileUpdateData, UserProfile} from '../model/userProfile';
 import {useKeycloakAccountService} from "../services/keycloakService.ts";
-import {getFriendsList, getPublicUsers, updateUserPrivacy} from "../services/userApi.ts";
+import {
+    getFriendsList,
+    getPublicUsers,
+    getUser,
+    getUserProfile,
+    updateUserPrivacy,
+    updateUserProfile
+} from "../services/userApi.ts";
 
 export function useUserProfile() {
     const { loggedInUser } = useContext(SecurityContext);
