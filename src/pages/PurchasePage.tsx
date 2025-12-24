@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { useGameDetails } from '../hooks/useGames';
 import { usePurchaseGame } from '../hooks/usePurchase';
-import { useOwnedGames } from '../hooks/useOwnedGames';
+import { useMyOwnedGames } from '../hooks/useOwnedGames';
 import { GameSummary } from '../components/purchase/GameSummary';
 import { PaymentForm } from '../components/purchase/PaymentForm';
 import { PurchaseSuccessDialog } from '../components/purchase/PurchaseSuccessDialog';
@@ -38,7 +38,7 @@ export function PurchasePage() {
     const { game, loading, error: gameError } = useGameDetails(gameId);
     const purchaseMutation = usePurchaseGame();
 
-    const { games: ownedGames = [] } = useOwnedGames('');
+    const { games: ownedGames = [] } = useMyOwnedGames('');
     const isOwned = !!game && ownedGames.some((g) => g.gameId === game.gameId);
 
     const [successDialogOpen, setSuccessDialogOpen] = useState(false);

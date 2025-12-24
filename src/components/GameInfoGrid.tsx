@@ -15,7 +15,7 @@ import type { Game } from "../model/game.ts";
 import { useNavigate } from "react-router";
 import { useContext, useEffect, useState } from "react";
 import SecurityContext from "../context/SecurityContext.ts";
-import { useOwnedGames } from "../hooks/useOwnedGames.ts";
+import { useMyOwnedGames } from "../hooks/useOwnedGames.ts";
 
 interface GameInfoGridProps {
     game: Game;
@@ -24,7 +24,7 @@ interface GameInfoGridProps {
 export function GameInfoGrid({ game }: GameInfoGridProps) {
     const navigate = useNavigate();
     const { isAuthenticated, login } = useContext(SecurityContext);
-    const { games } = useOwnedGames("");
+    const { games } = useMyOwnedGames("");
 
     const [isGameOwned, setIsGameOwned] = useState(false);
 

@@ -1,4 +1,4 @@
-interface BaseGame {
+export interface BaseGame {
     gameId: string;
     name: string;
     description: string;

@@ -1,8 +1,8 @@
-import { Card, CardMedia, Box, Typography, Chip } from '@mui/material';
-import type { Game } from '../../model/game';
+import { Box, Card, CardMedia, Chip, Typography } from '@mui/material';
+import type { BaseGame } from '../../model/game';
 
 interface GameCardProps {
-    game: Game;
+    game: BaseGame;
     onClick?: () => void;
 }
 

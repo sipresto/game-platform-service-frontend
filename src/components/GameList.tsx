@@ -1,6 +1,6 @@
 import { useFilteredGames } from '../hooks/useGames';
 import type { GameFilterRequest } from "../model/gameRequest";
-import { useOwnedGames } from "../hooks/useOwnedGames.ts";
+import { useMyOwnedGames } from "../hooks/useOwnedGames.ts";
 import { GameListDisplay } from "./GameListDisplay.tsx";
 
 interface BaseGameListProps {
@@ -17,6 +17,6 @@ export function StoreGameList({ searchText, filters }: StoreGameListProps) {
 }
 
 export function LibraryGameList({ searchText }: BaseGameListProps) {
-    const { games } = useOwnedGames(searchText);
+    const { games } = useMyOwnedGames(searchText);
     return <GameListDisplay games={games} searchText={searchText} isLibrary />;
 }
