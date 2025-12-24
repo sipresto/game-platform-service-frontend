@@ -1,30 +1,50 @@
 import { Box, Grid, Typography, } from '@mui/material';
 import { GameCard } from './GameCard';
 import type { GameFilterRequest } from "../model/gameRequest";
-import type { Game } from "../model/game";
+import type { Game, LibraryGame } from "../model/game";
 
-interface GameListDisplayProps {
+type GameListDisplayProps =
+    | {
     games: Game[];
     searchText: string;
     filters?: GameFilterRequest;
-    isLibrary?: boolean;
+    isLibrary?: false;
 }
+    | {
+    games: LibraryGame[];
+    searchText: string;
+    isLibrary: true;
+};
 
-export function GameListDisplay({ games, searchText, filters, isLibrary = false }: GameListDisplayProps) {
+
+export function GameListDisplay(props: GameListDisplayProps) {
+    const { games, searchText, isLibrary = false } = props;
+
+    const hasSearch = searchText.trim().length > 0;
+    const hasFilters =
+        !isLibrary && 'filters' in props && props.filters && Object.keys(props.filters).length > 0;
+
+    const isFilteredView = hasSearch || hasFilters;
+
     if (games.length === 0) {
         return (
             <Grid container spacing={2} justifyContent="center" sx={{ mt: 10, opacity: 0.6 }}>
-                <Grid size={{xs: 12}}>
+                <Grid size={{ xs: 12 }}>
                     <Box sx={{ textAlign: 'center' }}>
                         <Typography variant="h5" gutterBottom>
-                            {searchText || (isLibrary ? false : filters && Object.keys(filters).length > 0)
-                                ? `No games found matching your criteria.`
-                                : isLibrary ? 'Your library is empty.' : 'No games available'}
+                            {isFilteredView
+                                ? 'No games found matching your criteria.'
+                                : isLibrary
+                                    ? 'Your library is empty.'
+                                    : 'No games available'}
                         </Typography>
+
                         <Typography variant="body1">
-                            {searchText || (isLibrary ? false : filters && Object.keys(filters).length > 0)
+                            {isFilteredView
                                 ? 'Try modifying your search term or filter settings.'
-                                : isLibrary ? 'Time to check out the store!' : 'Check back later for new releases.'}
+                                : isLibrary
+                                    ? 'Time to check out the store!'
+                                    : 'Check back later for new releases.'}
                         </Typography>
                     </Box>
                 </Grid>
@@ -34,11 +54,17 @@ export function GameListDisplay({ games, searchText, filters, isLibrary = false 
 
     return (
         <Grid container spacing={2} sx={{ overflowX: 'hidden' }}>
-            {games.map((game: Game) => (
-                <Grid key={game.gameId} size={{xs: 12, md: 6, lg: 3}}>
-                    <GameCard game={game} isLibrary={isLibrary} />
-                </Grid>
-            ))}
+            {isLibrary
+                ? (games as LibraryGame[]).map((game) => (
+                    <Grid key={game.gameId} size={{ xs: 12, md: 6, lg: 3 }}>
+                        <GameCard game={game} isLibrary={true} />
+                    </Grid>
+                ))
+                : (games as Game[]).map((game) => (
+                    <Grid key={game.gameId} size={{ xs: 12, md: 6, lg: 3 }}>
+                        <GameCard game={game} />
+                    </Grid>
+                ))}
         </Grid>
     );
 }

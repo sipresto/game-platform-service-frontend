@@ -1,7 +1,7 @@
 import apiClient from './axiosInstance';
-import type { Game } from '../model/game';
+import type { Game, LibraryGame } from '../model/game';
 import type { GameFilterRequest } from '../model/gameRequest';
-import type {AxiosError} from "axios";
+import type { AxiosError } from "axios";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -45,9 +45,9 @@ export const getGameById = async (gameId: string): Promise<Game> => {
     }
 };
 
-export async function getOwnedGamesForUser(userId: string): Promise<Game[]> {
+export async function getOwnedGamesForUser(userId: string): Promise<LibraryGame[]> {
     try {
-        const { data } = await apiClient.get<Game[]>(
+        const { data } = await apiClient.get<LibraryGame[]>(
             `${BACKEND_URL}/games/user/${userId}`
         );
 

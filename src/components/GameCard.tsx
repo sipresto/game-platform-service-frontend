@@ -5,20 +5,23 @@ import {
     Typography,
     Box,
     Chip,
-    ButtonBase
+    ButtonBase, IconButton
 } from '@mui/material';
 import {useNavigate} from 'react-router';
-import {useContext} from 'react';
+import React, {useContext} from 'react';
 import SecurityContext from '../context/SecurityContext';
-import type {Game} from "../model/game.ts";
+import type { Game, LibraryGame } from "../model/game.ts";
+import { useToggleFavoriteGame } from "../hooks/useFavorites.ts";
+import { Star, StarBorder } from "@mui/icons-material";
 
 interface GameCardProps {
-    game: Game;
+    game: Game | LibraryGame;
     isLibrary?: boolean;
 }
 
 export function GameCard({game, isLibrary = false}: GameCardProps) {
     const navigate = useNavigate();
+    const { toggleFavorite, isPending } = useToggleFavoriteGame();
     const {isAuthenticated} = useContext(SecurityContext);
     const descriptionLimit = 150;
 
@@ -32,6 +35,15 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
             navigate(`/game/${game.gameId}`);
             return;
         }
+    };
+
+    const isLibraryGame = (g: Game | LibraryGame): g is LibraryGame =>
+        isLibrary && 'isFavorited' in g;
+
+    const handleToggleFavorite = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!isLibraryGame(game)) return;
+        toggleFavorite({ ...game });
     };
 
     return (
@@ -78,6 +90,27 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                             objectFit: 'cover',
                         }}
                     />
+
+                    {isLibraryGame(game) && isAuthenticated() && (
+                        <IconButton
+                            onClick={handleToggleFavorite}
+                            disabled={isPending}
+                            sx={{
+                                position: 'absolute',
+                                top: 8,
+                                right: 8,
+                                bgcolor: 'rgba(255,255,255,0.8)',
+                                '&:hover': { bgcolor: 'rgba(255,255,255,1)' },
+                                p: 0.5,
+                            }}
+                        >
+                            {game.isFavorited ? (
+                                <Star fontSize="small" color="primary" />
+                            ) : (
+                                <StarBorder fontSize="small" />
+                            )}
+                        </IconButton>
+                    )}
                 </Box>
 
                 <CardContent sx={{
@@ -117,7 +150,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                                     whiteSpace: 'nowrap',
                                 }}
                             >
-                                €{(game.price ?? 0).toFixed(2)}
+                                €{("price" in game ? game.price : 0).toFixed(2)}
                             </Typography>
                         )}
                     </Box>
