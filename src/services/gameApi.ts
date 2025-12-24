@@ -8,7 +8,7 @@ export const getGames = async (
     filter: GameFilterRequest | null
 ): Promise<Game[]> => {
     const response = await apiClient.post<Game[]>(
-        `${BACKEND_URL}/games/filter`,
+        `${BACKEND_URL}/games/browse/filter`,
         filter ?? {}
     );
     return response.data;
@@ -16,7 +16,7 @@ export const getGames = async (
 
 export const getGameById = async (gameId: string): Promise<Game> => {
     const response = await apiClient.get<Game>(
-        `${BACKEND_URL}/games/${gameId}`
+        `${BACKEND_URL}/games/browse/${gameId}`
     );
     return response.data;
 };
