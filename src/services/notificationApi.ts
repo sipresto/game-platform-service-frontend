@@ -1,4 +1,4 @@
-import type {Notification} from "../model/Notification.ts";
+import type {Notification} from "../model/notification.ts";
 import apiClient from "./axiosInstance.ts";
 import type {NotificationChannel, NotificationPreferences, NotificationType} from "../model/notificationPreferences.ts";
 

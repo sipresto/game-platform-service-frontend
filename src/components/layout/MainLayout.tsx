@@ -15,7 +15,7 @@ import SecurityContext from '../../context/SecurityContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useNotifications } from "../../hooks/useNotifications.ts";
 import { markNotificationRead } from "../../services/notificationApi.ts";
-import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
+import { useProfileImageLoader } from "../../hooks/useProfileImageLoader.ts";
 
 const DRAWER_WIDTH = 240;
 
@@ -44,16 +44,6 @@ export function MainLayout() {
         setNotificationAnchor(null);
     };
 
-    const notificationTitleMap: Record<string, string> = {
-        FRIEND_REQUEST: "You have a new friend request!",
-        ACHIEVEMENT: "New achievement unlocked!",
-        YOUR_TURN: "Your turn!",
-    };
-
-    const handleNotificationTitle = (type: string) => {
-        return notificationTitleMap[type] ?? "New notification";
-    };
-
     function getNotificationIcon(type: string) {
         switch (type) {
             case "FRIEND_REQUEST":
@@ -62,6 +52,8 @@ export function MainLayout() {
                 return <EmojiEvents fontSize="small" />;
             case "YOUR_TURN":
                 return <Autorenew fontSize="small" />;
+            case "CHAT_MESSAGE":
+                return <ChatBubble fontSize="small" />;
             default:
                 return <Notifications fontSize="small" />;
         }
@@ -277,7 +269,7 @@ export function MainLayout() {
                                                 </ListItemIcon>
 
                                                 <ListItemText
-                                                    primary={handleNotificationTitle(n.notificationType)}
+                                                    primary={n.title}
                                                     secondary={n.description}
                                                 />
                                             </MenuItem>
