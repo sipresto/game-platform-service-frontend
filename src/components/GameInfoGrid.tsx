@@ -1,9 +1,11 @@
 import {
+    Alert,
     Box,
     Button,
     Card,
     CardContent,
     Chip,
+    CircularProgress,
     Divider,
     Grid,
     Stack,
@@ -24,7 +26,7 @@ interface GameInfoGridProps {
 export function GameInfoGrid({ game }: GameInfoGridProps) {
     const navigate = useNavigate();
     const { isAuthenticated, login } = useContext(SecurityContext);
-    const { games } = useMyOwnedGames("");
+    const { games, isLoading, error } = useMyOwnedGames("");
 
     const [isGameOwned, setIsGameOwned] = useState(false);
 
@@ -40,6 +42,24 @@ export function GameInfoGrid({ game }: GameInfoGridProps) {
         }
         navigate(`/purchase/${game.gameId}`);
     };
+
+    if (isLoading) {
+        return (
+            <Grid size={{ xs: 12, md: 5 }}>
+                <Card elevation={4} sx={{ borderRadius: 2, p: 3, display: 'flex', justifyContent: 'center' }}>
+                    <CircularProgress size={24} />
+                </Card>
+            </Grid>
+        );
+    }
+
+    if (error) {
+        return (
+            <Alert severity="error">
+                Error loading game details: {error.message}
+            </Alert>
+        );
+    }
 
     return (
         <Grid size={{ xs: 12, md: 5 }}>

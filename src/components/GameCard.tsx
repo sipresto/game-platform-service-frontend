@@ -5,7 +5,7 @@ import {
     Typography,
     Box,
     Chip,
-    ButtonBase, IconButton
+    IconButton
 } from '@mui/material';
 import {useNavigate} from 'react-router';
 import React, {useContext} from 'react';
@@ -47,7 +47,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
     };
 
     return (
-        <ButtonBase
+        <Box
             sx={{
                 width: '100%',
                 textAlign: 'left',
@@ -99,8 +99,8 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                                 position: 'absolute',
                                 top: 8,
                                 right: 8,
-                                bgcolor: 'rgba(255,255,255,0.8)',
-                                '&:hover': { bgcolor: 'rgba(255,255,255,1)' },
+                                bgcolor: 'background.paper',
+                                boxShadow: 1,
                                 p: 0.5,
                             }}
                         >
@@ -210,6 +210,6 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                     </Box>
                 </CardContent>
             </Card>
-        </ButtonBase>
+        </Box>
     );
 }
