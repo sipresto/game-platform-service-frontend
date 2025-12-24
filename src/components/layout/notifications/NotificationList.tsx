@@ -1,18 +1,17 @@
 import { Menu, MenuItem } from '@mui/material';
 import { NotificationCard } from './NotificationCard';
+import type { Notification } from "../../../model/notification.ts";
 
 interface NotificationListProps {
     anchorEl: HTMLElement | null;
     onClose: () => void;
-    notifications: any[];
-    getNotificationIcon: (type: string) => JSX.Element;
+    notifications: Notification[];
 }
 
 export function NotificationList({
                                      anchorEl,
                                      onClose,
                                      notifications,
-                                     getNotificationIcon,
                                  }: NotificationListProps) {
     return (
         <Menu
@@ -45,7 +44,6 @@ export function NotificationList({
                     <NotificationCard
                         key={n.notificationId}
                         notification={n}
-                        getNotificationIcon={getNotificationIcon}
                     />
                 ))}
         </Menu>

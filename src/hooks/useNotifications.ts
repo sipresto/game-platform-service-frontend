@@ -1,6 +1,6 @@
-import {useContext} from "react";
+import { useContext } from "react";
 import SecurityContext from "../context/SecurityContext.ts";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     getNotificationPreferences,
     getNotifications,
@@ -12,9 +12,8 @@ import type {
     NotificationPreferenceUpdate,
     NotificationType
 } from "../model/notificationPreferences.ts";
-import type {
-    Notification
-} from "../model/notification.ts";
+import type { Notification } from "../model/notification.ts";
+import { useCurrentUser } from "./useUserProfile.ts";
 
 const useToken = () => {
     const { loggedInUser } = useContext(SecurityContext);
@@ -22,12 +21,13 @@ const useToken = () => {
 };
 
 export function useNotifications() {
-    const token = useToken();
+    const { isAuthenticated } = useCurrentUser();
 
     const { data: notifications, isLoading, error } = useQuery<Notification[]>({
         queryKey: ['notifications'],
         queryFn: getNotifications,
-        enabled: !!token
+        enabled: isAuthenticated,
+        refetchInterval: 10 * 1000,
     })
     return {
         notifications,
@@ -36,28 +36,17 @@ export function useNotifications() {
     }
 }
 
-export function useNotifications() {
-    const token = useToken();
+export function useReadNotifications() {
+    const queryClient = useQueryClient();
 
-    const query = useQuery({
-        queryKey: ['notifications'],
-        queryFn: () => getNotifications(),
-        enabled: !!token,
-        refetchInterval: 60 * 1000,
-    });
-
-    const markReadMutation = useMutation({
+    const { mutate: readNotification } = useMutation({
         mutationFn: (notificationId: string) => markNotificationRead(notificationId),
-        onSuccess: () => {
-            query.refetch();
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['notifications'] });
         }
-    });
+    })
 
-    return {
-        ...query,
-        notifications: query.data ?? [],
-        markNotificationRead: markReadMutation.mutate,
-    };
+    return { readNotification };
 }
 
 export function useNotificationPreferences() {
