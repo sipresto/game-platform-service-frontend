@@ -12,11 +12,29 @@ import type {
     NotificationPreferenceUpdate,
     NotificationType
 } from "../model/notificationPreferences.ts";
+import type {
+    Notification
+} from "../model/notification.ts";
 
 const useToken = () => {
     const { loggedInUser } = useContext(SecurityContext);
     return loggedInUser?.accessToken ?? loggedInUser?.idToken;
 };
+
+export function useNotifications() {
+    const token = useToken();
+
+    const { data: notifications, isLoading, error } = useQuery<Notification[]>({
+        queryKey: ['notifications'],
+        queryFn: getNotifications,
+        enabled: !!token
+    })
+    return {
+        notifications,
+        isLoading,
+        error
+    }
+}
 
 export function useNotifications() {
     const token = useToken();
