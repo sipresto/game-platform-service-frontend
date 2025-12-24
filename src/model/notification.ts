@@ -5,5 +5,5 @@ export type Notification = {
     notificationType: string;
     createdAt: string;
     read: boolean;
-    referenceId: string;
+    referenceId: string | null;
 }

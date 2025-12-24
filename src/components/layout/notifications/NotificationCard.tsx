@@ -2,6 +2,7 @@ import { ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Autorenew, ChatBubble, EmojiEvents, Notifications, PersonAdd } from "@mui/icons-material";
 import { useReadNotifications } from "../../../hooks/useNotifications.ts";
 import type { Notification } from "../../../model/notification.ts";
+import { useNavigate } from "react-router";
 
 interface NotificationCardProps {
     notification: Notification;
@@ -24,10 +25,24 @@ function getNotificationIcon(type: string) {
 
 export function NotificationCard({ notification: n, }: NotificationCardProps) {
     const { readNotification } = useReadNotifications();
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        if (!n.read) {
+            n.read = true;
+            readNotification(n.notificationId);
+        }
+
+        if (n.notificationType === "CHAT_MESSAGE" && n.referenceId) {
+            navigate(`/chat/${n.referenceId}`);
+        }
+    };
+
 
     return (
         <MenuItem
             key={n.notificationId}
+            onClick={handleClick}
             onMouseEnter={() => {
                 if (!n.read) {
                     n.read = true;
