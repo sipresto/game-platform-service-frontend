@@ -1,7 +1,8 @@
 import { useFilteredGames } from '../hooks/useGames';
 import type { GameFilterRequest } from "../model/gameRequest";
-import { useOwnedGames } from "../hooks/useOwnedGames.ts";
+import { useMyOwnedGames } from "../hooks/useOwnedGames.ts";
 import { GameListDisplay } from "./GameListDisplay.tsx";
+import { Alert, Box, Button, CircularProgress } from "@mui/material";
 
 interface BaseGameListProps {
     searchText: string;
@@ -17,6 +18,39 @@ export function StoreGameList({ searchText, filters }: StoreGameListProps) {
 }
 
 export function LibraryGameList({ searchText }: BaseGameListProps) {
-    const { games } = useOwnedGames(searchText);
-    return <GameListDisplay games={games} searchText={searchText} isLibrary />;
+    const { games, isLoading, error } = useMyOwnedGames(searchText);
+
+    if (isLoading) {
+        return (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box sx={{ mt: 4, textAlign: "center" }}>
+                <Alert severity="error">
+                    Failed to load your library.
+                    <Box mt={1}>
+                        <Button
+                            variant="outlined"
+                            onClick={() => window.location.reload()}
+                        >
+                            Retry
+                        </Button>
+                    </Box>
+                </Alert>
+            </Box>
+        );
+    }
+
+    return (
+        <GameListDisplay
+            games={games}
+            searchText={searchText}
+            isLibrary={true}
+        />
+    );
 }

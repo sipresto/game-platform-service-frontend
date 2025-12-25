@@ -1,11 +1,11 @@
 import { Box, Chip, Grid, Paper, Typography } from '@mui/material';
 import { Games as GamesIcon } from '@mui/icons-material';
-import type { Game } from '../../model/game';
+import type { BaseGame } from '../../model/game';
 import { ProfileGameCard } from './ProfileGameCard';
 import { EmptyGameLibrary } from './EmptyGameLibrary';
 
 interface GameLibrarySectionProps {
-    games: Game[];
+    games: BaseGame[];
     isOwnProfile: boolean;
 }
 

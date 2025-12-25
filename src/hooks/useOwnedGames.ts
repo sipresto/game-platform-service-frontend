@@ -1,35 +1,39 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { getOwnedGamesForUser } from "../services/gameApi.ts";
-import type { Game } from "../model/game.ts";
-import { useCurrentUser } from "./useUserProfile.ts";
+import { useQuery } from "@tanstack/react-query";
+import { getMyOwnedGames, getOwnedGamesForUser } from "../services/gameApi.ts";
 import { useMemo } from "react";
+import { filterAndSortLibraryGames } from "../utils/gameFilters.ts";
+import { useCurrentUser } from "./useUserProfile.ts";
 
-export function useOwnedGames(searchText: string) {
-    const { keycloakId } = useCurrentUser();
+export function useMyOwnedGames(searchText: string) {
+    const { isAuthenticated } = useCurrentUser();
 
-    if (!keycloakId) {
-        return { games: [] };
-    }
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['myOwnedGames'],
+        queryFn: () => getMyOwnedGames(),
+        enabled: isAuthenticated,
+    });
 
-    return useOwnedGamesForUser(keycloakId, searchText);
+    const games = useMemo(
+        () => filterAndSortLibraryGames(data ?? [], searchText),
+        [data, searchText]
+    );
+
+    return {
+        games,
+        isLoading,
+        error
+    };
 }
 
-export function useOwnedGamesForUser(userId: string, searchText: string) {
-    const { data: ownedGames } = useSuspenseQuery<Game[]>({
-        queryKey: ['ownedGames', userId],
-        queryFn: () => getOwnedGamesForUser(userId),
-    })
-
-    const filteredGames = useMemo(() => {
-        if (!searchText) return ownedGames;
-
-        const lowerCaseSearchTerm = searchText.toLowerCase();
-
-        return ownedGames.filter(game =>
-            game.name.toLowerCase().includes(lowerCaseSearchTerm)
-        );
-    }, [ownedGames, searchText]);
-
-
-    return { games: filteredGames };
+export function useUserLibrary(userId: string | undefined) {
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['userLibrary', userId],
+        queryFn: () => getOwnedGamesForUser(userId!),
+        enabled: !!userId
+    });
+    return {
+        games: data,
+        isLoading,
+        error
+    };
 }

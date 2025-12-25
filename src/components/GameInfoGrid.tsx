@@ -1,9 +1,11 @@
 import {
+    Alert,
     Box,
     Button,
     Card,
     CardContent,
     Chip,
+    CircularProgress,
     Divider,
     Grid,
     Stack,
@@ -15,7 +17,7 @@ import type { Game } from "../model/game.ts";
 import { useNavigate } from "react-router";
 import { useContext, useEffect, useState } from "react";
 import SecurityContext from "../context/SecurityContext.ts";
-import { useOwnedGames } from "../hooks/useOwnedGames.ts";
+import { useMyOwnedGames } from "../hooks/useOwnedGames.ts";
 
 interface GameInfoGridProps {
     game: Game;
@@ -24,7 +26,7 @@ interface GameInfoGridProps {
 export function GameInfoGrid({ game }: GameInfoGridProps) {
     const navigate = useNavigate();
     const { isAuthenticated, login } = useContext(SecurityContext);
-    const { games } = useOwnedGames("");
+    const { games, isLoading, error } = useMyOwnedGames("");
 
     const [isGameOwned, setIsGameOwned] = useState(false);
 
@@ -40,6 +42,24 @@ export function GameInfoGrid({ game }: GameInfoGridProps) {
         }
         navigate(`/purchase/${game.gameId}`);
     };
+
+    if (isLoading) {
+        return (
+            <Grid size={{ xs: 12, md: 5 }}>
+                <Card elevation={4} sx={{ borderRadius: 2, p: 3, display: 'flex', justifyContent: 'center' }}>
+                    <CircularProgress size={24} />
+                </Card>
+            </Grid>
+        );
+    }
+
+    if (error) {
+        return (
+            <Alert severity="error">
+                Error loading game details: {error.message}
+            </Alert>
+        );
+    }
 
     return (
         <Grid size={{ xs: 12, md: 5 }}>
