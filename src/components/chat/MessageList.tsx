@@ -3,13 +3,15 @@ import { useEffect, useRef } from 'react';
 import type { ChatMessageDetail, ChatParticipant } from '../../model/chat';
 import { MessageBubble } from './MessageBubble';
 import { isSameDay } from 'date-fns';
+import { usePollChat } from "../../hooks/useChats.ts";
 
 type Props = {
+    chatId: string;
     messages: ChatMessageDetail[];
     participants: ChatParticipant[];
 };
 
-export function MessageList({ messages, participants }: Props) {
+export function MessageList({ chatId, messages, participants }: Props) {
     const containerRef = useRef<HTMLDivElement>(null);
 
     let lastSenderId: string | null = null;
@@ -19,6 +21,8 @@ export function MessageList({ messages, participants }: Props) {
         if (msg.isMine) return 'You';
         return participants.find(p => p.id === msg.senderId)?.username ?? 'User';
     };
+
+    usePollChat(chatId);
 
     useEffect(() => {
         const el = containerRef.current;

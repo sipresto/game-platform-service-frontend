@@ -6,16 +6,16 @@ import {
     CssBaseline, Button, Menu, MenuItem, Avatar
 } from '@mui/material';
 import {
-    ArrowLeft, Autorenew, ChatBubble, Diversity3, Edit, EmojiEvents,
+    ArrowLeft, ChatBubble, Diversity3, Edit, EmojiEvents,
     Gamepad, Group, Login, Logout, Menu as MenuIcon, Notifications,
-    Person, PersonAdd, Settings, Store, VerticalSplit
+    Person, Settings, Store, VerticalSplit
 } from '@mui/icons-material';
 
 import SecurityContext from '../../context/SecurityContext';
 import { useUserProfile } from '../../hooks/useUserProfile';
 import { useNotifications } from "../../hooks/useNotifications.ts";
-import { markNotificationRead } from "../../services/notificationApi.ts";
-import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
+import { useProfileImageLoader } from "../../hooks/useProfileImageLoader.ts";
+import { NotificationList } from "./notifications/NotificationList.tsx";
 
 const DRAWER_WIDTH = 240;
 
@@ -24,7 +24,7 @@ export function MainLayout() {
     const location = useLocation();
     const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
     const { profile: userProfile } = useUserProfile();
-    const { notifications } = useNotifications();
+    const { notifications = [] } = useNotifications();
     let unreadCount = notifications.filter(n => !n.read).length;
     const imageUrl = useProfileImageLoader(userProfile?.id || '').profileImageUrl;
 
@@ -43,29 +43,6 @@ export function MainLayout() {
     const handleNotificationsClose = () => {
         setNotificationAnchor(null);
     };
-
-    const notificationTitleMap: Record<string, string> = {
-        FRIEND_REQUEST: "You have a new friend request!",
-        ACHIEVEMENT: "New achievement unlocked!",
-        YOUR_TURN: "Your turn!",
-    };
-
-    const handleNotificationTitle = (type: string) => {
-        return notificationTitleMap[type] ?? "New notification";
-    };
-
-    function getNotificationIcon(type: string) {
-        switch (type) {
-            case "FRIEND_REQUEST":
-                return <PersonAdd fontSize="small" />;
-            case "ACHIEVEMENT":
-                return <EmojiEvents fontSize="small" />;
-            case "YOUR_TURN":
-                return <Autorenew fontSize="small" />;
-            default:
-                return <Notifications fontSize="small" />;
-        }
-    }
 
     const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setUserMenuAnchor(event.currentTarget);
@@ -240,49 +217,11 @@ export function MainLayout() {
                                     </Badge>
                                 </IconButton>
 
-                                <Menu
+                                <NotificationList
                                     anchorEl={notificationAnchor}
-                                    open={Boolean(notificationAnchor)}
                                     onClose={handleNotificationsClose}
-                                    onClick={handleNotificationsClose}
-                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                                    slotProps={{
-                                        paper: {
-                                            sx: {
-                                                maxHeight: 350,
-                                                overflowY: 'auto',
-                                            }
-                                        }
-                                    }}
-                                >
-                                    {notifications.length === 0 && (
-                                        <MenuItem disabled>No notifications</MenuItem>
-                                    )}
-
-                                    {notifications
-                                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                                        .map((n) => (
-                                            <MenuItem key={n.notificationId}
-                                                      onMouseEnter={() => {
-                                                          if (!n.read) {
-                                                              n.read = true;
-                                                              unreadCount--;
-                                                              markNotificationRead(n.notificationId);
-                                                          }
-                                                      }}
-                                            >
-                                                <ListItemIcon sx={{ minWidth: 36 }}>
-                                                    {getNotificationIcon(n.notificationType)}
-                                                </ListItemIcon>
-
-                                                <ListItemText
-                                                    primary={handleNotificationTitle(n.notificationType)}
-                                                    secondary={n.description}
-                                                />
-                                            </MenuItem>
-                                        ))}
-                                </Menu>
+                                    notifications={notifications}
+                                />
 
                                 <IconButton
                                     color="inherit"

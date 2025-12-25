@@ -1,6 +1,6 @@
-import {useContext} from "react";
+import { useContext } from "react";
 import SecurityContext from "../context/SecurityContext.ts";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     getNotificationPreferences,
     getNotifications,
@@ -12,6 +12,8 @@ import type {
     NotificationPreferenceUpdate,
     NotificationType
 } from "../model/notificationPreferences.ts";
+import type { Notification } from "../model/notification.ts";
+import { useCurrentUser } from "./useUserProfile.ts";
 
 const useToken = () => {
     const { loggedInUser } = useContext(SecurityContext);
@@ -19,27 +21,32 @@ const useToken = () => {
 };
 
 export function useNotifications() {
-    const token = useToken();
+    const { isAuthenticated } = useCurrentUser();
 
-    const query = useQuery({
+    const { data: notifications, isLoading, error } = useQuery<Notification[]>({
         queryKey: ['notifications'],
-        queryFn: () => getNotifications(),
-        enabled: !!token,
-        refetchInterval: 60 * 1000,
-    });
-
-    const markReadMutation = useMutation({
-        mutationFn: (notificationId: string) => markNotificationRead(notificationId),
-        onSuccess: () => {
-            query.refetch();
-        }
-    });
-
+        queryFn: getNotifications,
+        enabled: isAuthenticated,
+        refetchInterval: 10 * 1000,
+    })
     return {
-        ...query,
-        notifications: query.data ?? [],
-        markNotificationRead: markReadMutation.mutate,
-    };
+        notifications,
+        isLoading,
+        error
+    }
+}
+
+export function useReadNotifications() {
+    const queryClient = useQueryClient();
+
+    const { mutate: readNotification } = useMutation({
+        mutationFn: (notificationId: string) => markNotificationRead(notificationId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        }
+    })
+
+    return { readNotification };
 }
 
 export function useNotificationPreferences() {
