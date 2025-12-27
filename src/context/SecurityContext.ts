@@ -1,11 +1,11 @@
 import {createContext} from 'react'
-import type {User} from "../model/user.ts"
+import type {KeycloakUser} from "../model/keycloakUser.ts"
 import type Keycloak from 'keycloak-js'
 
 export type SecurityContext = {
     isInitialised: boolean
     isAuthenticated: () => boolean
-    loggedInUser: User | undefined
+    loggedInUser: KeycloakUser | undefined
     login: () => void
     logout: () => void
     keycloakInstance: Keycloak | null

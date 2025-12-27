@@ -1,22 +1,12 @@
-import { Paper, Box, Avatar, Typography, Chip, Button } from '@mui/material';
+import { Paper, Box, Avatar, Typography, Button } from '@mui/material';
 import { ChatBubble, Edit as EditIcon } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router';
 import { useCreateChat } from "../../hooks/useChats.ts";
 import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
-
-interface User {
-    id?: string;
-    keycloakId?: string;
-    username: string;
-    visibility: string;
-    profile?: {
-        displayName?: string;
-        bio?: string;
-    };
-}
+import type {PublicUserProfile} from "../../model/userProfile.ts";
 
 interface ProfileHeaderProps {
-    user: User;
+    user: PublicUserProfile;
     isOwnProfile: boolean;
 }
 
@@ -24,8 +14,6 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
     const userId = user.id || user.keycloakId || '';
     const displayName = user.profile?.displayName || user.username;
     const initial = displayName.charAt(0).toUpperCase();
-    const visibilityColor =
-        user.visibility === 'PUBLIC' ? 'success' : user.visibility === 'FRIENDS_ONLY' ? 'warning' : 'default';
     const navigate = useNavigate();
     const { createNewChat } = useCreateChat();
 
@@ -61,12 +49,6 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
                 <Typography variant="body1" color="text.secondary" gutterBottom>
                     @{user.username}
                 </Typography>
-                <Chip
-                    label={`${user.visibility.charAt(0) + user.visibility.slice(1).toLowerCase()} Profile`}
-                    color={visibilityColor}
-                    size="small"
-                    sx={{ mt: 1, mb: 3 }}
-                />
                 {user.profile?.bio && (
                     <Box sx={{ width: '100%', mb: 3 }}>
                         <Typography variant="overline" color="text.secondary" fontWeight={600}>

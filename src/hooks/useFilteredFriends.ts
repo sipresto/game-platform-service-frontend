@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import type { UserProfile } from "../model/userProfile.ts";
+import type { PublicUserProfile } from "../model/userProfile.ts";
 
-export function useFilteredFriends(friends: UserProfile[], search: string) {
+export function useFilteredFriends(friends: PublicUserProfile[], search: string) {
     return useMemo(() => {
         if (!search) return [];
         const lowerSearch = search.toLowerCase();

@@ -1,11 +1,11 @@
 import { Box, Button } from '@mui/material';
 import { Edit } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import type { UserProfile } from '../../model/userProfile';
+import type {PublicUserProfile} from '../../model/userProfile';
 import {FriendRequestButton} from "../FriendRequestButton.tsx";
 
 interface ProfileActionsProps {
-    user: UserProfile;
+    user: PublicUserProfile;
     isOwnProfile: boolean;
 }
 

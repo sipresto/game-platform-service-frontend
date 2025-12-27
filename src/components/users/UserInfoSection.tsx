@@ -1,8 +1,8 @@
 import { Typography, Box } from '@mui/material';
-import type { UserProfile } from '../../model/userProfile';
+import type {PublicUserProfile} from '../../model/userProfile';
 
 interface UserInfoSectionProps {
-    user: UserProfile;
+    user: PublicUserProfile;
 }
 
 export const UserInfoSection = ({ user }: UserInfoSectionProps) => {

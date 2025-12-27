@@ -51,7 +51,7 @@ export function ChatSidebar({ selectedChatId }: { selectedChatId?: string }) {
                 placeholder="Search friends..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                sx={{ mb: 1 }}
+                sx={{ mb: 1, px: 2 }}
             />
 
             {search ? (

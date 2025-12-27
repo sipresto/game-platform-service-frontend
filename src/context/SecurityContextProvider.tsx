@@ -2,7 +2,7 @@ import { type PropsWithChildren, useEffect, useState, useCallback, useRef } from
 import SecurityContext from './SecurityContext';
 import { addAccessTokenToAuthHeader, removeAccessTokenFromAuthHeader } from '../services/auth';
 import Keycloak from 'keycloak-js';
-import type { User } from "../model/user.ts";
+import type { KeycloakUser } from "../model/keycloakUser.ts";
 import {attachAuthInterceptor} from "../services/axiosInstance.ts";
 
 const getKeycloakConfig = () => {
@@ -15,7 +15,7 @@ const getKeycloakConfig = () => {
     };
 };
 
-const createUserFromKeycloak = (keycloak: Keycloak, config: ReturnType<typeof getKeycloakConfig>): User | undefined => {
+const createUserFromKeycloak = (keycloak: Keycloak, config: ReturnType<typeof getKeycloakConfig>): KeycloakUser | undefined => {
     if (!keycloak.tokenParsed || !keycloak.authenticated) return undefined;
     const profile = keycloak.profile || {};
     const tokenParsed = keycloak.tokenParsed || {};
@@ -25,7 +25,7 @@ const createUserFromKeycloak = (keycloak: Keycloak, config: ReturnType<typeof ge
     const email = profile.email || tokenParsed.email;
     const name = givenName && familyName
         ? `${givenName} ${familyName}`
-        : profile.username || tokenParsed.name || tokenParsed.preferred_username || 'Unknown User';
+        : profile.username || tokenParsed.name || tokenParsed.preferred_username || 'Unknown KeycloakUser';
     const realmRoles = tokenParsed.realm_access?.roles ?? [];
     const clientRoles = tokenParsed.resource_access?.[config.clientId]?.roles ?? [];
     return {
@@ -50,7 +50,7 @@ const createUserFromKeycloak = (keycloak: Keycloak, config: ReturnType<typeof ge
 };
 
 export default function SecurityContextProvider({ children }: PropsWithChildren) {
-    const [loggedInUser, setLoggedInUser] = useState<User | undefined>(undefined);
+    const [loggedInUser, setLoggedInUser] = useState<KeycloakUser | undefined>(undefined);
     const [isInitialised, setIsInitialised] = useState(false);
     const [keycloakInstance, setKeycloakInstance] = useState<Keycloak | null>(null);
     const initRef = useRef(false);
@@ -64,7 +64,7 @@ export default function SecurityContextProvider({ children }: PropsWithChildren)
         try {
             console.log('Starting user data refresh, forceTokenRefresh:', forceTokenRefresh);
             await keycloakInstance.loadUserProfile();
-            console.log('User profile loaded from Keycloak server');
+            console.log('KeycloakUser profile loaded from Keycloak server');
             if (forceTokenRefresh) {
                 const tokenRefreshed = await keycloakInstance.updateToken(-1);
                 console.log('Token force refresh result:', tokenRefreshed);
@@ -75,7 +75,7 @@ export default function SecurityContextProvider({ children }: PropsWithChildren)
             const updatedUser = createUserFromKeycloak(keycloakInstance, configRef.current);
             if (updatedUser) {
                 setLoggedInUser(updatedUser);
-                console.log('User data refreshed and state updated');
+                console.log('KeycloakUser data refreshed and state updated');
             }
         } catch (error) {
             console.error('Failed to refresh user data:', error);

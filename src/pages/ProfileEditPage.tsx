@@ -74,12 +74,9 @@ export function ProfileEditPage() {
         formState,
         isDirty,
         updateProfileMutation,
-        updatePrivacyMutation,
         handleFieldChange,
-        handlePrivacyChange,
         handleReset,
-        handleSubmit,
-        isPrivacyUpdating
+        handleSubmit
     } = useProfileForm({ userProfile, loggedInUser: loggedInUserOrNull });
 
     if (isLoading && !loggedInUser) {
@@ -96,14 +93,6 @@ export function ProfileEditPage() {
 
     const adaptedHandleFieldChange = (field: string, value: string) => {
         handleFieldChange(field as keyof FormState, value);
-    };
-
-    const handleBooleanPrivacyChange = (field: string, value: boolean) => {
-        console.log(`Privacy field changed: ${field} = ${value}`);
-    };
-
-    const handleVisibilityChange = (visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE') => {
-        handlePrivacyChange(visibility);
     };
 
     return (
@@ -139,14 +128,7 @@ export function ProfileEditPage() {
                 </TabPanel>
 
                 <TabPanel value={currentTab} index={1}>
-                    <PrivacyTab
-                        formState={formState}
-                        isLoading={isLoading}
-                        isPrivacyUpdating={isPrivacyUpdating}
-                        updatePrivacyMutation={updatePrivacyMutation}
-                        onPrivacyChange={handleBooleanPrivacyChange}
-                        onVisibilityChange={handleVisibilityChange}
-                    />
+                    <PrivacyTab />
                 </TabPanel>
 
                 <TabPanel value={currentTab} index={2}>

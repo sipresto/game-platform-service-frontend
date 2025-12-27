@@ -38,7 +38,7 @@ function App() {
                             <Route path="/game/:gameId/lobby/:lobbyId" element={<LobbyRoomPage />} />
                             <Route path="/library" element={<LibraryPage />} />
                             <Route path="/sessions" element={<SessionsPage />} />
-                            <Route path="/profile/:keycloakId" element={<ProfilePage />} />
+                            <Route path="/profile/:userId" element={<ProfilePage />} />
                             <Route path="/profile/edit" element={<ProfileEditPage />} />
                             <Route path="/users" element={<UsersPage />} />
                             <Route path="/friends" element={<FriendsPage />} />

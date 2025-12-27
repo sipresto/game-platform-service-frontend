@@ -7,11 +7,11 @@ import {
     Grid
 } from '@mui/material';
 import { Group } from '@mui/icons-material';
-import type { UserProfile } from '../../model/userProfile';
+import type {PublicUserProfile} from '../../model/userProfile';
 import { FriendCard } from './FriendCard';
 
 interface FriendsListProps {
-    friends: UserProfile[];
+    friends: PublicUserProfile[];
 }
 
 export function FriendsList({ friends }: FriendsListProps) {

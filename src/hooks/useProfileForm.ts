@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useUpdateProfile, usePrivacySettings } from './useUserProfile';
-import type { ProfileUpdateData, UserProfile } from "../model/userProfile.ts";
-import type { User } from "../model/user.ts";
+import React, { useState, useEffect } from 'react';
+import { useUpdateProfile } from './useUserProfile';
+import type { UserProfile } from '../model/userProfile';
+import type { KeycloakUser } from '../model/keycloakUser';
 
 export interface FormState {
     username: string;
@@ -9,12 +9,11 @@ export interface FormState {
     lastName: string;
     displayName: string;
     bio: string;
-    profile_visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
 }
 
 interface UseProfileFormProps {
-    userProfile: UserProfile | null | undefined;
-    loggedInUser: User | null;
+    userProfile: UserProfile | undefined;
+    loggedInUser: KeycloakUser | null;
 }
 
 export function useProfileForm({ userProfile, loggedInUser }: UseProfileFormProps) {
@@ -23,145 +22,66 @@ export function useProfileForm({ userProfile, loggedInUser }: UseProfileFormProp
         firstName: '',
         lastName: '',
         displayName: '',
-        bio: '',
-        profile_visibility: 'PUBLIC',
+        bio: ''
     });
 
-    const [isDirty, setIsDirty] = useState(false);
-    const [isInitialized, setIsInitialized] = useState(false);
-
+    const [initialState, setInitialState] = useState<FormState>(formState);
     const updateProfileMutation = useUpdateProfile();
-    const updatePrivacyMutation = usePrivacySettings();
 
+    // Initialize form state from user profile and Keycloak data
     useEffect(() => {
-        if (loggedInUser && !isInitialized) {
-            const currentFirstName = loggedInUser.profile?.firstName || '';
-            const currentLastName = loggedInUser.profile?.lastName || '';
-            const tempDisplayName = loggedInUser.name || '';
+        if (loggedInUser || userProfile) {
+            const newState: FormState = {
+                username: loggedInUser?.profile?.username || userProfile?.username || '',
+                firstName: loggedInUser?.profile?.firstName || '',
+                lastName: loggedInUser?.profile?.lastName || '',
+                displayName: userProfile?.profile?.displayName || '',
+                bio: userProfile?.profile?.bio || ''
+            };
 
-            setFormState({
-                username: loggedInUser.username || '',
-                firstName: currentFirstName,
-                lastName: currentLastName,
-                displayName: tempDisplayName,
-                bio: '',
-                profile_visibility: loggedInUser.profile?.profile_visibility || 'PUBLIC',
-            });
-            setIsInitialized(true);
+            setFormState(newState);
+            setInitialState(newState);
         }
-    }, [loggedInUser, isInitialized]);
+    }, [loggedInUser, userProfile]);
 
-    useEffect(() => {
-        if (userProfile && isInitialized) {
-            const backendDisplayName = userProfile.profile?.displayName || '';
-            const backendBio = userProfile.profile?.bio || '';
-            const backendVisibility = userProfile.visibility || 'PUBLIC';
-
-            setFormState(prev => {
-                if (
-                    prev.displayName === backendDisplayName &&
-                    prev.bio === backendBio &&
-                    prev.profile_visibility === backendVisibility
-                ) {
-                    return prev;
-                }
-
-                return {
-                    ...prev,
-                    displayName: backendDisplayName,
-                    bio: backendBio,
-                    profile_visibility: backendVisibility,
-                };
-            });
-        }
-    }, [userProfile, isInitialized]);
-
-    useEffect(() => {
-        if (updateProfileMutation.isSuccess) {
-            setIsDirty(false);
-        }
-    }, [updateProfileMutation.isSuccess]);
-
-    const checkDirtyState = useCallback(() => {
-        if (!loggedInUser) return;
-
-        const initialUsername = loggedInUser.username || '';
-        const initialFirstName = loggedInUser.profile?.firstName || '';
-        const initialLastName = loggedInUser.profile?.lastName || '';
-        const initialDisplayName = userProfile?.profile?.displayName || loggedInUser.name || '';
-        const initialBio = userProfile?.profile?.bio || '';
-
-        const isUsernameChanged = formState.username !== initialUsername;
-        const isFirstNameChanged = formState.firstName !== initialFirstName;
-        const isLastNameChanged = formState.lastName !== initialLastName;
-        const isDisplayNameChanged = formState.displayName !== initialDisplayName;
-        const isBioChanged = formState.bio !== initialBio;
-
-        setIsDirty(isUsernameChanged || isFirstNameChanged || isLastNameChanged || isDisplayNameChanged || isBioChanged);
-    }, [formState, userProfile, loggedInUser]);
-
-    const handleFieldChange = useCallback((field: keyof FormState, value: string) => {
-        setFormState(prev => ({ ...prev, [field]: value }));
-    }, []);
-
-    const handlePrivacyChange = useCallback((visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE') => {
-        setFormState(prev => ({ ...prev, profile_visibility: visibility }));
-
-        updatePrivacyMutation.mutate({ profile_visibility: visibility });
-    }, [updatePrivacyMutation]);
-
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-
-        if (!formState.username.trim() || !formState.displayName.trim() || !formState.firstName.trim()) {
-            return;
-        }
-
-        const updateData: ProfileUpdateData = {
-            username: formState.username.trim(),
-            firstName: formState.firstName.trim(),
-            lastName: formState.lastName.trim(),
-            displayName: formState.displayName.trim(),
-            bio: formState.bio.trim(),
-        };
-
-        updateProfileMutation.mutate(updateData);
+    const handleFieldChange = (field: keyof FormState, value: string) => {
+        setFormState(prev => ({
+            ...prev,
+            [field]: value
+        }));
     };
 
     const handleReset = () => {
-        if (loggedInUser && userProfile) {
-            const initialDisplayName = userProfile.profile?.displayName || loggedInUser.name || '';
-            const initialBio = userProfile.profile?.bio || '';
-            const initialVisibility = userProfile.visibility || 'PUBLIC';
-
-            setFormState({
-                username: loggedInUser.username || '',
-                firstName: loggedInUser.profile?.firstName || '',
-                lastName: loggedInUser.profile?.lastName || '',
-                displayName: initialDisplayName,
-                bio: initialBio,
-                profile_visibility: initialVisibility,
-            });
-        }
-        setIsDirty(false);
-        updateProfileMutation.reset();
+        setFormState(initialState);
     };
 
-    useEffect(() => {
-        checkDirtyState();
-    }, [formState, checkDirtyState]);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-    const isPrivacyUpdating = updatePrivacyMutation.isPending;
+        try {
+            await updateProfileMutation.mutateAsync({
+                username: formState.username,
+                firstName: formState.firstName,
+                lastName: formState.lastName,
+                displayName: formState.displayName,
+                bio: formState.bio
+            });
+
+            // Update initial state after successful save
+            setInitialState(formState);
+        } catch (error) {
+            console.error('Failed to update profile:', error);
+        }
+    };
+
+    const isDirty = JSON.stringify(formState) !== JSON.stringify(initialState);
 
     return {
         formState,
         isDirty,
         updateProfileMutation,
-        updatePrivacyMutation,
         handleFieldChange,
-        handlePrivacyChange,
         handleReset,
-        handleSubmit,
-        isPrivacyUpdating
+        handleSubmit
     };
 }

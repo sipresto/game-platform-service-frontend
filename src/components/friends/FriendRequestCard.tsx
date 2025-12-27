@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, Box } from '@mui/material';
-import type { UserProfile } from '../../model/userProfile';
+import type {PublicUserProfile} from '../../model/userProfile';
 import { useProfileImageLoader } from '../../hooks/useProfileImageLoader.ts';
 import { useAcceptFriendRequest, useRejectFriendRequest } from '../../hooks/useFriendRequests';
 import { UserInfoSection } from './UserInfoSection';
@@ -8,7 +8,7 @@ import { TimeChip } from './TimeChip';
 import { FriendRequestActions } from './FriendRequestActions';
 
 interface FriendRequestCardProps {
-    user: UserProfile;
+    user: PublicUserProfile;
     createdAt: string;
 }
 
@@ -48,7 +48,7 @@ export function FriendRequestCard({ user, createdAt }: FriendRequestCardProps) {
                     gap: 1,
                     mb: 1
                 }}>
-                    {/* User info on the left */}
+                    {/* KeycloakUser info on the left */}
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                         <UserInfoSection
                             userId={userId}
@@ -69,7 +69,6 @@ export function FriendRequestCard({ user, createdAt }: FriendRequestCardProps) {
                 <Box sx={{ mt: 1 }}>
                     <FriendRequestActions
                         userId={userId}
-                        keycloakId={user.keycloakId}
                         isProcessing={isProcessing}
                         onAccept={handleAccept}
                         onReject={handleReject}

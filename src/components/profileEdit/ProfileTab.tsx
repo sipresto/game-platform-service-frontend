@@ -4,19 +4,26 @@ import { FormAlerts } from "./FormAlerts.tsx";
 import { ActionButtons } from "./ActionButtons.tsx";
 import { ProfileImageUpload } from "./ProfileImageUpload.tsx";
 import type { UseMutationResult } from "@tanstack/react-query";
-import type { FormState } from '../../hooks/useProfileForm';
-import type { User } from "../../model/user.ts";
-import type { UserProfile, ProfileUpdateData } from "../../model/userProfile.ts";
+import type { KeycloakUser } from "../../model/keycloakUser.ts";
+import type { ProfileUpdateData } from "../../model/userProfile.ts";
 import React from "react";
-import {useUserProfile} from "../../hooks/useUserProfile.ts";
+import { useUserProfile } from "../../hooks/useUserProfile.ts";
+
+interface FormState {
+    username: string;
+    firstName: string;
+    lastName: string;
+    displayName: string;
+    bio: string;
+}
 
 interface ProfileTabProps {
     formState: FormState;
-    loggedInUser: User | null;
+    loggedInUser: KeycloakUser | null;
     isLoading: boolean;
     error: Error | null;
     isDirty: boolean;
-    updateProfileMutation: UseMutationResult<UserProfile, Error, ProfileUpdateData>;
+    updateProfileMutation: UseMutationResult<void, Error, ProfileUpdateData>;
     onFieldChange: (field: string, value: string) => void;
     onReset: () => void;
     onSubmit: (e: React.FormEvent) => void;
@@ -33,7 +40,7 @@ export function ProfileTab({
                                onReset,
                                onSubmit
                            }: ProfileTabProps) {
-    const displayName = formState.displayName || formState.username || 'User';
+    const displayName = formState.displayName || formState.username || 'KeycloakUser';
     const { profile } = useUserProfile();
 
     return (
@@ -53,9 +60,7 @@ export function ProfileTab({
                     isLoading={isLoading}
                     error={error}
                     isSubmitting={updateProfileMutation.isPending}
-                    isPrivacyUpdating={false}
                     onFieldChange={onFieldChange}
-                    onPrivacyChange={() => {}}
                 />
 
                 <FormAlerts

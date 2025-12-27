@@ -9,8 +9,8 @@ import {
 } from '@mui/material';
 import { UserSearchBar } from '../components/users/UserSearchBar';
 import { UsersGrid } from '../components/users/UsersGrid';
-import {useAllUsers} from '../hooks/useUserProfile';
-import type { UserProfile } from '../model/userProfile';
+import { useAllUsers } from '../hooks/useUserProfile';
+import type { PublicUserProfile } from '../model/userProfile';
 
 export function UsersPage() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,15 +19,15 @@ export function UsersPage() {
     const filteredUsers = useMemo(() => {
         if (isLoading || isError) return [];
 
-        const userMap = new Map<string, UserProfile>();
+        // Combine public users and friends, removing duplicates
+        const userMap = new Map<string, PublicUserProfile>();
 
         publicUsers.forEach(user => {
-            if (user.visibility === 'PUBLIC') {
-                userMap.set(user.id, user);
-            }
+            userMap.set(user.id, user);
         });
+
         friends.forEach(user => {
-            if (user.visibility !== 'PUBLIC' || !userMap.has(user.id)) {
+            if (!userMap.has(user.id)) {
                 userMap.set(user.id, user);
             }
         });

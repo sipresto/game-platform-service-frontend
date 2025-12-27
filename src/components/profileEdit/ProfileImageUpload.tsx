@@ -12,7 +12,7 @@ import { getInitials } from "../../utils/imageUtils.ts";
 import { useProfileImageManager } from '../../hooks/useProfileImageManager';
 
 export const ProfileImageUpload = ({
-                                       displayName = 'User',
+                                       displayName = 'KeycloakUser',
                                        size = 120
                                    }: ProfileImageUploadProps) => {
     const {

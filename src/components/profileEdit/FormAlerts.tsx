@@ -1,12 +1,12 @@
 import { Alert, Grid } from '@mui/material';
 import type { ApiError } from "../../services/keycloakService.ts";
-import type { UserProfile, ProfileUpdateData } from "../../model/userProfile.ts";
+import type { ProfileUpdateData } from "../../model/userProfile.ts";
 import type { UseMutationResult } from "@tanstack/react-query";
 
 interface FormAlertsProps {
     isLoading: boolean;
     error: Error | null;
-    updateProfileMutation: UseMutationResult<UserProfile, Error, ProfileUpdateData>;
+    updateProfileMutation: UseMutationResult<void, Error, ProfileUpdateData>;
 }
 
 export function FormAlerts({ isLoading, error, updateProfileMutation }: FormAlertsProps) {

@@ -13,7 +13,6 @@ interface FriendCardActionsProps {
 
 export function FriendCardActions({
                                       userId,
-                                      keycloakId,
                                       onRemoveFriend,
                                       onMessage
                                   }: FriendCardActionsProps) {
@@ -33,7 +32,7 @@ export function FriendCardActions({
                 size="small"
                 variant="contained"
                 component={RouterLink}
-                to={`/profile/${keycloakId}`}
+                to={`/profile/${userId}`}
                 fullWidth
                 sx={{
                     borderRadius: 1,
