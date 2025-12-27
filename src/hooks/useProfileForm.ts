@@ -28,7 +28,6 @@ export function useProfileForm({ userProfile, loggedInUser }: UseProfileFormProp
     const [initialState, setInitialState] = useState<FormState>(formState);
     const updateProfileMutation = useUpdateProfile();
 
-    // Initialize form state from user profile and Keycloak data
     useEffect(() => {
         if (loggedInUser || userProfile) {
             const newState: FormState = {
@@ -67,7 +66,6 @@ export function useProfileForm({ userProfile, loggedInUser }: UseProfileFormProp
                 bio: formState.bio
             });
 
-            // Update initial state after successful save
             setInitialState(formState);
         } catch (error) {
             console.error('Failed to update profile:', error);

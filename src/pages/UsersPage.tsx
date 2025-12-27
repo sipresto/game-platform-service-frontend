@@ -19,7 +19,6 @@ export function UsersPage() {
     const filteredUsers = useMemo(() => {
         if (isLoading || isError) return [];
 
-        // Combine public users and friends, removing duplicates
         const userMap = new Map<string, PublicUserProfile>();
 
         publicUsers.forEach(user => {
