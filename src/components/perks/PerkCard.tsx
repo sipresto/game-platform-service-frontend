@@ -3,16 +3,27 @@ import {
     CardContent,
     Chip,
     Typography,
-    Box
+    Box,
+    Stack, Button
 } from '@mui/material';
 import { getPerkTypeConfig } from '../../utils/perkUtils';
 import type { Perk } from '../../model/perk';
 
 interface PerkCardProps {
     perk: Perk;
+    onPurchase?: (perkId: string) => void;
+    onEquip?: (perkId: string) => void;
+    isPurchasing?: boolean;
+    isEquipping?: boolean;
 }
 
-export default function PerkCard({ perk }: PerkCardProps) {
+export default function PerkCard({
+                                     perk,
+                                     onPurchase,
+                                     onEquip,
+                                     isPurchasing = false,
+                                     isEquipping = false
+                                 }: PerkCardProps) {
     const typeConfig = getPerkTypeConfig(perk.type);
     const Icon = typeConfig.icon;
 
@@ -24,7 +35,7 @@ export default function PerkCard({ perk }: PerkCardProps) {
                 flexDirection: 'column',
             }}
         >
-            <CardContent sx={{ flexGrow: 1 }}>
+            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -48,9 +59,39 @@ export default function PerkCard({ perk }: PerkCardProps) {
                     />
                 </Box>
 
-                <Typography variant="body2" color="text.secondary" align="left">
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    align="left"
+                    sx={{ flexGrow: 1, mb: 2 }}
+                >
                     {perk.description}
                 </Typography>
+
+                <Stack direction="row" spacing={1}>
+                    {onPurchase && (
+                        <Button
+                            variant="contained"
+                            size="small"
+                            fullWidth
+                            onClick={() => onPurchase(perk.perkId)}
+                            disabled={isPurchasing}
+                        >
+                            {isPurchasing ? 'Purchasing...' : 'Purchase'}
+                        </Button>
+                    )}
+                    {onEquip && (
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            onClick={() => onEquip(perk.perkId)}
+                            disabled={isEquipping}
+                        >
+                            {isEquipping ? 'Equipping...' : 'Equip'}
+                        </Button>
+                    )}
+                </Stack>
             </CardContent>
         </Card>
     );

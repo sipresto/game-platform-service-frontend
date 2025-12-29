@@ -1,28 +1,56 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Perk } from '../model/perk';
-import {fetchPerks} from "../services/perkApi.ts";
+import { equipPerk, fetchPerks, getUserPoints, purchasePerk } from "../services/perkApi.ts";
 
-export function usePerksData() {
-    const [perks, setPerks] = useState<Perk[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
+export function usePerks() {
+    const { data: perks, isLoading, error } = useQuery<Perk[]>({
+        queryKey: ['perks'],
+        queryFn: fetchPerks,
+    });
 
-    const fetchData = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const perksData = await fetchPerks();
-            setPerks(perksData);
-            setError(null);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to load perks'));
-        } finally {
-            setIsLoading(false);
+    return {
+        perks,
+        isLoading,
+        error
+    };
+}
+
+export function useUserPoints() {
+    const { data: points, isLoading, error } = useQuery<number>({
+        queryKey: ['userPoints'],
+        queryFn: getUserPoints,
+    });
+
+    return {
+        points,
+        isLoading,
+        error
+    };
+}
+
+export function usePurchasePerk() {
+    const queryClient = useQueryClient();
+
+    const { mutate: buyPerk, isPending, isError, error } = useMutation({
+        mutationFn: (perkId: string) => purchasePerk(perkId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['perks'] });
+            await queryClient.invalidateQueries({ queryKey: ['userPoints'] });
         }
-    }, []);
+    });
 
-    useEffect(() => {
-        void fetchData();
-    }, [fetchData]);
+    return { buyPerk, isPending, isError, error };
+}
 
-    return { perks, isLoading, error };
+export function useEquipPerk() {
+    const queryClient = useQueryClient();
+
+    const { mutate: equipPerkMutation, isPending, isError, error } = useMutation({
+        mutationFn: (perkId: string) => equipPerk(perkId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['perks'] });
+        }
+    });
+
+    return { equipPerk: equipPerkMutation, isPending, isError, error };
 }
