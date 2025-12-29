@@ -6,9 +6,10 @@ import { useGroupedAchievements } from "../../hooks/useGroupedAchievements.ts";
 
 interface AchievementsSectionProps {
     achievements: AchievementProgress[]
+    achievementsVisible: boolean
 }
 
-export function AchievementsSection({ achievements }: AchievementsSectionProps) {
+export function AchievementsSection({ achievements, achievementsVisible }: AchievementsSectionProps) {
     const groupedAchievements = useGroupedAchievements(achievements)
     const completedCount = achievements.filter(a => a.completedAt !== null).length
 
@@ -70,11 +71,18 @@ export function AchievementsSection({ achievements }: AchievementsSectionProps) 
                         </Accordion>
                     ))
                 ) : (
+                    achievementsVisible ?
                     <Box sx={ { textAlign: "center", py: 4 } }>
                         <Typography variant="body1" color="text.secondary">
                             No achievements unlocked yet
                         </Typography>
                     </Box>
+                        :
+                        <Box sx={ { textAlign: "center", py: 4 } }>
+                            <Typography variant="body1" color="text.secondary">
+                                This user's achievements are not visible
+                            </Typography>
+                        </Box>
                 ) }
             </>
         </Paper>

@@ -48,7 +48,6 @@ export function FriendRequestCard({ user, createdAt }: FriendRequestCardProps) {
                     gap: 1,
                     mb: 1
                 }}>
-                    {/* KeycloakUser info on the left */}
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                         <UserInfoSection
                             userId={userId}
@@ -59,13 +58,11 @@ export function FriendRequestCard({ user, createdAt }: FriendRequestCardProps) {
                         />
                     </Box>
 
-                    {/* Time on the right */}
                     <Box>
                         <TimeChip createdAt={createdAt} />
                     </Box>
                 </Box>
 
-                {/* Actions */}
                 <Box sx={{ mt: 1 }}>
                     <FriendRequestActions
                         userId={userId}

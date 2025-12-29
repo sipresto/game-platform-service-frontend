@@ -61,7 +61,7 @@ export function ProfilePageContent({ userId }: { userId: string }) {
                     )}
                 </Grid>
                 <Grid size={{ xs: 12 }} sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                    <AchievementsSection achievements={achievements} />
+                    <AchievementsSection achievements={achievements} achievementsVisible={user.ownedGames !== undefined} />
                 </Grid>
             </Grid>
         </Container>

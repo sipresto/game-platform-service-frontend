@@ -58,38 +58,6 @@ export interface ProfileUpdateData {
     bio: string;
 }
 
-export interface FieldVisibilityUpdateData {
-    field: VisibleField;
-    visibility: Visibility;
-}
-
-export const defaultVisibilitySettings = (): VisibilitySettings => ({
-    fieldVisibilities: {
-        PROFILE: 'PUBLIC',
-        POINTS: 'PUBLIC',
-        FAVORITE_GAMES: 'PUBLIC',
-        OWNED_GAMES: 'FRIENDS_ONLY',
-        FRIENDS_LIST: 'FRIENDS_ONLY',
-    }
-});
-
-export const createVisibilityTemplate = (template: Visibility): VisibilitySettings => ({
-    fieldVisibilities: {
-        PROFILE: 'PUBLIC',
-        POINTS: template,
-        FAVORITE_GAMES: template,
-        OWNED_GAMES: template,
-        FRIENDS_LIST: template,
-    }
-});
-
-export const getFieldVisibility = (
-    settings: VisibilitySettings,
-    field: VisibleField
-): Visibility => {
-    return settings.fieldVisibilities[field];
-};
-
 export const getAllFields = (): VisibleField[] => [
     'PROFILE',
     'POINTS',
@@ -97,13 +65,6 @@ export const getAllFields = (): VisibleField[] => [
     'OWNED_GAMES',
     'FRIENDS_LIST'
 ];
-
-export const getMostRestrictiveVisibility = (settings: VisibilitySettings): Visibility => {
-    const visibilities = Object.values(settings.fieldVisibilities);
-    if (visibilities.some(v => v === 'PRIVATE')) return 'PRIVATE';
-    if (visibilities.some(v => v === 'FRIENDS_ONLY')) return 'FRIENDS_ONLY';
-    return 'PUBLIC';
-};
 
 export const hasUniformVisibility = (settings: VisibilitySettings): boolean => {
     const fields = getAllFields().filter(f => f !== 'PROFILE');
