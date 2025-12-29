@@ -33,6 +33,7 @@ export function AdvancedPrivacyView({
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                     Customize visibility for each type of information separately.
                 </Typography>
+                <Box sx={{ height: 1.5, bgcolor: 'primary.main', mb: 2 }} />
 
                 <Stack spacing={3} divider={<Divider />}>
                     {getAllFields().map((field) => {
