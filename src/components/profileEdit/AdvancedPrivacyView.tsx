@@ -1,6 +1,6 @@
-import { Paper, Stack, Typography, Box, Divider } from '@mui/material';
-import { Public } from '@mui/icons-material';
-import { VisibilityButtonGroup } from './VisibilityButtonGroup';
+import {Paper, Stack, Typography, Box, Divider} from '@mui/material';
+import {Public} from '@mui/icons-material';
+import {VisibilityButtonGroup} from './VisibilityButtonGroup';
 import {getAllFields, type Visibility, type VisibleField} from '../../model/userProfile';
 import {fieldConfig} from "../../model/constants.ts";
 
@@ -27,25 +27,31 @@ export function AdvancedPrivacyView({
                     backgroundColor: 'background.default'
                 }}
             >
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+                <Typography variant="subtitle1" sx={{fontWeight: 600, mb: 1}}>
                     Advanced Privacy Controls
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                <Typography variant="body2" color="text.secondary" sx={{mb: 3}}>
                     Customize visibility for each type of information separately.
                 </Typography>
-                <Box sx={{ height: 1.5, bgcolor: 'primary.main', mb: 2 }} />
+                <Box sx={{
+                    bgcolor: 'grey.50',
+                    border: 1,
+                    borderColor: 'grey.300',
+                    borderRadius: 1,
+                    marginBottom: 2
+                }}/>
 
-                <Stack spacing={3} divider={<Divider />}>
+                <Stack spacing={3} divider={<Divider/>}>
                     {getAllFields().map((field) => {
                         const config = fieldConfig[field];
                         const isProfileField = field === 'PROFILE';
 
                         return (
                             <Box key={field}>
-                                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                <Typography variant="subtitle2" sx={{fontWeight: 600, mb: 0.5}}>
                                     {config.label}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                                <Typography variant="caption" color="text.secondary" sx={{mb: 2, display: 'block'}}>
                                     {config.description}
                                 </Typography>
 
@@ -60,8 +66,8 @@ export function AdvancedPrivacyView({
                                             borderRadius: 1
                                         }}
                                     >
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <Public sx={{ color: 'success.main' }} fontSize="small" />
+                                        <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+                                            <Public sx={{color: 'success.main'}} fontSize="small"/>
                                             <Typography variant="body2" color="text.secondary">
                                                 Always Public - Your display name is always visible to everyone
                                             </Typography>
