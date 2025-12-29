@@ -1,4 +1,4 @@
-export interface User {
+export interface KeycloakUser {
     name: string;
     username: string;
     email?: string;

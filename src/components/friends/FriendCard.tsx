@@ -1,13 +1,13 @@
 import { Card, CardContent } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import type { UserProfile } from '../../model/userProfile';
+import type {PublicUserProfile} from '../../model/userProfile';
 import { useProfileImageLoader } from '../../hooks/useProfileImageLoader.ts';
 import { FriendCardHeader } from './FriendCardHeader';
 import { FriendCardActions } from './FriendCardActions';
 import {cardStyles, contentStyles} from "../../utils/friendCardUtils.ts";
 
 interface FriendCardProps {
-    user: UserProfile;
+    user: PublicUserProfile;
     onRemoveFriend?: (userId: string) => void;
     onMessage?: (userId: string) => void;
     showActions?: boolean;

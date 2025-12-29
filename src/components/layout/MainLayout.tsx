@@ -25,7 +25,7 @@ export function MainLayout() {
     const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
     const { profile: userProfile } = useUserProfile();
     const { notifications = [] } = useNotifications();
-    let unreadCount = notifications.filter(n => !n.read).length;
+    const unreadCount = notifications.filter(n => !n.read).length;
     const imageUrl = useProfileImageLoader(userProfile?.id || '').profileImageUrl;
 
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -68,7 +68,7 @@ export function MainLayout() {
 
     const handleViewProfile = () => {
         handleUserMenuClose();
-        const userId = userProfile?.id || userProfile?.keycloakId || loggedInUser?.profile?.keycloakId;
+        const userId = userProfile?.id;
         if (userId) {
             navigate(`/profile/${userId}`);
         }
@@ -82,12 +82,12 @@ export function MainLayout() {
         { text: 'Store', path: '/store', icon: <Store /> },
     ];
 
-    const keycloakId = userProfile?.keycloakId || '';
+    const userId = userProfile?.id || '';
 
     const protectedMenuItems = [
         { text: 'Library', path: '/library', icon: <VerticalSplit /> },
         { text: 'Sessions', path: '/sessions', icon: <Gamepad /> },
-        { text: 'Profile', path: `/profile/${keycloakId}`, icon: <Person /> },
+        { text: 'Profile', path: `/profile/${userId}`, icon: <Person /> },
         { text: 'Friends', path: '/friends', icon: <Group /> },
         { text: 'Users', path: '/users', icon: <Diversity3 /> },
         { text: 'Chats', path: '/chat', icon: <ChatBubble /> },

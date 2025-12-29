@@ -1,15 +1,27 @@
+export type Visibility = 'PRIVATE' | 'FRIENDS_ONLY' | 'PUBLIC';
+
+export type VisibleField =
+    | 'PROFILE'
+    | 'POINTS'
+    | 'FAVORITE_GAMES'
+    | 'OWNED_GAMES'
+    | 'FRIENDS_LIST';
+
+export interface VisibilitySettings {
+    fieldVisibilities: Record<VisibleField, Visibility>;
+}
+
 export interface UserProfile {
     id: string;
     keycloakId: string;
     username: string;
-    email?: string;
-    name?: string;
-    roles?: string[];
-    visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
-    profile?: {
-        displayName?: string;
+    email: string;
+    profile: {
+        displayName: string;
         bio?: string;
     };
+    visibilitySettings: VisibilitySettings;
+    points: number;
     incomingFriendRequests: {
         senderId: string;
         createdAt: string;
@@ -19,6 +31,23 @@ export interface UserProfile {
         receiverId: string;
         createdAt: string;
     }[];
+    ownedGames: string[];
+    favoriteGames: string[];
+}
+
+export interface PublicUserProfile {
+    id: string;
+    username: string;
+    profile: {
+        displayName: string;
+        bio?: string;
+        hasProfileImage?: boolean;
+    };
+    points?: number;
+    favoriteGames?: string[];
+    ownedGames?: string[];
+    friends?: string[];
+    keycloakId: string;
 }
 
 export interface ProfileUpdateData {
@@ -27,9 +56,18 @@ export interface ProfileUpdateData {
     lastName: string;
     displayName: string;
     bio: string;
-    profile_visibility?: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
 }
 
-export interface PrivacyUpdateData {
-    profile_visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE';
-}
+export const getAllFields = (): VisibleField[] => [
+    'PROFILE',
+    'POINTS',
+    'FAVORITE_GAMES',
+    'OWNED_GAMES',
+    'FRIENDS_LIST'
+];
+
+export const hasUniformVisibility = (settings: VisibilitySettings): boolean => {
+    const fields = getAllFields().filter(f => f !== 'PROFILE');
+    const visibilities = fields.map(f => settings.fieldVisibilities[f]);
+    return visibilities.every(v => v === visibilities[0]);
+};

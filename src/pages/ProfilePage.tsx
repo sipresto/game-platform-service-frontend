@@ -6,9 +6,9 @@ import { Suspense } from "react";
 import { ProfilePageContent } from "../components/profile/ProfilePageContent.tsx";
 
 export function ProfilePage() {
-    const { keycloakId } = useParams<{ keycloakId: string }>();
-
-    if (!keycloakId) {
+    const { userId } = useParams<{ userId: string }>();
+    console.log(`received id: ${userId}`);
+    if (!userId) {
         return (
             <Container maxWidth="md" sx={ { py: 4 } }>
                 <Alert severity="error">
@@ -46,7 +46,7 @@ export function ProfilePage() {
             ) }
         >
             <Suspense fallback={ <ProfileSkeleton/> }>
-                <ProfilePageContent keycloakId={ keycloakId }/>
+                <ProfilePageContent userId={ userId }/>
             </Suspense>
         </ErrorBoundary>
     )

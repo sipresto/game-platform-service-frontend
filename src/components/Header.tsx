@@ -67,7 +67,7 @@ export function Header() {
                             borderRadius: '20px',
                             fontSize: '0.9rem'
                         }}>
-                            {loggedInUser?.name || 'User'}
+                            {loggedInUser?.name || 'KeycloakUser'}
                         </div>
                     </>
                 ) : (

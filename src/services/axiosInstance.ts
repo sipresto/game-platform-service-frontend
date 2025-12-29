@@ -1,4 +1,9 @@
-import axios, { AxiosError, type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import axios, {
+    AxiosError,
+    type AxiosInstance,
+    type AxiosResponse,
+    type InternalAxiosRequestConfig
+} from 'axios';
 import type Keycloak from 'keycloak-js';
 
 type GetKeycloakInstance = () => Keycloak | null;
@@ -17,11 +22,47 @@ interface RetryableAxiosRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean;
 }
 
+let isRefreshing = false;
+let failedQueue: Array<{
+    resolve: (token: string) => void,
+    reject: (error: unknown) => void
+}> = [];
+
+const processQueue = (error: unknown, token: string | null = null): void => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else if (token) {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
+
 const responseInterceptor = async (error: AxiosError): Promise<AxiosResponse> => {
     const originalRequest = error.config as RetryableAxiosRequestConfig;
 
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+    if (error.response?.status === 401 && originalRequest) {
+        if (originalRequest._retry) {
+            return Promise.reject(error);
+        }
+
+        if (isRefreshing) {
+            return new Promise<string>((resolve, reject) => {
+                failedQueue.push({ resolve, reject });
+            })
+                .then((token: string) => {
+                    originalRequest.headers = originalRequest.headers || {};
+                    originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                    return apiClient(originalRequest);
+                })
+                .catch((err: unknown) => {
+                    return Promise.reject(err);
+                });
+        }
+
         originalRequest._retry = true;
+        isRefreshing = true;
 
         try {
             if (getKeycloakInstance && getRefreshUserData) {
@@ -32,8 +73,10 @@ const responseInterceptor = async (error: AxiosError): Promise<AxiosResponse> =>
                     await refreshUserData(true);
                     const newToken = keycloakInstance.token;
 
-                    if (newToken && typeof newToken === 'string') {
+                    if (newToken) {
                         apiClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+
+                        processQueue(null, newToken);
 
                         originalRequest.headers = originalRequest.headers || {};
                         originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
@@ -42,9 +85,19 @@ const responseInterceptor = async (error: AxiosError): Promise<AxiosResponse> =>
                     }
                 }
             }
+            new Error('Token refresh failed: Missing keycloak instance or refresh function');
         } catch (refreshError: unknown) {
             console.error('Failed to refresh token:', refreshError);
+            processQueue(refreshError, null);
+
+            if (getKeycloakInstance) {
+                const keycloakInstance = getKeycloakInstance();
+                keycloakInstance?.login();
+            }
+
             return Promise.reject(refreshError);
+        } finally {
+            isRefreshing = false;
         }
     }
 

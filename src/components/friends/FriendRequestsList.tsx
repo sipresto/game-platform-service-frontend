@@ -3,7 +3,8 @@ import {
     Box,
     Typography,
     Paper,
-    CircularProgress, Grid
+    CircularProgress,
+    Grid
 } from '@mui/material';
 import { PersonAdd } from '@mui/icons-material';
 import { FriendRequestCard } from './FriendRequestCard';

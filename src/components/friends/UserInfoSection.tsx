@@ -1,10 +1,10 @@
 import { Box, Typography } from '@mui/material';
 import { UserAvatar } from '../users/UserAvatar.tsx';
-import type { UserProfile } from '../../model/userProfile';
+import type {PublicUserProfile} from '../../model/userProfile';
 
 interface UserInfoSectionProps {
     userId: string;
-    user: UserProfile;
+    user: PublicUserProfile;
     profileImageUrl?: string;
     imageLoading: boolean;
     hasError: boolean;

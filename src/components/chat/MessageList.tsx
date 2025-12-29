@@ -19,7 +19,7 @@ export function MessageList({ chatId, messages, participants }: Props) {
 
     const getName = (msg: ChatMessageDetail) => {
         if (msg.isMine) return 'You';
-        return participants.find(p => p.id === msg.senderId)?.username ?? 'User';
+        return participants.find(p => p.id === msg.senderId)?.username ?? 'KeycloakUser';
     };
 
     usePollChat(chatId);

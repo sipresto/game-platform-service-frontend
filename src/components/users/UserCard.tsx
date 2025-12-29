@@ -6,16 +6,15 @@ import {
     Box
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router';
-import type { UserProfile } from '../../model/userProfile';
+import type {PublicUserProfile} from '../../model/userProfile';
 import { UserAvatar } from './UserAvatar';
 import { UserInfoSection } from './UserInfoSection';
 import { UserBio } from './UserBio';
-import { VisibilityChip } from './VisibilityChip';
 import { useProfileImageLoader } from "../../hooks/useProfileImageLoader.ts";
 import {FriendRequestButton} from "../FriendRequestButton.tsx";
 
 interface UserCardProps {
-    user: UserProfile;
+    user: PublicUserProfile;
 }
 
 export function UserCard({ user }: UserCardProps) {
@@ -50,8 +49,6 @@ export function UserCard({ user }: UserCardProps) {
                 {user.profile?.bio && (
                     <UserBio bio={user.profile.bio} />
                 )}
-
-                <VisibilityChip visibility={user.visibility} />
             </CardContent>
 
             <CardActions sx={{ mt: 'auto', flexDirection: 'column', gap: 1, alignItems: 'stretch' }}>
@@ -64,7 +61,7 @@ export function UserCard({ user }: UserCardProps) {
                 <Button
                     size="small"
                     component={RouterLink}
-                    to={`/profile/${user.keycloakId}`}
+                    to={`/profile/${user.id}`}
                 >
                     View Profile
                 </Button>

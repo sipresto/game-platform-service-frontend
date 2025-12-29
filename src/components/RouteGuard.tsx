@@ -1,13 +1,11 @@
-import {type PropsWithChildren, useContext, useEffect, useRef} from 'react'
+import { type PropsWithChildren, useContext, useEffect } from 'react'
 import SecurityContext from '../context/SecurityContext.ts'
 
-export function RouteGuard({children}: PropsWithChildren) {
-    const {isInitialised, isAuthenticated, login} = useContext(SecurityContext)
-    const loginTriggeredRef = useRef(false)
+export function RouteGuard({ children }: PropsWithChildren) {
+    const { isInitialised, isAuthenticated, login } = useContext(SecurityContext)
 
     useEffect(() => {
-        if (isInitialised && !isAuthenticated() && !loginTriggeredRef.current) {
-            loginTriggeredRef.current = true
+        if (isInitialised && !isAuthenticated()) {
             console.log('RouteGuard: Not authenticated, initiating login...')
             login()
         }
@@ -15,10 +13,6 @@ export function RouteGuard({children}: PropsWithChildren) {
 
     if (!isInitialised) {
         return <div>Loading...</div>
-    }
-
-    if (!isAuthenticated()) {
-        return null
     }
 
     return <>{children}</>

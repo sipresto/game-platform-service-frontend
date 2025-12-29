@@ -1,33 +1,16 @@
-import { Box, Typography, Chip, Tooltip } from '@mui/material';
+import { Box, Typography, Chip } from '@mui/material';
 import { useTheme, alpha } from '@mui/material/styles';
-import PublicIcon from '@mui/icons-material/Public';
-import LockIcon from '@mui/icons-material/Lock';
-import PeopleIcon from '@mui/icons-material/People';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import StarIcon from '@mui/icons-material/Star';
 import { UserAvatar } from '../users/UserAvatar';
-import type { UserProfile } from '../../model/userProfile';
-import {getVisibilityLabel} from "../../utils/friendCardUtils.ts";
+import type { PublicUserProfile } from '../../model/userProfile';
 
 interface FriendCardHeaderProps {
-    user: UserProfile;
+    user: PublicUserProfile;
     profileImageUrl: string | null | undefined;
     isLoading: boolean;
     hasError: boolean;
     displayName: string;
 }
-
-const getVisibilityIcon = (visibility: string) => {
-    switch (visibility) {
-        case 'PUBLIC':
-            return <PublicIcon fontSize="small" />;
-        case 'FRIENDS_ONLY':
-            return <PeopleIcon fontSize="small" />;
-        case 'PRIVATE':
-            return <LockIcon fontSize="small" />;
-        default:
-            return <VisibilityIcon fontSize="small" />;
-    }
-};
 
 export function FriendCardHeader({
                                      user,
@@ -72,11 +55,11 @@ export function FriendCardHeader({
                     </Typography>
                 </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Tooltip title={`Profile: ${getVisibilityLabel(user.visibility)}`}>
+                {user.points !== undefined && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Chip
-                            icon={getVisibilityIcon(user.visibility)}
-                            label={getVisibilityLabel(user.visibility)}
+                            icon={<StarIcon />}
+                            label={`${user.points} points`}
                             size="small"
                             variant="outlined"
                             sx={{
@@ -90,8 +73,8 @@ export function FriendCardHeader({
                                 }
                             }}
                         />
-                    </Tooltip>
-                </Box>
+                    </Box>
+                )}
             </Box>
         </Box>
     );

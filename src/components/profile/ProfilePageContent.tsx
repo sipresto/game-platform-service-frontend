@@ -1,4 +1,4 @@
-import { useCurrentUser, useUserProfileById } from "../../hooks/useUserProfile.ts";
+import { useUserProfile, useUserProfileById} from "../../hooks/useUserProfile.ts";
 import { useUserLibrary } from "../../hooks/useOwnedGames.ts";
 import { useAchievementsForUser } from "../../hooks/useAchievementProgress.ts";
 import { ProfileSkeleton } from "./ProfileSkeleton.tsx";
@@ -8,14 +8,13 @@ import { GameLibrarySection } from "./GameLibrarySection.tsx";
 import { AchievementsSection } from "./AchievementsSection.tsx";
 import { ProfileActions } from "./ProfileActions.tsx";
 
-export function ProfilePageContent({ keycloakId }: { keycloakId: string }) {
-    const { keycloakId: currentUserKeycloakId } = useCurrentUser();
-    const { data: user, isLoading: userLoading, error: userError } = useUserProfileById(keycloakId || '');
+export function ProfilePageContent({ userId }: { userId: string }) {
+    const { profile } = useUserProfile();
+    const { data: user, isLoading: userLoading, error: userError } = useUserProfileById(userId || '');
     const { games, isLoading: libraryLoading, error: libraryError } = useUserLibrary(user?.id);
-    const { achievements } = useAchievementsForUser(keycloakId);
+    const { achievements } = useAchievementsForUser(userId);
 
-    const isOwnProfile = currentUserKeycloakId === keycloakId;
-    const canViewProfile = user?.visibility === 'PUBLIC' || isOwnProfile;
+    const isOwnProfile = profile?.id === userId;
 
     if (userLoading || libraryLoading) {
         return <ProfileSkeleton />;
@@ -26,25 +25,10 @@ export function ProfilePageContent({ keycloakId }: { keycloakId: string }) {
             <Container maxWidth="md" sx={{ py: 4 }}>
                 <Alert severity="error">
                     <Typography variant="h6" gutterBottom>
-                        Profile Not Found
+                        Profile Not Available
                     </Typography>
                     <Typography variant="body2">
-                        {userError?.message || 'This profile does not exist or is not available.'}
-                    </Typography>
-                </Alert>
-            </Container>
-        );
-    }
-
-    if (!canViewProfile) {
-        return (
-            <Container maxWidth="md" sx={{ py: 4 }}>
-                <Alert severity="warning">
-                    <Typography variant="h6" gutterBottom>
-                        Private Profile
-                    </Typography>
-                    <Typography variant="body2">
-                        This profile is private. Only the owner can view it.
+                        {userError?.message || 'This profile does not exist.'}
                     </Typography>
                 </Alert>
             </Container>
@@ -66,10 +50,18 @@ export function ProfilePageContent({ keycloakId }: { keycloakId: string }) {
                             </Typography>
                         </Alert>
                     )}
-                    <GameLibrarySection games={games || []} isOwnProfile={isOwnProfile} />
+                    {user.ownedGames !== undefined ? (
+                        <GameLibrarySection games={games || []} isOwnProfile={isOwnProfile} />
+                    ) : (
+                        <Alert severity="info" sx={{ mb: 2 }}>
+                            <Typography variant="body2">
+                                This user's game library is private.
+                            </Typography>
+                        </Alert>
+                    )}
                 </Grid>
                 <Grid size={{ xs: 12 }} sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                    <AchievementsSection achievements={achievements} />
+                    <AchievementsSection achievements={achievements} achievementsVisible={user.ownedGames !== undefined} />
                 </Grid>
             </Grid>
         </Container>

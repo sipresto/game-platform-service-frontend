@@ -1,9 +1,9 @@
 import { Grid, Typography } from '@mui/material';
 import { UserCard } from './UserCard';
-import type { UserProfile } from '../../model/userProfile';
+import type {PublicUserProfile} from '../../model/userProfile';
 
 interface UsersGridProps {
-    users: UserProfile[];
+    users: PublicUserProfile[];
 }
 
 export function UsersGrid({ users }: UsersGridProps) {

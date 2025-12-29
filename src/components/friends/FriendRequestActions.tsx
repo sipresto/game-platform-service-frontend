@@ -4,14 +4,13 @@ import { Link as RouterLink } from 'react-router';
 
 interface FriendRequestActionsProps {
     userId: string;
-    keycloakId: string;
     isProcessing: boolean;
     onAccept: () => Promise<void>;
     onReject: () => Promise<void>;
 }
 
 export function FriendRequestActions({
-                                         keycloakId,
+                                         userId,
                                          isProcessing,
                                          onAccept,
                                          onReject
@@ -41,7 +40,7 @@ export function FriendRequestActions({
             <Button
                 size="small"
                 component={RouterLink}
-                to={`/profile/${keycloakId}`}
+                to={`/profile/${userId}`}
                 disabled={isProcessing}
             >
                 View

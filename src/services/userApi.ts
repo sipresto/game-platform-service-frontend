@@ -1,12 +1,48 @@
 import apiClient from './axiosInstance';
-import type { UserProfile } from "../model/userProfile.ts";
-import type {AxiosError} from "axios";
+import type {
+    UserProfile,
+    PublicUserProfile,
+    Visibility,
+    VisibleField,
+    VisibilitySettings
+} from "../model/userProfile";
+import type { AxiosError } from "axios";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL + "/users";
 
-export async function updateUserPrivacy(
-    visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'PRIVATE'
-): Promise<void> {
+export async function getUserProfile(): Promise<UserProfile> {
+    const { data } = await apiClient.get<UserProfile>(`${BACKEND_URL}/me`);
+    return data;
+}
+
+export async function getUser(id: string): Promise<PublicUserProfile> {
+    const { data } = await apiClient.get<PublicUserProfile>(`${BACKEND_URL}/${id}`);
+    return data;
+}
+
+export async function updateUserProfile(profileData: {
+    displayName: string;
+    bio: string
+}): Promise<void> {
+    try {
+        await apiClient.put(
+            `${BACKEND_URL}/profile`,
+            profileData
+        );
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        throw new Error(`Failed to update profile: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
+
+export async function getVisibilitySettings(): Promise<VisibilitySettings> {
+    const { data } = await apiClient.get<VisibilitySettings>(
+        `${BACKEND_URL}/privacy/settings`
+    );
+    return data;
+}
+
+export async function updateGlobalVisibility(visibility: Visibility): Promise<void> {
     try {
         await apiClient.put(
             `${BACKEND_URL}/privacy`,
@@ -19,17 +55,38 @@ export async function updateUserPrivacy(
         );
     } catch (error) {
         const axiosError = error as AxiosError;
-        throw new Error(`Failed to update privacy settings: ${axiosError.response?.statusText || axiosError.message}`);
+        throw new Error(`Failed to update global visibility: ${axiosError.response?.statusText || axiosError.message}`);
     }
 }
 
-export async function getPublicUsers(): Promise<UserProfile[]> {
-    const { data } = await apiClient.get<UserProfile[]>(`${BACKEND_URL}`);
+export async function updateFieldVisibility(
+    field: VisibleField,
+    visibility: Visibility
+): Promise<void> {
+    try {
+        await apiClient.put(
+            `${BACKEND_URL}/privacy/fields`,
+            null,
+            {
+                params: {
+                    field,
+                    visibility
+                }
+            }
+        );
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        throw new Error(`Failed to update field visibility: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
+
+export async function getPublicUsers(): Promise<PublicUserProfile[]> {
+    const { data } = await apiClient.get<PublicUserProfile[]>(`${BACKEND_URL}`);
     return data;
 }
 
-export async function getFriendsList(): Promise<UserProfile[]> {
-    const { data } = await apiClient.get<UserProfile[]>(`${BACKEND_URL}/friends`);
+export async function getFriendsList(): Promise<PublicUserProfile[]> {
+    const { data } = await apiClient.get<PublicUserProfile[]>(`${BACKEND_URL}/friends`);
     return data;
 }
 
@@ -62,9 +119,11 @@ export async function removeProfileImage(): Promise<void> {
     }
 }
 
-export async function sendFriendRequest(
-    receiverId: string,
-): Promise<void> {
+export async function getProfileImageUrl(userId: string): Promise<string> {
+    return `${BACKEND_URL}/profile-image/${userId}`;
+}
+
+export async function sendFriendRequest(receiverId: string): Promise<void> {
     try {
         await apiClient.post(
             `${BACKEND_URL}/${receiverId}/send-friend-request`
@@ -91,25 +150,4 @@ export async function rejectFriendRequest(senderId: string): Promise<void> {
         const axiosError = error as AxiosError;
         throw new Error(`Failed to reject friend request: ${axiosError.response?.statusText || axiosError.message}`);
     }
-}
-
-export async function getUserProfile(): Promise<UserProfile> {
-    const { data } = await apiClient.get<UserProfile>(`${BACKEND_URL}/find-by-keycloak-id`);
-    return data;
-}
-
-export async function getUser(id: string): Promise<UserProfile> {
-    const { data } = await apiClient.get<UserProfile>(`${BACKEND_URL}/${id}`);
-    return data;
-}
-
-export async function updateUserProfile(profileData: { displayName: string; bio: string }): Promise<UserProfile> {
-    const { data } = await apiClient.put<UserProfile>(
-        `${BACKEND_URL}/profile`,
-        {
-            displayName: profileData.displayName,
-            bio: profileData.bio
-        }
-    );
-    return data;
 }
