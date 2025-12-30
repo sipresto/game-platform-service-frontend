@@ -6,10 +6,13 @@ import type { Perk } from '../../model/perk';
 interface PerkSectionProps {
     type: string;
     perks: Perk[];
-    onPurchase?: (perkId: string) => void;
-    onEquip?: (perkId: string) => void;
-    purchasingPerkId?: string | null;
-    equippingPerkId?: string | null;
+    onPurchase: (perkId: string) => void;
+    onEquip: (perkId: string) => void;
+    onUnequip: (perkId: string) => void;
+    purchasingPerkId: string | null;
+    equippingPerkId: string | null;
+    unequippingPerkId: string | null;
+    userPoints: number;
 }
 
 export default function PerkSection({
@@ -17,8 +20,11 @@ export default function PerkSection({
                                         perks,
                                         onPurchase,
                                         onEquip,
+                                        onUnequip,
                                         purchasingPerkId,
-                                        equippingPerkId
+                                        equippingPerkId,
+                                        unequippingPerkId,
+                                        userPoints
                                     }: PerkSectionProps) {
     const typeConfig = getPerkTypeConfig(type);
     const Icon = typeConfig.icon;
@@ -43,8 +49,11 @@ export default function PerkSection({
                             perk={perk}
                             onPurchase={onPurchase}
                             onEquip={onEquip}
+                            onUnequip={onUnequip}
                             isPurchasing={purchasingPerkId === perk.perkId}
                             isEquipping={equippingPerkId === perk.perkId}
+                            isUnequipping={unequippingPerkId === perk.perkId}
+                            userPoints={userPoints}
                         />
                     </Grid>
                 ))}

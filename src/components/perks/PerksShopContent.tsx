@@ -6,55 +6,25 @@ import {
     CircularProgress,
     Snackbar,
 } from '@mui/material';
-import { useState } from 'react';
 import { groupPerksByType } from '../../utils/perkUtils';
 import PerkSection from './PerkSection';
-import { usePerks, usePurchasePerk, useEquipPerk } from "../../hooks/usePerks.ts";
+import {usePerkShop} from "../../hooks/usePerkShop.ts";
 
 export default function PerksShopContent() {
-    const { perks, isLoading, error } = usePerks();
-    const { buyPerk } = usePurchasePerk();
-    const { equipPerk } = useEquipPerk();
-
-    const [purchasingPerkId, setPurchasingPerkId] = useState<string | null>(null);
-    const [equippingPerkId, setEquippingPerkId] = useState<string | null>(null);
-    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
-        open: false,
-        message: '',
-        severity: 'success'
-    });
-
-    const handlePurchase = (perkId: string) => {
-        setPurchasingPerkId(perkId);
-        buyPerk(perkId, {
-            onSuccess: () => {
-                setSnackbar({ open: true, message: 'Perk purchased successfully!', severity: 'success' });
-                setPurchasingPerkId(null);
-            },
-            onError: (error) => {
-                setSnackbar({ open: true, message: `Purchase failed: ${error.message}`, severity: 'error' });
-                setPurchasingPerkId(null);
-            }
-        });
-    };
-
-    const handleEquip = (perkId: string) => {
-        setEquippingPerkId(perkId);
-        equipPerk(perkId, {
-            onSuccess: () => {
-                setSnackbar({ open: true, message: 'Perk equipped successfully!', severity: 'success' });
-                setEquippingPerkId(null);
-            },
-            onError: (error) => {
-                setSnackbar({ open: true, message: `Equip failed: ${error.message}`, severity: 'error' });
-                setEquippingPerkId(null);
-            }
-        });
-    };
-
-    const handleCloseSnackbar = () => {
-        setSnackbar({ ...snackbar, open: false });
-    };
+    const {
+        perks,
+        userPoints,
+        isLoading,
+        error,
+        purchasePerk,
+        equipPerk,
+        unequipPerk,
+        closeSnackbar,
+        snackbar,
+        purchasingPerkId,
+        equippingPerkId,
+        unequippingPerkId
+    } = usePerkShop();
 
     if (isLoading) {
         return (
@@ -77,9 +47,16 @@ export default function PerksShopContent() {
 
     return (
         <>
-            <Typography variant="h4" fontWeight={600} gutterBottom>
-                Perk Shop
-            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h4" fontWeight={600}>
+                    Perk Shop
+                </Typography>
+                <Paper sx={{ px: 2, py: 1, bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                        Points: {userPoints ?? 0}
+                    </Typography>
+                </Paper>
+            </Box>
 
             <Paper sx={{ p: 3 }}>
                 {perkTypes.map((type) => {
@@ -91,10 +68,13 @@ export default function PerksShopContent() {
                             key={type}
                             type={type}
                             perks={perksForType}
-                            onPurchase={handlePurchase}
-                            onEquip={handleEquip}
+                            userPoints={userPoints ?? 0}
+                            onPurchase={purchasePerk}
+                            onEquip={equipPerk}
+                            onUnequip={unequipPerk}
                             purchasingPerkId={purchasingPerkId}
                             equippingPerkId={equippingPerkId}
+                            unequippingPerkId={unequippingPerkId}
                         />
                     );
                 })}
@@ -103,11 +83,11 @@ export default function PerksShopContent() {
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={4000}
-                onClose={handleCloseSnackbar}
+                onClose={closeSnackbar}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
                 <Alert
-                    onClose={handleCloseSnackbar}
+                    onClose={closeSnackbar}
                     severity={snackbar.severity}
                     sx={{ width: '100%' }}
                 >

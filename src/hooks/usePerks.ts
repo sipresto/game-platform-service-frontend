@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Perk } from '../model/perk';
-import { equipPerk, fetchPerks, getUserPoints, purchasePerk } from "../services/perkApi.ts";
+import {equipPerk, fetchPerks, getUserPoints, purchasePerk, unequipPerk} from "../services/perkApi.ts";
 
 export function usePerks() {
     const { data: perks, isLoading, error } = useQuery<Perk[]>({
@@ -49,8 +49,25 @@ export function useEquipPerk() {
         mutationFn: (perkId: string) => equipPerk(perkId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({ queryKey: ['perks'] });
+            await queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+            await queryClient.invalidateQueries({ queryKey: ['userProfileById'] });
         }
     });
 
     return { equipPerk: equipPerkMutation, isPending, isError, error };
+}
+
+export function useUnequipPerk() {
+    const queryClient = useQueryClient();
+
+    const { mutate: unequipPerkMutation, isPending, isError, error } = useMutation({
+        mutationFn: (perkId: string) => unequipPerk(perkId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['perks'] });
+            await queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+            await queryClient.invalidateQueries({ queryKey: ['userProfileById'] });
+        }
+    });
+
+    return { unequipPerk: unequipPerkMutation, isPending, isError, error };
 }

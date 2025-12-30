@@ -4,28 +4,78 @@ import {
     Chip,
     Typography,
     Box,
-    Stack, Button
+    Button
 } from '@mui/material';
 import { getPerkTypeConfig } from '../../utils/perkUtils';
 import type { Perk } from '../../model/perk';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 interface PerkCardProps {
     perk: Perk;
-    onPurchase?: (perkId: string) => void;
-    onEquip?: (perkId: string) => void;
-    isPurchasing?: boolean;
-    isEquipping?: boolean;
+    onPurchase: (perkId: string) => void;
+    onEquip: (perkId: string) => void;
+    onUnequip: (perkId: string) => void;
+    isPurchasing: boolean;
+    isEquipping: boolean;
+    isUnequipping: boolean;
+    userPoints: number;
 }
 
 export default function PerkCard({
                                      perk,
                                      onPurchase,
                                      onEquip,
-                                     isPurchasing = false,
-                                     isEquipping = false
+                                     onUnequip,
+                                     isPurchasing,
+                                     isEquipping,
+                                     isUnequipping,
+                                     userPoints
                                  }: PerkCardProps) {
     const typeConfig = getPerkTypeConfig(perk.type);
     const Icon = typeConfig.icon;
+
+    const renderActionButton = () => {
+        if (perk.equipped) {
+            return (
+                <Button
+                    variant="outlined"
+                    color="warning"
+                    fullWidth
+                    onClick={() => onUnequip(perk.perkId)}
+                    disabled={isUnequipping}
+                >
+                    {isUnequipping ? 'Unequipping...' : 'Unequip'}
+                </Button>
+            );
+        }
+
+        if (perk.purchased) {
+            return (
+                <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={() => onEquip(perk.perkId)}
+                    disabled={isEquipping}
+                >
+                    {isEquipping ? 'Equipping...' : 'Equip'}
+                </Button>
+            );
+        }
+
+        const canAfford = userPoints >= perk.pointCost;
+
+        return (
+            <Button
+                variant="contained"
+                fullWidth
+                onClick={() => onPurchase(perk.perkId)}
+                disabled={isPurchasing || !canAfford}
+                color={canAfford ? "primary" : "error"}
+            >
+                {isPurchasing ? 'Purchasing...' : `Purchase (${perk.pointCost})`}
+            </Button>
+        );
+    };
 
     return (
         <Card
@@ -33,6 +83,7 @@ export default function PerkCard({
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
+                border: perk.equipped ? `2px solid ${typeConfig.color}` : undefined
             }}
         >
             <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
@@ -50,13 +101,18 @@ export default function PerkCard({
                         </Typography>
                     </Box>
 
-                    <Chip
-                        label={`${perk.pointCost} points`}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                        sx={{ flexShrink: 0 }}
-                    />
+                    {!perk.purchased && (
+                        <Chip
+                            label={`${perk.pointCost} pts`}
+                            size="small"
+                            color="primary"
+                            variant="outlined"
+                            sx={{ flexShrink: 0 }}
+                        />
+                    )}
+                    {perk.purchased && !perk.equipped && (
+                        <CheckCircleIcon color="success" />
+                    )}
                 </Box>
 
                 <Typography
@@ -68,30 +124,9 @@ export default function PerkCard({
                     {perk.description}
                 </Typography>
 
-                <Stack direction="row" spacing={1}>
-                    {onPurchase && (
-                        <Button
-                            variant="contained"
-                            size="small"
-                            fullWidth
-                            onClick={() => onPurchase(perk.perkId)}
-                            disabled={isPurchasing}
-                        >
-                            {isPurchasing ? 'Purchasing...' : 'Purchase'}
-                        </Button>
-                    )}
-                    {onEquip && (
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            onClick={() => onEquip(perk.perkId)}
-                            disabled={isEquipping}
-                        >
-                            {isEquipping ? 'Equipping...' : 'Equip'}
-                        </Button>
-                    )}
-                </Stack>
+                <Box mt="auto">
+                    {renderActionButton()}
+                </Box>
             </CardContent>
         </Card>
     );

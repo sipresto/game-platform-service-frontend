@@ -22,6 +22,8 @@ const DRAWER_WIDTH = 240;
 export function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
+    const isProfilePage = location.pathname.startsWith('/profile');
+
     const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
     const { profile: userProfile } = useUserProfile();
     const { notifications = [] } = useNotifications();
@@ -352,9 +354,9 @@ export function MainLayout() {
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: 3,
+                    p: isProfilePage ? 0 : 3,
                     mt: '64px',
-                    bgcolor: '#FFFFFF',
+                    bgcolor: isProfilePage ? 'transparent' : '#FFFFFF',
                     height: 'calc(100vh - 64px)',
                     overflow: 'auto',
                     width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` }

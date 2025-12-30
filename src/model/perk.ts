@@ -4,4 +4,6 @@ export interface Perk {
     description: string;
     pointCost: number;
     type: 'BORDER' | 'TITLE' | 'THEME';
+    purchased: boolean;
+    equipped: boolean;
 }

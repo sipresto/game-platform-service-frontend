@@ -77,7 +77,10 @@ export function useUserProfileById(userId: string): UseQueryResult<PublicUserPro
                     favoriteGames: currentUserProfile.favoriteGames,
                     ownedGames: currentUserProfile.ownedGames,
                     friends: currentUserProfile.friends,
-                    keycloakId: currentUserProfile.keycloakId
+                    keycloakId: currentUserProfile.keycloakId,
+                    equippedBorderId: currentUserProfile.equippedBorderId,
+                    equippedThemeId: currentUserProfile.equippedThemeId,
+                    equippedTitleId: currentUserProfile.equippedTitleId
                 };
             }
 
