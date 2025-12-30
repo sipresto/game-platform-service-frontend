@@ -50,6 +50,15 @@ export interface PublicUserProfile {
     keycloakId: string;
 }
 
+export interface BlockedUser {
+    id: string;
+    username: string;
+    profile: {
+        displayName: string;
+        bio?: string;
+    };
+}
+
 export interface ProfileUpdateData {
     username: string;
     firstName: string;

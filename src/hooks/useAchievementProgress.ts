@@ -7,10 +7,13 @@ export function useAchievementsForUser(userId: string) {
         throw new Error("userId required");
     }
 
-    const { data } = useSuspenseQuery<AchievementProgress[]>({
+    const query = useSuspenseQuery<AchievementProgress[]>({
         queryKey: ['achievements', userId],
         queryFn: () => getAchievementProgressByUserId(userId),
     });
 
-    return { achievements: data };
+    return {
+        achievements: query.data,
+        refetch: query.refetch
+    };
 }

@@ -4,9 +4,11 @@ import {
     Typography,
     Paper,
     CircularProgress,
-    Grid
+    Grid,
+    IconButton,
+    Tooltip
 } from '@mui/material';
-import { PersonAdd } from '@mui/icons-material';
+import { PersonAdd, Refresh } from '@mui/icons-material';
 import { FriendRequestCard } from './FriendRequestCard';
 import { useUserProfileById } from '../../hooks/useUserProfile';
 
@@ -17,6 +19,8 @@ interface FriendRequest {
 
 interface FriendRequestsListProps {
     friendRequests: FriendRequest[];
+    onRefresh?: () => void | Promise<void>;
+    isRefreshing?: boolean;
 }
 
 function FriendRequestItem({ request }: { request: FriendRequest }) {
@@ -43,7 +47,11 @@ function FriendRequestItem({ request }: { request: FriendRequest }) {
     );
 }
 
-export function FriendRequestsList({ friendRequests }: FriendRequestsListProps) {
+export function FriendRequestsList({
+                                       friendRequests,
+                                       onRefresh,
+                                       isRefreshing = false
+                                   }: FriendRequestsListProps) {
     const [sortedRequests, setSortedRequests] = useState<FriendRequest[]>([]);
 
     useEffect(() => {
@@ -53,6 +61,12 @@ export function FriendRequestsList({ friendRequests }: FriendRequestsListProps) 
         setSortedRequests(sorted);
     }, [friendRequests]);
 
+    const handleRefresh = async () => {
+        if (onRefresh && !isRefreshing) {
+            await onRefresh();
+        }
+    };
+
     if (friendRequests.length === 0) {
         return (
             <Paper
@@ -60,8 +74,27 @@ export function FriendRequestsList({ friendRequests }: FriendRequestsListProps) 
                     p: 6,
                     textAlign: 'center',
                     bgcolor: 'background.default',
+                    position: 'relative'
                 }}
             >
+                {onRefresh && (
+                    <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+                        <Tooltip title="Refresh friend requests">
+                            <IconButton
+                                onClick={handleRefresh}
+                                disabled={isRefreshing}
+                                size="small"
+                            >
+                                <Refresh
+                                    sx={{
+                                        fontSize: 20,
+                                        animation: isRefreshing ? 'spin 1s linear infinite' : 'none'
+                                    }}
+                                />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                )}
                 <PersonAdd sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
                 <Typography variant="h6" gutterBottom>
                     No Pending Friend Requests
@@ -75,9 +108,49 @@ export function FriendRequestsList({ friendRequests }: FriendRequestsListProps) 
 
     return (
         <Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                You have {friendRequests.length} pending friend request{friendRequests.length !== 1 ? 's' : ''}
-            </Typography>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2
+            }}>
+                <Typography variant="body2" color="text.secondary">
+                    You have {friendRequests.length} pending friend request{friendRequests.length !== 1 ? 's' : ''}
+                </Typography>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {isRefreshing && (
+                        <Typography variant="caption" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Refresh sx={{ fontSize: 14, animation: 'spin 1s linear infinite' }} />
+                            Refreshing...
+                        </Typography>
+                    )}
+
+                    {onRefresh && (
+                        <Tooltip title="Refresh friend requests">
+                            <IconButton
+                                onClick={handleRefresh}
+                                disabled={isRefreshing}
+                                size="small"
+                                sx={{
+                                    bgcolor: 'background.paper',
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    '&:hover': {
+                                        bgcolor: 'action.hover'
+                                    }
+                                }}
+                            >
+                                <Refresh
+                                    sx={{
+                                        animation: isRefreshing ? 'spin 1s linear infinite' : 'none'
+                                    }}
+                                />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                </Box>
+            </Box>
 
             <Grid container spacing={3}>
                 {sortedRequests.map((request) => (

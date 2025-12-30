@@ -4,17 +4,22 @@ import {
     TextField,
     Typography,
     Paper,
-    Grid
+    Grid,
+    IconButton,
+    Tooltip
 } from '@mui/material';
-import { Group } from '@mui/icons-material';
-import type {PublicUserProfile} from '../../model/userProfile';
+import { Group, Refresh } from '@mui/icons-material';
+import type { PublicUserProfile } from '../../model/userProfile';
 import { FriendCard } from './FriendCard';
 
 interface FriendsListProps {
     friends: PublicUserProfile[];
+    onRemoveFriend?: (userId: string) => void;
+    onRefresh?: () => void | Promise<void>;
+    isRefreshing?: boolean;
 }
 
-export function FriendsList({ friends }: FriendsListProps) {
+export function FriendsList({ friends, onRemoveFriend, onRefresh, isRefreshing = false }: FriendsListProps) {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredAndSortedFriends = useMemo(() => {
@@ -38,6 +43,12 @@ export function FriendsList({ friends }: FriendsListProps) {
         return result;
     }, [friends, searchTerm]);
 
+    const handleRefresh = async () => {
+        if (onRefresh && !isRefreshing) {
+            await onRefresh();
+        }
+    };
+
     if (friends.length === 0) {
         return (
             <Paper
@@ -45,8 +56,27 @@ export function FriendsList({ friends }: FriendsListProps) {
                     p: 6,
                     textAlign: 'center',
                     bgcolor: 'background.default',
+                    position: 'relative'
                 }}
             >
+                {onRefresh && (
+                    <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+                        <Tooltip title="Refresh friends list">
+                            <IconButton
+                                onClick={handleRefresh}
+                                disabled={isRefreshing}
+                                size="small"
+                            >
+                                <Refresh
+                                    sx={{
+                                        fontSize: 20,
+                                        animation: isRefreshing ? 'spin 1s linear infinite' : 'none'
+                                    }}
+                                />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                )}
                 <Group sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
                 <Typography variant="h6" gutterBottom>
                     No Friends Yet
@@ -60,7 +90,13 @@ export function FriendsList({ friends }: FriendsListProps) {
 
     return (
         <Box>
-            <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+            <Box sx={{
+                display: 'flex',
+                gap: 2,
+                mb: 3,
+                flexWrap: 'wrap',
+                alignItems: 'center'
+            }}>
                 <TextField
                     placeholder="Search friends..."
                     value={searchTerm}
@@ -68,17 +104,57 @@ export function FriendsList({ friends }: FriendsListProps) {
                     size="small"
                     sx={{ flexGrow: 1, minWidth: 200 }}
                 />
+
+                {onRefresh && (
+                    <Tooltip title="Refresh friends list">
+                        <IconButton
+                            onClick={handleRefresh}
+                            disabled={isRefreshing}
+                            sx={{
+                                bgcolor: 'background.paper',
+                                border: '1px solid',
+                                borderColor: 'divider',
+                                '&:hover': {
+                                    bgcolor: 'action.hover'
+                                }
+                            }}
+                        >
+                            <Refresh
+                                sx={{
+                                    animation: isRefreshing ? 'spin 1s linear infinite' : 'none'
+                                }}
+                            />
+                        </IconButton>
+                    </Tooltip>
+                )}
             </Box>
 
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Showing {filteredAndSortedFriends.length} of {friends.length} friend{friends.length !== 1 ? 's' : ''}
-                {searchTerm && ` matching "${searchTerm}"`}
-            </Typography>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2
+            }}>
+                <Typography variant="body2" color="text.secondary">
+                    Showing {filteredAndSortedFriends.length} of {friends.length} friend{friends.length !== 1 ? 's' : ''}
+                    {searchTerm && ` matching "${searchTerm}"`}
+                </Typography>
+
+                {isRefreshing && (
+                    <Typography variant="caption" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Refresh sx={{ fontSize: 14, animation: 'spin 1s linear infinite' }} />
+                        Refreshing...
+                    </Typography>
+                )}
+            </Box>
 
             <Grid container spacing={3}>
                 {filteredAndSortedFriends.map((friend) => (
                     <Grid key={friend.id} size={{ xs: 12, sm: 6, md: 4 }}>
-                        <FriendCard user={friend} />
+                        <FriendCard
+                            user={friend}
+                            onRemoveFriend={onRemoveFriend}
+                        />
                     </Grid>
                 ))}
             </Grid>

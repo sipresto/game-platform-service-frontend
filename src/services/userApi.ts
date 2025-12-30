@@ -4,7 +4,8 @@ import type {
     PublicUserProfile,
     Visibility,
     VisibleField,
-    VisibilitySettings
+    VisibilitySettings,
+    BlockedUser
 } from "../model/userProfile";
 import type { AxiosError } from "axios";
 
@@ -150,4 +151,36 @@ export async function rejectFriendRequest(senderId: string): Promise<void> {
         const axiosError = error as AxiosError;
         throw new Error(`Failed to reject friend request: ${axiosError.response?.statusText || axiosError.message}`);
     }
+}
+
+export async function removeFriend(friendId: string): Promise<void> {
+    try {
+        await apiClient.patch(`${BACKEND_URL}/${friendId}/remove`);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        throw new Error(`Failed to remove friend: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
+
+export async function blockUser(userId: string): Promise<void> {
+    try {
+        await apiClient.patch(`${BACKEND_URL}/${userId}/block`);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        throw new Error(`Failed to block user: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
+
+export async function unblockUser(userId: string): Promise<void> {
+    try {
+        await apiClient.patch(`${BACKEND_URL}/${userId}/unblock`);
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        throw new Error(`Failed to unblock user: ${axiosError.response?.statusText || axiosError.message}`);
+    }
+}
+
+export async function getBlockedUsers(): Promise<BlockedUser[]> {
+    const { data } = await apiClient.get<BlockedUser[]>(`${BACKEND_URL}/blocked`);
+    return data;
 }

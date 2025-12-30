@@ -1,6 +1,6 @@
 import apiClient from './axiosInstance';
 import type { AxiosError } from 'axios';
-import type {ChargeResponse} from "../model/ChargeResponse.ts";
+import type {ChargeResponse} from "../model/chargeResponse.ts";
 import type {Purchase} from "../model/purchase.ts";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
