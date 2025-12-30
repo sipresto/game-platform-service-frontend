@@ -1,6 +1,10 @@
 import type {Notification} from "../model/notification.ts";
 import apiClient from "./axiosInstance.ts";
-import type {NotificationChannel, NotificationPreferences, NotificationType} from "../model/notificationPreferences.ts";
+import type {
+    NotificationChannel,
+    NotificationPreferences,
+    NotificationType
+} from "../model/notificationPreferences.ts";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
@@ -16,10 +20,10 @@ export async function markNotificationRead(notificationId: string): Promise<void
 }
 
 export async function getNotificationPreferences(): Promise<NotificationPreferences> {
-    const { data } = await apiClient.get<NotificationPreferences>(
+    const { data } = await apiClient.get<{ preferences: NotificationPreferences }>(
         `${BACKEND_URL}/notifications/preferences`
     );
-    return data;
+    return data.preferences;
 }
 
 export async function updateNotificationPreference(
@@ -28,10 +32,11 @@ export async function updateNotificationPreference(
     enabled: boolean
 ): Promise<void> {
     await apiClient.put(
-        `${BACKEND_URL}/notifications/preferences/${notificationType}/${channel}`,
-        null,
+        `${BACKEND_URL}/notifications/preferences`,
         {
-            params: { enabled }
+            notificationType,
+            channel,
+            enabled
         }
     );
 }
