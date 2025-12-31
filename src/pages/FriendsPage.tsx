@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import {
     Container,
-    Typography,
-    Box,
+    Paper,
     Tabs,
     Tab,
-    Paper,
-    CircularProgress,
-    Alert,
-    AlertTitle,
     Badge,
     Snackbar
 } from '@mui/material';
@@ -18,37 +12,17 @@ import { useAllUsers, useUserProfile, useBlockedUsers, useUnblockUser, useRemove
 import { FriendsList } from '../components/friends/FriendsList';
 import { FriendRequestsList } from '../components/friends/FriendRequestsList';
 import { BlockedUsersList } from '../components/friends/blocked/BlockedUsersList';
-
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: number;
-}
-
-function TabPanel({ children, value, index }: TabPanelProps) {
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`friends-tabpanel-${index}`}
-            aria-labelledby={`friends-tab-${index}`}
-        >
-            {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-        </div>
-    );
-}
+import { TabPanel } from '../components/friends/TabPanel';
+import { FriendsPageLoadingState } from '../components/friends/FriendsPageLoadingState';
+import { FriendsPageErrorState } from '../components/friends/FriendsPageErrorState';
+import { FriendsPageHeader } from '../components/friends/FriendsPageHeader';
+import { useFriendsSnackbar } from '../hooks/useFriendsSnackbar';
+import { useFriendsRefresh } from '../hooks/useFriendsRefresh';
 
 export function FriendsPage() {
-    const queryClient = useQueryClient();
     const [currentTab, setCurrentTab] = useState(0);
-    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+    const { snackbar, showSnackbar, closeSnackbar } = useFriendsSnackbar();
 
-    // Add separate refreshing states for all tabs
-    const [isFriendsRefreshing, setIsFriendsRefreshing] = useState(false);
-    const [isRequestsRefreshing, setIsRequestsRefreshing] = useState(false);
-    const [isBlockedRefreshing, setIsBlockedRefreshing] = useState(false);
-
-    // Use the hooks
     const {
         friends,
         isLoading: friendsLoading,
@@ -73,6 +47,18 @@ export function FriendsPage() {
     const unblockMutation = useUnblockUser();
     const removeFriendMutation = useRemoveFriend();
 
+    const {
+        isFriendsRefreshing,
+        isRequestsRefreshing,
+        isBlockedRefreshing,
+        handleRefreshFriends,
+        handleRefreshFriendRequests,
+        handleRefreshBlockedUsers
+    } = useFriendsRefresh({
+        refetchProfile,
+        refetchBlockedUsers
+    });
+
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setCurrentTab(newValue);
     };
@@ -80,9 +66,9 @@ export function FriendsPage() {
     const handleUnblock = async (userId: string) => {
         try {
             await unblockMutation.mutateAsync(userId);
-            setSnackbar({ open: true, message: 'User unblocked successfully', severity: 'success' });
+            showSnackbar('User unblocked successfully', 'success');
         } catch (error) {
-            setSnackbar({ open: true, message: 'Failed to unblock user', severity: 'error' });
+            showSnackbar('Failed to unblock user', 'error');
             console.log(error);
         }
     };
@@ -90,118 +76,58 @@ export function FriendsPage() {
     const handleRemoveFriend = async (userId: string) => {
         try {
             await removeFriendMutation.mutateAsync(userId);
-            setSnackbar({ open: true, message: 'Friend removed successfully', severity: 'success' });
+            showSnackbar('Friend removed successfully', 'success');
         } catch (error) {
-            setSnackbar({ open: true, message: 'Failed to remove friend', severity: 'error' });
+            showSnackbar('Failed to remove friend', 'error');
             console.log(error);
         }
     };
 
-    const handleRefreshFriends = async () => {
+    const handleRefreshFriendsWithFeedback = async () => {
         try {
-            setIsFriendsRefreshing(true);
-            // Invalidate and refetch all queries related to friends
-            await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ['friends'] }),
-                queryClient.invalidateQueries({ queryKey: ['publicUsers'] }),
-                refetchProfile() // Also refresh profile for consistency
-            ]);
-            setSnackbar({
-                open: true,
-                message: 'Friends list refreshed successfully',
-                severity: 'success'
-            });
+            await handleRefreshFriends();
+            showSnackbar('Friends list refreshed successfully', 'success');
         } catch (error) {
             console.error('Failed to refresh friends:', error);
-            setSnackbar({
-                open: true,
-                message: 'Failed to refresh friends list',
-                severity: 'error'
-            });
-        } finally {
-            setIsFriendsRefreshing(false);
+            showSnackbar('Failed to refresh friends list', 'error');
         }
     };
 
-    const handleRefreshFriendRequests = async () => {
+    const handleRefreshFriendRequestsWithFeedback = async () => {
         try {
-            setIsRequestsRefreshing(true);
-            // Refresh the profile which contains friend requests
-            await refetchProfile();
-            setSnackbar({
-                open: true,
-                message: 'Friend requests refreshed successfully',
-                severity: 'success'
-            });
+            await handleRefreshFriendRequests();
+            showSnackbar('Friend requests refreshed successfully', 'success');
         } catch (error) {
             console.error('Failed to refresh friend requests:', error);
-            setSnackbar({
-                open: true,
-                message: 'Failed to refresh friend requests',
-                severity: 'error'
-            });
-        } finally {
-            setIsRequestsRefreshing(false);
+            showSnackbar('Failed to refresh friend requests', 'error');
         }
     };
 
-    const handleRefreshBlockedUsers = async () => {
+    const handleRefreshBlockedUsersWithFeedback = async () => {
         try {
-            setIsBlockedRefreshing(true);
-            await refetchBlockedUsers();
-            setSnackbar({
-                open: true,
-                message: 'Blocked users refreshed successfully',
-                severity: 'success'
-            });
+            await handleRefreshBlockedUsers();
+            showSnackbar('Blocked users refreshed successfully', 'success');
         } catch (error) {
             console.error('Failed to refresh blocked users:', error);
-            setSnackbar({
-                open: true,
-                message: 'Failed to refresh blocked users',
-                severity: 'error'
-            });
-        } finally {
-            setIsBlockedRefreshing(false);
+            showSnackbar('Failed to refresh blocked users', 'error');
         }
     };
 
-    const handleCloseSnackbar = () => {
-        setSnackbar({ ...snackbar, open: false });
-    };
+    if (friendsLoading || profileLoading || blockedLoading) {
+        return <FriendsPageLoadingState />;
+    }
+
+    const errorMessage = friendsErrorMsg?.message || profileError?.message || blockedError?.message;
+    if (friendsError || profileError || blockedError) {
+        return <FriendsPageErrorState errorMessage={errorMessage} />;
+    }
 
     const friendRequests = profile?.incomingFriendRequests || [];
     const pendingCount = friendRequests.length;
 
-    if (friendsLoading || profileLoading || blockedLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    if (friendsError || profileError || blockedError) {
-        return (
-            <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Alert severity="error">
-                    <AlertTitle>Error Loading Data</AlertTitle>
-                    {friendsErrorMsg?.message || profileError?.message || blockedError?.message || 'Failed to load data. Please try again later.'}
-                </Alert>
-            </Container>
-        );
-    }
-
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
-                    Friends
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    Manage your friends, friend requests, and blocked users
-                </Typography>
-            </Box>
+            <FriendsPageHeader />
 
             <Paper sx={{ mb: 3 }}>
                 <Tabs
@@ -242,7 +168,7 @@ export function FriendsPage() {
                 <FriendsList
                     friends={friends}
                     onRemoveFriend={handleRemoveFriend}
-                    onRefresh={handleRefreshFriends}
+                    onRefresh={handleRefreshFriendsWithFeedback}
                     isRefreshing={isFriendsRefreshing}
                 />
             </TabPanel>
@@ -250,7 +176,7 @@ export function FriendsPage() {
             <TabPanel value={currentTab} index={1}>
                 <FriendRequestsList
                     friendRequests={friendRequests}
-                    onRefresh={handleRefreshFriendRequests}
+                    onRefresh={handleRefreshFriendRequestsWithFeedback}
                     isRefreshing={isRequestsRefreshing}
                 />
             </TabPanel>
@@ -259,7 +185,7 @@ export function FriendsPage() {
                 <BlockedUsersList
                     blockedUsers={blockedUsers}
                     onUnblock={handleUnblock}
-                    onRefresh={handleRefreshBlockedUsers}
+                    onRefresh={handleRefreshBlockedUsersWithFeedback}
                     isRefreshing={isBlockedRefreshing}
                 />
             </TabPanel>
@@ -267,7 +193,7 @@ export function FriendsPage() {
             <Snackbar
                 open={snackbar.open}
                 autoHideDuration={4000}
-                onClose={handleCloseSnackbar}
+                onClose={closeSnackbar}
                 message={snackbar.message}
             />
         </Container>

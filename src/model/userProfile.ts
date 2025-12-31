@@ -80,3 +80,8 @@ export const hasUniformVisibility = (settings: VisibilitySettings): boolean => {
     const visibilities = fields.map(f => settings.fieldVisibilities[f]);
     return visibilities.every(v => v === visibilities[0]);
 };
+
+export interface FriendRequest {
+    senderId: string;
+    createdAt: string;
+}

@@ -1,3 +1,5 @@
+import type {PublicUserProfile} from "../model/userProfile.ts";
+
 export const getProfileImageUrl = (userId: string, timestamp?: number): string | null => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL as string;
     if (!BACKEND_URL || !userId) return null;
@@ -23,3 +25,32 @@ export const getVisibilityInfo = (visibility: string) => {
         default: return { label: 'Unknown', color: 'default' as const };
     }
 };
+
+export function filterUsers(
+    publicUsers: PublicUserProfile[],
+    friends: PublicUserProfile[],
+    searchTerm: string
+): PublicUserProfile[] {
+    const userMap = new Map<string, PublicUserProfile>();
+
+    publicUsers.forEach(user => {
+        userMap.set(user.id, user);
+    });
+
+    friends.forEach(user => {
+        if (!userMap.has(user.id)) {
+            userMap.set(user.id, user);
+        }
+    });
+
+    const allUsers = Array.from(userMap.values());
+
+    if (!searchTerm.trim()) return allUsers;
+
+    const term = searchTerm.toLowerCase();
+    return allUsers.filter(user => {
+        const displayName = user.profile?.displayName?.toLowerCase() || '';
+        const username = user.username.toLowerCase();
+        return displayName.includes(term) || username.includes(term);
+    });
+}

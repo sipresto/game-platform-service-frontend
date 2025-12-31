@@ -3,9 +3,17 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useUserProfile, useUserProfileById } from "../../hooks/useUserProfile.ts";
 import { useUserLibrary } from "../../hooks/useOwnedGames.ts";
 import { useAchievementsForUser } from "../../hooks/useAchievementProgress.ts";
-import { ProfileSkeleton } from "./ProfileSkeleton.tsx";
-import { Alert, Container, Grid, Typography, IconButton, Tooltip, Box, Snackbar } from "@mui/material";
-import { Refresh } from "@mui/icons-material";
+import { useProfileRefresh } from '../../hooks/useProfileRefresh.ts';
+import {
+    Container,
+    Grid,
+    Snackbar,
+    Alert
+} from "@mui/material";
+import { ProfileLoadingState } from "./ProfileLoadingState.tsx";
+import { ProfileErrorState } from "./ProfileErrorState.tsx";
+import { ProfileRefreshButton } from "./ProfileRefreshButton.tsx";
+import { LibraryErrorAlert } from "./LibraryErrorAlert.tsx";
 import { ProfileHeader } from "./ProfileHeader.tsx";
 import { GameLibrarySection } from "./GameLibrarySection.tsx";
 import { AchievementsSection } from "./AchievementsSection.tsx";
@@ -29,48 +37,23 @@ export function ProfilePageContent({ userId }: { userId: string }) {
         achievements
     } = useAchievementsForUser(userId);
 
-    const [isRefreshing, setIsRefreshing] = useState(false);
-    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
-
     const isOwnProfile = profile?.id === userId;
 
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: '',
+        severity: 'success' as 'success' | 'error'
+    });
+
+    const { isRefreshing, refreshProfile } = useProfileRefresh({
+        userId,
+        isOwnProfile,
+        refetchUserProfile
+    });
+
     const handleRefresh = async () => {
-        if (isRefreshing) return;
-
         try {
-            setIsRefreshing(true);
-
-            // Invalidate all profile-related queries
-            const promises = [];
-
-            // Always invalidate user profile and achievements
-            promises.push(
-                queryClient.invalidateQueries({ queryKey: ['userProfileById', userId] }),
-                queryClient.invalidateQueries({ queryKey: ['achievements', userId] })
-            );
-
-            // Invalidate library if user exists
-            if (user?.id) {
-                promises.push(
-                    queryClient.invalidateQueries({ queryKey: ['userLibrary', user.id] })
-                );
-            }
-
-            // If viewing own profile, also invalidate main profile
-            if (isOwnProfile) {
-                promises.push(
-                    queryClient.invalidateQueries({ queryKey: ['userProfile'] }),
-                    queryClient.invalidateQueries({ queryKey: ['myOwnedGames'] })
-                );
-            }
-
-            await Promise.all(promises);
-
-            // Refetch the user profile immediately so it updates
-            if (refetchUserProfile) {
-                await refetchUserProfile();
-            }
-
+            await refreshProfile();
             setSnackbar({
                 open: true,
                 message: 'Profile data refreshed successfully',
@@ -83,8 +66,6 @@ export function ProfilePageContent({ userId }: { userId: string }) {
                 message: 'Failed to refresh profile data',
                 severity: 'error'
             });
-        } finally {
-            setIsRefreshing(false);
         }
     };
 
@@ -108,101 +89,27 @@ export function ProfilePageContent({ userId }: { userId: string }) {
     };
 
     if (userLoading || libraryLoading) {
-        return (
-            <Box position="relative">
-                <ProfileSkeleton />
-                {isRefreshing && (
-                    <Box sx={{
-                        position: 'absolute',
-                        top: 16,
-                        left: 16,
-                        zIndex: 1
-                    }}>
-                        <Tooltip title="Refreshing...">
-                            <IconButton disabled>
-                                <Refresh sx={{ animation: 'spin 1s linear infinite' }} />
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
-                )}
-            </Box>
-        );
+        return <ProfileLoadingState isRefreshing={isRefreshing} />;
     }
 
     if (userError || !user) {
         return (
-            <Container maxWidth="md" sx={{ py: 4, position: 'relative' }}>
-                <Box sx={{ position: 'absolute', top: 16, left: 16 }}>
-                    <Tooltip title="Refresh profile">
-                        <IconButton
-                            onClick={handleRefresh}
-                            disabled={isRefreshing}
-                        >
-                            <Refresh
-                                sx={{
-                                    animation: isRefreshing ? 'spin 1s linear infinite' : 'none'
-                                }}
-                            />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
-                <Alert severity="error">
-                    <Typography variant="h6" gutterBottom>
-                        Profile Not Available
-                    </Typography>
-                    <Typography variant="body2">
-                        {userError?.message || 'This profile does not exist.'}
-                    </Typography>
-                </Alert>
-            </Container>
+            <ProfileErrorState
+                errorMessage={userError?.message}
+                onRefresh={handleRefresh}
+                isRefreshing={isRefreshing}
+            />
         );
     }
 
     return (
         <>
             <Container maxWidth={false} sx={{ py: 4, width: '100%', position: 'relative' }}>
-                <Box sx={{
-                    position: 'absolute',
-                    top: 16,
-                    left: 16,
-                    zIndex: 1
-                }}>
-                    <Tooltip title="Refresh profile data">
-                        <IconButton
-                            onClick={handleRefresh}
-                            disabled={isRefreshing}
-                            sx={{
-                                bgcolor: 'background.paper',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                boxShadow: 1,
-                                '&:hover': {
-                                    bgcolor: 'background.paper'
-                                }
-                            }}
-                        >
-                            <Refresh
-                                sx={{
-                                    animation: isRefreshing ? 'spin 1s linear infinite' : 'none'
-                                }}
-                            />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
-
-                {isRefreshing && (
-                    <Box sx={{
-                        position: 'absolute',
-                        top: 60,
-                        left: 16,
-                        zIndex: 1
-                    }}>
-                        <Typography variant="caption" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <Refresh sx={{ fontSize: 12, animation: 'spin 1s linear infinite' }} />
-                            Refreshing...
-                        </Typography>
-                    </Box>
-                )}
+                <ProfileRefreshButton
+                    onRefresh={handleRefresh}
+                    isRefreshing={isRefreshing}
+                    showRefreshingText
+                />
 
                 <Grid container spacing={3} sx={{ width: '100%' }}>
                     <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
@@ -211,35 +118,25 @@ export function ProfilePageContent({ userId }: { userId: string }) {
                     </Grid>
                     <Grid size={{ xs: 12, md: 8 }} sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                         {libraryError && (
-                            <Alert severity="warning" sx={{ mb: 2 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                    <Typography variant="body2">
-                                        Failed to load game library: {libraryError.message}
-                                    </Typography>
-                                    <Tooltip title="Retry loading library">
-                                        <IconButton
-                                            size="small"
-                                            onClick={handleRetryLibrary}
-                                            disabled={isRefreshing}
-                                        >
-                                            <Refresh sx={{ fontSize: 16 }} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
-                            </Alert>
+                            <LibraryErrorAlert
+                                errorMessage={libraryError.message}
+                                onRetry={handleRetryLibrary}
+                                isRefreshing={isRefreshing}
+                            />
                         )}
                         {user.ownedGames !== undefined ? (
                             <GameLibrarySection games={games || []} isOwnProfile={isOwnProfile} />
                         ) : (
                             <Alert severity="info" sx={{ mb: 2 }}>
-                                <Typography variant="body2">
-                                    This user's game library is private.
-                                </Typography>
+                                This user's game library is private.
                             </Alert>
                         )}
                     </Grid>
                     <Grid size={{ xs: 12 }} sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
-                        <AchievementsSection achievements={achievements} achievementsVisible={user.ownedGames !== undefined} />
+                        <AchievementsSection
+                            achievements={achievements}
+                            achievementsVisible={user.ownedGames !== undefined}
+                        />
                     </Grid>
                 </Grid>
             </Container>

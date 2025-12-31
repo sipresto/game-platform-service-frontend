@@ -17,6 +17,40 @@ export function BlockedUserCard({ user, onUnblock }: BlockedUserCardProps) {
     const { profileImageUrl, isLoading, hasError } = useProfileImageLoader(user.id);
     const displayName = user.profile?.displayName || user.username;
 
+    const viewProfileLinkStyles = {
+        borderRadius: 1,
+        textTransform: 'none',
+        fontWeight: 500,
+        boxShadow: 'none',
+        color: theme.palette.primary.contrastText,
+        '&:hover': {
+            boxShadow: `0 2px 6px ${alpha(theme.palette.primary.main, 0.2)}`,
+            backgroundColor: theme.palette.primary.dark,
+        },
+        textDecoration: 'none',
+        '&:hover, &:active, &:visited, &:link': {
+            color: theme.palette.primary.contrastText,
+        }
+    };
+
+    const unblockButtonStyles = {
+        border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
+        backgroundColor: alpha(theme.palette.success.main, 0.04),
+        color: theme.palette.text.secondary,
+        '&:hover': {
+            backgroundColor: alpha(theme.palette.success.main, 0.12),
+            color: theme.palette.success.main,
+        }
+    };
+
+    const cardActionsStyles = {
+        p: 1.5,
+        pt: 0.5,
+        gap: 1,
+        borderTop: `1px solid ${alpha(theme.palette.divider, 0.08)}`,
+        backgroundColor: alpha(theme.palette.background.default, 0.6),
+    };
+
     return (
         <Card sx={cardStyles(theme)}>
             <CardContent sx={contentStyles(true)}>
@@ -54,36 +88,14 @@ export function BlockedUserCard({ user, onUnblock }: BlockedUserCardProps) {
                 </Box>
             </CardContent>
 
-            <CardActions
-                sx={{
-                    p: 1.5,
-                    pt: 0.5,
-                    gap: 1,
-                    borderTop: `1px solid ${alpha(theme.palette.divider, 0.08)}`,
-                    backgroundColor: alpha(theme.palette.background.default, 0.6),
-                }}
-            >
+            <CardActions sx={cardActionsStyles}>
                 <Button
                     size="small"
                     variant="contained"
                     component={RouterLink}
                     to={`/profile/${user.id}`}
                     fullWidth
-                    sx={{
-                        borderRadius: 1,
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        boxShadow: 'none',
-                        color: theme.palette.primary.contrastText,
-                        '&:hover': {
-                            boxShadow: `0 2px 6px ${alpha(theme.palette.primary.main, 0.2)}`,
-                            backgroundColor: theme.palette.primary.dark,
-                        },
-                        textDecoration: 'none',
-                        '&:hover, &:active, &:visited, &:link': {
-                            color: theme.palette.primary.contrastText,
-                        }
-                    }}
+                    sx={viewProfileLinkStyles}
                 >
                     View Profile
                 </Button>
@@ -93,15 +105,7 @@ export function BlockedUserCard({ user, onUnblock }: BlockedUserCardProps) {
                         <IconButton
                             size="small"
                             onClick={() => onUnblock(user.id)}
-                            sx={{
-                                border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
-                                backgroundColor: alpha(theme.palette.success.main, 0.04),
-                                color: theme.palette.text.secondary,
-                                '&:hover': {
-                                    backgroundColor: alpha(theme.palette.success.main, 0.12),
-                                    color: theme.palette.success.main,
-                                }
-                            }}
+                            sx={unblockButtonStyles}
                         >
                             <BlockIcon fontSize="small" />
                         </IconButton>
