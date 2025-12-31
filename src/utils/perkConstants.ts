@@ -65,7 +65,7 @@ export const THEME_STYLES: Record<string, ThemeStyleConfig> = {
     // Dark Mode
     'a6d9f3c8-4e7b-4a2d-9f5c-1b8e6a0d3f7c': {
         background: 'linear-gradient(145deg, #3b3b3b 0%, #555555 100%)',
-        color: '#FFD700',
+        color: '#ffffff',
         accentColor: '#FFD700',
         secondaryTextColor: '#C0C0C0',
     },
