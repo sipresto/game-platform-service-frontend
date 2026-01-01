@@ -33,6 +33,9 @@ export interface UserProfile {
     }[];
     ownedGames: string[];
     favoriteGames: string[];
+    equippedBorderId?: string | null;
+    equippedTitleId?: string | null;
+    equippedThemeId?: string | null;
 }
 
 export interface PublicUserProfile {
@@ -48,6 +51,9 @@ export interface PublicUserProfile {
     ownedGames?: string[];
     friends?: string[];
     keycloakId: string;
+    equippedBorderId?: string | null;
+    equippedTitleId?: string | null;
+    equippedThemeId?: string | null;
 }
 
 export interface ProfileUpdateData {

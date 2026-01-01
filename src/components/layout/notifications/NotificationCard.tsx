@@ -33,6 +33,10 @@ export function NotificationCard({ notification: n, }: NotificationCardProps) {
             readNotification(n.notificationId);
         }
 
+        if (n.notificationType === "FRIEND_REQUEST" && n.referenceId) {
+            navigate(`/profile/${n.referenceId}`)
+        }
+
         if (n.notificationType === "CHAT_MESSAGE" && n.referenceId) {
             navigate(`/chat/${n.referenceId}`);
         }
