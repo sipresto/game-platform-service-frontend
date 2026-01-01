@@ -1,11 +1,15 @@
 export type NotificationType = 'FRIEND_REQUEST' | 'ACHIEVEMENT' | 'YOUR_TURN' | 'CHAT_MESSAGE';
 export type NotificationChannel = 'IN_APP' | 'EMAIL';
 
-export type NotificationPreferences = {
-    [key in NotificationType]: {
-        [channel in NotificationChannel]: boolean;
+export interface NotificationPreferencesDto {
+    preferences: {
+        [key in NotificationType]: {
+            [channel in NotificationChannel]: boolean;
+        };
     };
-};
+}
+
+export type NotificationPreferences = NotificationPreferencesDto['preferences'];
 
 export interface NotificationPreferenceUpdate {
     notificationType: NotificationType;

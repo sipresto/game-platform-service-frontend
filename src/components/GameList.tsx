@@ -14,7 +14,16 @@ interface StoreGameListProps extends BaseGameListProps {
 
 export function StoreGameList({ searchText, filters }: StoreGameListProps) {
     const { games } = useFilteredGames(filters, searchText);
-    return <GameListDisplay games={games} searchText={searchText} filters={filters} />;
+    const { games: ownedGames = [] } = useMyOwnedGames(searchText);
+
+    return (
+        <GameListDisplay
+            games={games}
+            searchText={searchText}
+            filters={filters}
+            ownedGameIds={ownedGames.map((game) => game.gameId)}
+        />
+    );
 }
 
 export function LibraryGameList({ searchText }: BaseGameListProps) {
