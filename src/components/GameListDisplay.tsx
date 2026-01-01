@@ -9,6 +9,7 @@ type GameListDisplayProps =
     searchText: string;
     filters?: GameFilterRequest;
     isLibrary?: false;
+    ownedGameIds?: string[];
 }
     | {
     games: LibraryGame[];
@@ -19,6 +20,7 @@ type GameListDisplayProps =
 
 export function GameListDisplay(props: GameListDisplayProps) {
     const { games, searchText, isLibrary = false } = props;
+    const ownedGameIds = 'ownedGameIds' in props ? props.ownedGameIds : [];
 
     const hasSearch = searchText.trim().length > 0;
     const hasFilters =
@@ -62,7 +64,7 @@ export function GameListDisplay(props: GameListDisplayProps) {
                 ))
                 : (games as Game[]).map((game) => (
                     <Grid key={game.gameId} size={{ xs: 12, md: 6, lg: 3 }}>
-                        <GameCard game={game} />
+                        <GameCard game={game} isOwned={ownedGameIds?.includes(game.gameId)} />
                     </Grid>
                 ))}
         </Grid>
