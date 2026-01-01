@@ -54,6 +54,7 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                 textAlign: 'left',
                 borderRadius: 1,
                 '&:hover': {
+                    cursor: 'pointer',
                     '& .game-card': {
                         transform: 'translateY(-2px)',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
