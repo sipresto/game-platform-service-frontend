@@ -1,7 +1,7 @@
 import apiClient from './axiosInstance';
-import type { AxiosError } from 'axios';
-import type {ChargeResponse} from "../model/ChargeResponse.ts";
+import type {AxiosError} from 'axios';
 import type {Purchase} from "../model/purchase.ts";
+import type {ChargeResponse} from "../model/chargeResponse.ts";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
@@ -9,21 +9,11 @@ export async function chargeGame(
     gameId: string,
     stripeToken: string
 ): Promise<ChargeResponse> {
-    try {
-        const { data } = await apiClient.post<ChargeResponse>(
-            `${BACKEND_URL}/payment/charge/${gameId}`,
-            { stripeToken }
-        );
-        return data;
-    } catch (error) {
-        const axiosError = error as AxiosError<{ error: string }>;
-        if (axiosError.response?.data?.error) {
-            throw new Error(axiosError.response.data.error);
-        }
-        throw new Error(
-            `Payment failed: ${axiosError.response?.statusText || axiosError.message}`
-        );
-    }
+    const {data} = await apiClient.post<ChargeResponse>(
+        `${BACKEND_URL}/payment/charge/${gameId}`,
+        {stripeToken}
+    );
+    return data;
 }
 
 export async function completePurchase(
@@ -31,9 +21,9 @@ export async function completePurchase(
     chargeId: string
 ): Promise<Purchase> {
     try {
-        const { data } = await apiClient.post<Purchase>(
+        const {data} = await apiClient.post<Purchase>(
             `${BACKEND_URL}/purchases/${gameId}`,
-            { chargeId }
+            {chargeId}
         );
         return data;
     } catch (error) {
