@@ -32,3 +32,11 @@ export async function sendMessage(id: string, request: SendMessageRequest): Prom
     );
     return data;
 }
+
+export async function askAi(message: string): Promise<string> {
+    const { data } = await apiClient.post<string>(
+        `${BACKEND_URL}/ai/chat`,
+        { message }
+    );
+    return data;
+}
