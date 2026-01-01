@@ -52,6 +52,7 @@ export function GameCard({game, isLibrary = false}: GameCardProps) {
                 width: '100%',
                 textAlign: 'left',
                 borderRadius: 1,
+                cursor: 'pointer',
                 '&:hover': {
                     '& .game-card': {
                         transform: 'translateY(-2px)',
