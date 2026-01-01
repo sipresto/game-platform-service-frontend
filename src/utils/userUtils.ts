@@ -1,4 +1,4 @@
-import type {PublicUserProfile} from "../model/userProfile.ts";
+import type {BlockedUser, FriendRequest, PublicUserProfile} from "../model/userProfile.ts";
 
 export const getProfileImageUrl = (userId: string, timestamp?: number): string | null => {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL as string;
@@ -53,4 +53,34 @@ export function filterUsers(
         const username = user.username.toLowerCase();
         return displayName.includes(term) || username.includes(term);
     });
+}
+
+export function sortFriendRequestsByDate(requests: FriendRequest[]): FriendRequest[] {
+    return [...requests].sort((a, b) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+}
+
+export function filterAndSortBlockedUsers(
+    users: BlockedUser[],
+    searchTerm: string
+): BlockedUser[] {
+    let result = [...users];
+
+    if (searchTerm.trim()) {
+        const term = searchTerm.toLowerCase();
+        result = result.filter(user => {
+            const displayName = user.profile?.displayName?.toLowerCase() || '';
+            const username = user.username.toLowerCase();
+            return displayName.includes(term) || username.includes(term);
+        });
+    }
+
+    result.sort((a, b) => {
+        const nameA = (a.profile?.displayName || a.username).toLowerCase();
+        const nameB = (b.profile?.displayName || b.username).toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+
+    return result;
 }

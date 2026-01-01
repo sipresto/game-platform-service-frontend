@@ -4,7 +4,7 @@ import { EmptyFriendRequestsState } from './EmptyFriendRequestsState';
 import { FriendRequestsListHeader } from './FriendRequestsListHeader';
 import { FriendRequestItem } from './FriendRequestItem';
 import type {FriendRequest} from "../../model/userProfile.ts";
-import {sortFriendRequestsByDate} from "../../utils/FriendRequestUtils.ts";
+import {sortFriendRequestsByDate} from "../../utils/userUtils.ts";
 
 interface FriendRequestsListProps {
     friendRequests: FriendRequest[];

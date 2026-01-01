@@ -21,9 +21,8 @@ export function UsersPage() {
         try {
             await refreshUsers();
             showSnackbar('Users list refreshed successfully', 'success');
-        } catch (err) {
-            console.error('Failed to refresh users:', err);
-            showSnackbar('Failed to refresh users list', 'error');
+        } catch {
+            showSnackbar('Failed to refresh users list: ', 'error');
         }
     };
 

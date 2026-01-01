@@ -5,7 +5,7 @@ import {
     Tabs,
     Tab,
     Badge,
-    Snackbar
+    Snackbar, CircularProgress, Box, Typography, Alert, AlertTitle
 } from '@mui/material';
 import { Group, PersonAdd, Block } from '@mui/icons-material';
 import { useAllUsers, useUserProfile, useBlockedUsers, useUnblockUser, useRemoveFriend } from '../hooks/useUserProfile';
@@ -13,9 +13,6 @@ import { FriendsList } from '../components/friends/FriendsList';
 import { FriendRequestsList } from '../components/friends/FriendRequestsList';
 import { BlockedUsersList } from '../components/friends/blocked/BlockedUsersList';
 import { TabPanel } from '../components/friends/TabPanel';
-import { FriendsPageLoadingState } from '../components/friends/FriendsPageLoadingState';
-import { FriendsPageErrorState } from '../components/friends/FriendsPageErrorState';
-import { FriendsPageHeader } from '../components/friends/FriendsPageHeader';
 import { useFriendsSnackbar } from '../hooks/useFriendsSnackbar';
 import { useFriendsRefresh } from '../hooks/useFriendsRefresh';
 
@@ -67,9 +64,8 @@ export function FriendsPage() {
         try {
             await unblockMutation.mutateAsync(userId);
             showSnackbar('User unblocked successfully', 'success');
-        } catch (error) {
-            showSnackbar('Failed to unblock user', 'error');
-            console.log(error);
+        } catch {
+            showSnackbar('Failed to refresh friends list: ', 'error');
         }
     };
 
@@ -77,9 +73,8 @@ export function FriendsPage() {
         try {
             await removeFriendMutation.mutateAsync(userId);
             showSnackbar('Friend removed successfully', 'success');
-        } catch (error) {
+        } catch {
             showSnackbar('Failed to remove friend', 'error');
-            console.log(error);
         }
     };
 
@@ -87,8 +82,7 @@ export function FriendsPage() {
         try {
             await handleRefreshFriends();
             showSnackbar('Friends list refreshed successfully', 'success');
-        } catch (error) {
-            console.error('Failed to refresh friends:', error);
+        } catch {
             showSnackbar('Failed to refresh friends list', 'error');
         }
     };
@@ -97,8 +91,7 @@ export function FriendsPage() {
         try {
             await handleRefreshFriendRequests();
             showSnackbar('Friend requests refreshed successfully', 'success');
-        } catch (error) {
-            console.error('Failed to refresh friend requests:', error);
+        } catch {
             showSnackbar('Failed to refresh friend requests', 'error');
         }
     };
@@ -107,19 +100,25 @@ export function FriendsPage() {
         try {
             await handleRefreshBlockedUsers();
             showSnackbar('Blocked users refreshed successfully', 'success');
-        } catch (error) {
-            console.error('Failed to refresh blocked users:', error);
+        } catch {
             showSnackbar('Failed to refresh blocked users', 'error');
         }
     };
 
     if (friendsLoading || profileLoading || blockedLoading) {
-        return <FriendsPageLoadingState />;
+        return (<Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+            <CircularProgress />
+        </Box>)
     }
 
     const errorMessage = friendsErrorMsg?.message || profileError?.message || blockedError?.message;
     if (friendsError || profileError || blockedError) {
-        return <FriendsPageErrorState errorMessage={errorMessage} />;
+        return (<Container maxWidth="lg" sx={{ py: 4 }}>
+            <Alert severity="error">
+                <AlertTitle>Error Loading Data</AlertTitle>
+                {errorMessage || 'Failed to load data. Please try again later.'}
+            </Alert>
+        </Container>);
     }
 
     const friendRequests = profile?.incomingFriendRequests || [];
@@ -127,7 +126,14 @@ export function FriendsPage() {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <FriendsPageHeader />
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">
+                    Friends
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                    Manage your friends, friend requests, and blocked users
+                </Typography>
+            </Box>
 
             <Paper sx={{ mb: 3 }}>
                 <Tabs

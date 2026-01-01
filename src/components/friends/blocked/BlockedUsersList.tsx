@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, Grid } from '@mui/material';
 import type { BlockedUser } from '../../../model/userProfile';
 import { BlockedUserCard } from './BlockedUserCard';
-import { filterAndSortBlockedUsers } from '../../../utils/blockedUsersUtils';
+import { filterAndSortBlockedUsers } from '../../../utils/userUtils';
 import { EmptyBlockedUsersState } from './EmptyBlockedUsersState';
 import { BlockedUsersSearchHeader } from './BlockedUsersSearchHeader';
 
