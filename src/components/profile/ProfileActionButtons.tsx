@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import {
+    Alert,
     Box,
     Button,
     Dialog,
@@ -7,31 +8,27 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    Snackbar,
-    Alert
+    Snackbar
 } from '@mui/material';
-import { Block, PersonRemove } from '@mui/icons-material';
-import { useBlockUser, useUnblockUser, useRemoveFriend, useUserProfile, useBlockedUsers } from '../../hooks/useUserProfile.ts';
-import type { PublicUserProfile } from '../../model/userProfile.ts';
+import {Block, PersonRemove} from '@mui/icons-material';
+import {useBlockUser, useRemoveFriend, useUserProfile} from '../../hooks/useUserProfile.ts';
+import type {PublicUserProfile} from '../../model/userProfile.ts';
 
 interface ProfileActionButtonsProps {
     user: PublicUserProfile;
 }
 
-type ActionType = 'block' | 'unblock' | 'unfriend' | null;
+type ActionType = 'block' | 'unfriend' | null;
 
-export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
+export function ProfileActionButtons({user}: ProfileActionButtonsProps) {
     const [confirmDialog, setConfirmDialog] = useState<ActionType>(null);
-    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+    const [snackbar, setSnackbar] = useState({open: false, message: '', severity: 'success' as 'success' | 'error'});
 
-    const { profile: currentUser } = useUserProfile();
-    const { data: blockedUsers = [] } = useBlockedUsers();
+    const {profile: currentUser} = useUserProfile();
     const blockMutation = useBlockUser();
-    const unblockMutation = useUnblockUser();
     const removeFriendMutation = useRemoveFriend();
 
     const isFriend = currentUser?.friends?.includes(user.id);
-    const isBlocked = blockedUsers.some(blocked => blocked.id === user.id);
 
     const handleOpenDialog = (action: ActionType) => {
         setConfirmDialog(action);
@@ -48,13 +45,10 @@ export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
         try {
             if (action === 'block') {
                 await blockMutation.mutateAsync(user.id);
-                setSnackbar({ open: true, message: 'User blocked successfully', severity: 'success' });
-            } else if (action === 'unblock') {
-                await unblockMutation.mutateAsync(user.id);
-                setSnackbar({ open: true, message: 'User unblocked successfully', severity: 'success' });
+                setSnackbar({open: true, message: 'User blocked successfully', severity: 'success'});
             } else if (action === 'unfriend') {
                 await removeFriendMutation.mutateAsync(user.id);
-                setSnackbar({ open: true, message: 'Friend removed successfully', severity: 'success' });
+                setSnackbar({open: true, message: 'Friend removed successfully', severity: 'success'});
             }
         } catch (error) {
             setSnackbar({
@@ -67,7 +61,7 @@ export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
     };
 
     const handleCloseSnackbar = () => {
-        setSnackbar({ ...snackbar, open: false });
+        setSnackbar({...snackbar, open: false});
     };
 
     const getDialogContent = () => {
@@ -79,18 +73,13 @@ export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
                     title: 'Block User',
                     content: `Are you sure you want to block ${displayName}? They will no longer be able to see your profile or interact with you. If you are friends, they will be removed from your friends list.`
                 };
-            case 'unblock':
-                return {
-                    title: 'Unblock User',
-                    content: `Are you sure you want to unblock ${displayName}? They will be able to see your profile and interact with you again.`
-                };
             case 'unfriend':
                 return {
                     title: 'Remove Friend',
                     content: `Are you sure you want to remove ${displayName} from your friends list? You can send them a friend request again later.`
                 };
             default:
-                return { title: '', content: '' };
+                return {title: '', content: ''};
         }
     };
 
@@ -98,12 +87,12 @@ export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
 
     return (
         <>
-            <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column', width: '100%' }}>
+            <Box sx={{display: 'flex', gap: 2, flexDirection: 'column', width: '100%'}}>
                 {isFriend && (
                     <Button
                         variant="outlined"
                         color="error"
-                        startIcon={<PersonRemove />}
+                        startIcon={<PersonRemove/>}
                         onClick={() => handleOpenDialog('unfriend')}
                         fullWidth
                         disabled={removeFriendMutation.isPending}
@@ -112,29 +101,16 @@ export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
                     </Button>
                 )}
 
-                {isBlocked ? (
-                    <Button
-                        variant="outlined"
-                        color="success"
-                        startIcon={<Block />}
-                        onClick={() => handleOpenDialog('unblock')}
-                        fullWidth
-                        disabled={unblockMutation.isPending}
-                    >
-                        Unblock User
-                    </Button>
-                ) : (
-                    <Button
-                        variant="outlined"
-                        color="error"
-                        startIcon={<Block />}
-                        onClick={() => handleOpenDialog('block')}
-                        fullWidth
-                        disabled={blockMutation.isPending}
-                    >
-                        Block User
-                    </Button>
-                )}
+                <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<Block/>}
+                    onClick={() => handleOpenDialog('block')}
+                    fullWidth
+                    disabled={blockMutation.isPending}
+                >
+                    Block User
+                </Button>
             </Box>
 
             <Dialog
@@ -166,12 +142,12 @@ export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
                 open={snackbar.open}
                 autoHideDuration={4000}
                 onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
             >
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.severity}
-                    sx={{ width: '100%' }}
+                    sx={{width: '100%'}}
                 >
                     {snackbar.message}
                 </Alert>
