@@ -13,7 +13,8 @@ import type {
     PublicUserProfile,
     VisibilitySettings,
     Visibility,
-    VisibleField
+    VisibleField,
+    BlockedUser
 } from '../model/userProfile';
 import { useKeycloakAccountService } from "../services/keycloakService";
 import {
@@ -24,7 +25,11 @@ import {
     updateUserProfile,
     getVisibilitySettings,
     updateGlobalVisibility,
-    updateFieldVisibility
+    updateFieldVisibility,
+    removeFriend,
+    blockUser,
+    unblockUser,
+    getBlockedUsers
 } from "../services/userApi";
 
 export function useCurrentUser() {
@@ -268,5 +273,79 @@ export function useAllUsers() {
         isLoading: publicUsersQuery.isLoading || friendsQuery.isLoading,
         isError: publicUsersQuery.isError || friendsQuery.isError,
         error: publicUsersQuery.error || friendsQuery.error,
+        refetchFriends: friendsQuery.refetch,
+        refetchPublicUsers: publicUsersQuery.refetch,
+        refetchAll: async () => {
+            await Promise.all([
+                friendsQuery.refetch(),
+                publicUsersQuery.refetch()
+            ]);
+        }
     };
+}
+
+export function useRemoveFriend(): UseMutationResult<void, Error, string> {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (friendId: string) => {
+            await removeFriend(friendId);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['friends'] });
+            queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+            queryClient.invalidateQueries({ queryKey: ['publicUsers'] });
+        },
+        onError: (error) => {
+            console.error('Failed to remove friend:', error);
+        }
+    });
+}
+
+export function useBlockUser(): UseMutationResult<void, Error, string> {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (userId: string) => {
+            await blockUser(userId);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['blockedUsers'] });
+            queryClient.invalidateQueries({ queryKey: ['friends'] });
+            queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+            queryClient.invalidateQueries({ queryKey: ['publicUsers'] });
+        },
+        onError: (error) => {
+            console.error('Failed to block user:', error);
+        }
+    });
+}
+
+export function useUnblockUser(): UseMutationResult<void, Error, string> {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (userId: string) => {
+            await unblockUser(userId);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['blockedUsers'] });
+            queryClient.invalidateQueries({ queryKey: ['publicUsers'] });
+        },
+        onError: (error) => {
+            console.error('Failed to unblock user:', error);
+        }
+    });
+}
+
+export function useBlockedUsers(): UseQueryResult<BlockedUser[], Error> {
+    const { token } = useCurrentUser();
+
+    return useQuery<BlockedUser[], Error>({
+        queryKey: ['blockedUsers'],
+        queryFn: () => getBlockedUsers(),
+        enabled: !!token,
+        staleTime: 1000 * 60 * 5,
+        retry: 1,
+    });
 }

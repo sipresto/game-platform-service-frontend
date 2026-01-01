@@ -53,6 +53,7 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                 width: '100%',
                 textAlign: 'left',
                 borderRadius: 1,
+                cursor: 'pointer',
                 '&:hover': {
                     cursor: 'pointer',
                     '& .game-card': {

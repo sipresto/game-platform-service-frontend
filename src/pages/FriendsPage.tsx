@@ -1,70 +1,128 @@
 import React, { useState } from 'react';
 import {
     Container,
-    Typography,
-    Box,
+    Paper,
     Tabs,
     Tab,
-    Paper,
-    CircularProgress,
-    Alert,
-    AlertTitle,
-    Badge
+    Badge,
+    Snackbar, CircularProgress, Box, Typography, Alert, AlertTitle
 } from '@mui/material';
-import { Group, PersonAdd } from '@mui/icons-material';
-import { useAllUsers, useUserProfile } from '../hooks/useUserProfile';
+import { Group, PersonAdd, Block } from '@mui/icons-material';
+import { useAllUsers, useUserProfile, useBlockedUsers, useUnblockUser, useRemoveFriend } from '../hooks/useUserProfile';
 import { FriendsList } from '../components/friends/FriendsList';
 import { FriendRequestsList } from '../components/friends/FriendRequestsList';
-
-interface TabPanelProps {
-    children?: React.ReactNode;
-    index: number;
-    value: number;
-}
-
-function TabPanel({ children, value, index }: TabPanelProps) {
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`friends-tabpanel-${index}`}
-            aria-labelledby={`friends-tab-${index}`}
-        >
-            {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-        </div>
-    );
-}
+import { BlockedUsersList } from '../components/friends/blocked/BlockedUsersList';
+import { TabPanel } from '../components/friends/TabPanel';
+import { useFriendsSnackbar } from '../hooks/useFriendsSnackbar';
+import { useFriendsRefresh } from '../hooks/useFriendsRefresh';
 
 export function FriendsPage() {
     const [currentTab, setCurrentTab] = useState(0);
-    const { friends, isLoading: friendsLoading, isError: friendsError, error: friendsErrorMsg } = useAllUsers();
-    const { profile, isLoading: profileLoading, error: profileError } = useUserProfile();
+    const { snackbar, showSnackbar, closeSnackbar } = useFriendsSnackbar();
+
+    const {
+        friends,
+        isLoading: friendsLoading,
+        isError: friendsError,
+        error: friendsErrorMsg
+    } = useAllUsers();
+
+    const {
+        profile,
+        isLoading: profileLoading,
+        error: profileError,
+        refetch: refetchProfile
+    } = useUserProfile();
+
+    const {
+        data: blockedUsers = [],
+        isLoading: blockedLoading,
+        error: blockedError,
+        refetch: refetchBlockedUsers
+    } = useBlockedUsers();
+
+    const unblockMutation = useUnblockUser();
+    const removeFriendMutation = useRemoveFriend();
+
+    const {
+        isFriendsRefreshing,
+        isRequestsRefreshing,
+        isBlockedRefreshing,
+        handleRefreshFriends,
+        handleRefreshFriendRequests,
+        handleRefreshBlockedUsers
+    } = useFriendsRefresh({
+        refetchProfile,
+        refetchBlockedUsers
+    });
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setCurrentTab(newValue);
     };
 
+    const handleUnblock = async (userId: string) => {
+        try {
+            await unblockMutation.mutateAsync(userId);
+            showSnackbar('User unblocked successfully', 'success');
+        } catch {
+            showSnackbar('Failed to refresh friends list: ', 'error');
+        }
+    };
+
+    const handleRemoveFriend = async (userId: string) => {
+        try {
+            await removeFriendMutation.mutateAsync(userId);
+            showSnackbar('Friend removed successfully', 'success');
+        } catch {
+            showSnackbar('Failed to remove friend', 'error');
+        }
+    };
+
+    const handleRefreshFriendsWithFeedback = async () => {
+        try {
+            await handleRefreshFriends();
+            showSnackbar('Friends list refreshed successfully', 'success');
+        } catch {
+            showSnackbar('Failed to refresh friends list', 'error');
+        }
+    };
+
+    const handleRefreshFriendRequestsWithFeedback = async () => {
+        try {
+            await handleRefreshFriendRequests();
+            showSnackbar('Friend requests refreshed successfully', 'success');
+        } catch {
+            showSnackbar('Failed to refresh friend requests', 'error');
+        }
+    };
+
+    const handleRefreshBlockedUsersWithFeedback = async () => {
+        try {
+            await handleRefreshBlockedUsers();
+            showSnackbar('Blocked users refreshed successfully', 'success');
+        } catch {
+            showSnackbar('Failed to refresh blocked users', 'error');
+        }
+    };
+
+    if (friendsLoading || profileLoading || blockedLoading) {
+        return (<Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+            <CircularProgress />
+        </Box>)
+    }
+
+    const errorMessage = friendsErrorMsg?.message || profileError?.message || blockedError?.message;
+    if (friendsError || profileError || blockedError) {
+        return (<Container maxWidth="lg" sx={{ py: 4 }}>
+            <Alert severity="error">
+                <AlertTitle>Error Loading Data</AlertTitle>
+                {errorMessage || 'Failed to load data. Please try again later.'}
+            </Alert>
+        </Container>);
+    }
+
     const friendRequests = profile?.incomingFriendRequests || [];
     const pendingCount = friendRequests.length;
-
-    if (friendsLoading || profileLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-                <CircularProgress />
-            </Box>
-        );
-    }
-
-    if (friendsError || profileError) {
-        return (
-            <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Alert severity="error">
-                    <AlertTitle>Error Loading Friends</AlertTitle>
-                    {friendsErrorMsg?.message || profileError?.message || 'Failed to load friends. Please try again later.'}
-                </Alert>
-            </Container>
-        );
-    }
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -73,7 +131,7 @@ export function FriendsPage() {
                     Friends
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                    Manage your friends and friend requests
+                    Manage your friends, friend requests, and blocked users
                 </Typography>
             </Box>
 
@@ -102,16 +160,48 @@ export function FriendsPage() {
                         id="friends-tab-1"
                         aria-controls="friends-tabpanel-1"
                     />
+                    <Tab
+                        icon={<Block />}
+                        iconPosition="start"
+                        label={`Blocked (${blockedUsers.length})`}
+                        id="friends-tab-2"
+                        aria-controls="friends-tabpanel-2"
+                    />
                 </Tabs>
             </Paper>
 
             <TabPanel value={currentTab} index={0}>
-                <FriendsList friends={friends} />
+                <FriendsList
+                    friends={friends}
+                    onRemoveFriend={handleRemoveFriend}
+                    onRefresh={handleRefreshFriendsWithFeedback}
+                    isRefreshing={isFriendsRefreshing}
+                />
             </TabPanel>
 
             <TabPanel value={currentTab} index={1}>
-                <FriendRequestsList friendRequests={friendRequests} />
+                <FriendRequestsList
+                    friendRequests={friendRequests}
+                    onRefresh={handleRefreshFriendRequestsWithFeedback}
+                    isRefreshing={isRequestsRefreshing}
+                />
             </TabPanel>
+
+            <TabPanel value={currentTab} index={2}>
+                <BlockedUsersList
+                    blockedUsers={blockedUsers}
+                    onUnblock={handleUnblock}
+                    onRefresh={handleRefreshBlockedUsersWithFeedback}
+                    isRefreshing={isBlockedRefreshing}
+                />
+            </TabPanel>
+
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000}
+                onClose={closeSnackbar}
+                message={snackbar.message}
+            />
         </Container>
     );
 }

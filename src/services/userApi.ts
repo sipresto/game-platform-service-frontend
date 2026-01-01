@@ -1,10 +1,11 @@
 import apiClient from './axiosInstance';
 import type {
-    UserProfile,
+    BlockedUser,
     PublicUserProfile,
+    UserProfile,
     Visibility,
-    VisibleField,
-    VisibilitySettings
+    VisibilitySettings,
+    VisibleField
 } from "../model/userProfile";
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL + "/users";
@@ -108,4 +109,24 @@ export async function acceptFriendRequest(senderId: string): Promise<void> {
 
 export async function rejectFriendRequest(senderId: string): Promise<void> {
     await apiClient.put(`${BACKEND_URL}/${senderId}/friend-request/reject`);
+}
+
+export async function removeFriend(friendId: string): Promise<void> {
+    await apiClient.patch(`${BACKEND_URL}/${friendId}/remove`);
+
+}
+
+export async function blockUser(userId: string): Promise<void> {
+    await apiClient.patch(`${BACKEND_URL}/${userId}/block`);
+
+}
+
+export async function unblockUser(userId: string): Promise<void> {
+    await apiClient.patch(`${BACKEND_URL}/${userId}/unblock`);
+
+}
+
+export async function getBlockedUsers(): Promise<BlockedUser[]> {
+    const { data } = await apiClient.get<BlockedUser[]>(`${BACKEND_URL}/blocked`);
+    return data;
 }

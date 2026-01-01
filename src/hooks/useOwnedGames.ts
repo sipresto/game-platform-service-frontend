@@ -26,14 +26,15 @@ export function useMyOwnedGames(searchText: string) {
 }
 
 export function useUserLibrary(userId: string | undefined) {
-    const { data, isLoading, error } = useQuery({
+    const query = useQuery({
         queryKey: ['userLibrary', userId],
         queryFn: () => getOwnedGamesForUser(userId!),
         enabled: !!userId
     });
     return {
-        games: data,
-        isLoading,
-        error
+        games: query.data,
+        isLoading: query.isLoading,
+        error: query.error,
+        refetch: query.refetch
     };
 }

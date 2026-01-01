@@ -56,6 +56,15 @@ export interface PublicUserProfile {
     equippedThemeId?: string | null;
 }
 
+export interface BlockedUser {
+    id: string;
+    username: string;
+    profile: {
+        displayName: string;
+        bio?: string;
+    };
+}
+
 export interface ProfileUpdateData {
     username: string;
     firstName: string;
@@ -77,3 +86,8 @@ export const hasUniformVisibility = (settings: VisibilitySettings): boolean => {
     const visibilities = fields.map(f => settings.fieldVisibilities[f]);
     return visibilities.every(v => v === visibilities[0]);
 };
+
+export interface FriendRequest {
+    senderId: string;
+    createdAt: string;
+}

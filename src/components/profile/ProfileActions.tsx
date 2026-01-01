@@ -1,40 +1,31 @@
-import { Box, Button } from '@mui/material';
-import { Edit } from '@mui/icons-material';
-import { useNavigate } from 'react-router';
+import {Box, Paper} from '@mui/material';
 import type {PublicUserProfile} from '../../model/userProfile';
 import {FriendRequestButton} from "../FriendRequestButton.tsx";
+import {ProfileActionButtons} from "./ProfileActionButtons.tsx";
 
 interface ProfileActionsProps {
     user: PublicUserProfile;
     isOwnProfile: boolean;
 }
 
-export function ProfileActions({ user, isOwnProfile }: ProfileActionsProps) {
-    const navigate = useNavigate();
+export function ProfileActions({user, isOwnProfile}: ProfileActionsProps) {
 
     if (isOwnProfile) {
-        return (
-            <Box sx={{ mt: 2 }}>
-                <Button
-                    variant="outlined"
-                    fullWidth
-                    startIcon={<Edit />}
-                    onClick={() => navigate('/profile/edit')}
-                >
-                    Edit Profile
-                </Button>
-            </Box>
-        );
+        return null;
     }
 
     return (
-        <Box sx={{ mt: 2 }}>
-            <FriendRequestButton
-                targetUserId={user.id}
-                targetUserKeycloakId={user.keycloakId}
-                variant="contained"
-                fullWidth
-            />
-        </Box>
+        <Paper sx={{p: 2, mt: 2}}>
+            <Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+                <FriendRequestButton
+                    targetUserId={user.id}
+                    targetUserKeycloakId={user.keycloakId}
+                    variant="contained"
+                    fullWidth
+                />
+
+                <ProfileActionButtons user={user}/>
+            </Box>
+        </Paper>
     );
 }
