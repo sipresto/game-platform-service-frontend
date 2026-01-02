@@ -38,3 +38,14 @@ export interface ChatListMessage {
     isMine: boolean;
     senderName: string;
 }
+
+export interface RagUploadResponse {
+    success: boolean;
+    code: string;
+    message: string;
+    data: {
+        filename: string;
+        document_id: string;
+        chunks_indexed: number;
+    };
+}
