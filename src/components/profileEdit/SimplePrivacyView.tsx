@@ -23,9 +23,8 @@ export function SimplePrivacyView({
                 sx={{
                     p: 3,
                     border: 1,
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                    backgroundColor: 'background.default'
+                    borderColor: 'action.disabled',
+                    borderRadius: 2
                 }}
             >
                 <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
@@ -50,9 +49,8 @@ export function SimplePrivacyView({
                 sx={{
                     p: 3,
                     border: 1,
-                    borderColor: 'primary.main',
-                    borderRadius: 2,
-                    backgroundColor: 'primary.50'
+                    borderColor: 'action.disabled',
+                    borderRadius: 2
                 }}
             >
                 <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5 }}>

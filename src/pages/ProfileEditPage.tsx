@@ -106,7 +106,18 @@ export function ProfileEditPage() {
                     value={currentTab}
                     onChange={handleTabChange}
                     aria-label="profile settings tabs"
-                    sx={{ borderBottom: 1, borderColor: 'divider' }}
+                    sx={{
+                        '& .MuiTab-root': {
+                            color: 'custom.tabs.inactive',
+
+                            '&:hover': {
+                                color: 'custom.tabs.hover',
+                            },
+                        },
+                        '& .Mui-selected': {
+                            color: 'custom.tabs.active'
+                        },
+                    }}
                 >
                     <Tab label="Profile" id="profile-tab-0" aria-controls="profile-tabpanel-0" />
                     <Tab label="Privacy" id="profile-tab-1" aria-controls="profile-tabpanel-1" />

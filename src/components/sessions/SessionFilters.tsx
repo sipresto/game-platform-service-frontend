@@ -134,7 +134,11 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
                     height: '40px',
                     minWidth: 'auto',
                     px: 1.2,
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    color: 'text.primary', borderColor: 'action.disabled',
+                    '&:hover': {
+                        borderColor: 'text.primary'
+                    }
                 }}
             >
                 Filters
@@ -267,7 +271,7 @@ export function SessionFilterPopup({ filters, onFiltersChange }: SessionFilterPo
                     <Divider sx={{ my: 2 }} />
 
                     <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-                        <Button onClick={handleClearFilters} size="small">
+                        <Button onClick={handleClearFilters} size="small" sx={{color: 'text.primary'}}>
                             Clear All Filters
                         </Button>
                     </Box>
