@@ -24,15 +24,19 @@ export interface LobbyDetail {
     started: boolean;
     gameUrl?: string;
     players: LobbyPlayer[];
+    bots: Bot[]
 }
 
 export interface JoinLobbyRequest {
     password?: string | null;
 }
 
-
-export interface StartGameRequest {
+export interface Difficulty {
     difficulty: 'EASY' | 'HARD' | 'IMPOSSIBLE';
+}
+
+export interface Bot {
+    difficulty: Difficulty;
 }
 
 export interface LobbyCreatedResponse {

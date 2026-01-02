@@ -2,17 +2,18 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useContext, useEffect, useRef } from 'react';
 import SecurityContext from '../context/SecurityContext';
 import {
+    addBot,
     createLobby,
     getLobbiesForGame,
     getLobbyDetails,
     joinLobby,
-    leaveLobby,
+    leaveLobby, removeBot,
     startGame
 } from '../services/lobbyApi';
 import type {
     CreateLobbyRequest,
     JoinLobbyRequest,
-    StartGameRequest
+    Difficulty
 } from '../model/lobby';
 import { useUserProfile } from "./useUserProfile.ts";
 
@@ -125,7 +126,7 @@ export function useLobbyActions(gameId: string | undefined) {
     });
 
     const startMutation = useMutation({
-        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: StartGameRequest }) =>
+        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: Difficulty }) =>
             startGame(lobbyId, request),
         onSuccess: (gameUrl, variables) => {
             let finalUrl = window.location.origin + gameUrl;
@@ -153,10 +154,28 @@ export function useLobbyActions(gameId: string | undefined) {
         },
     });
 
+    const addBotMutation = useMutation({
+        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: Difficulty }) =>
+            addBot(lobbyId, request),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        },
+    });
+
+    const removeBotMutation = useMutation({
+        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: number }) =>
+            removeBot(lobbyId, request),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        },
+    });
+
     return {
         createLobby: createMutation,
         joinLobby: joinMutation,
         leaveLobby: leaveMutation,
         startGame: startMutation,
+        addBot: addBotMutation,
+        removeBot: removeBotMutation,
     };
 }

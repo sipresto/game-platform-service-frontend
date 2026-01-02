@@ -6,7 +6,7 @@ import type {
     Lobby,
     LobbyCreatedResponse,
     LobbyDetail,
-    StartGameRequest
+    Difficulty
 } from '../model/lobby';
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
@@ -55,11 +55,31 @@ export async function leaveLobby(
 
 export async function startGame(
     lobbyId: string,
-    request: StartGameRequest
+    request: Difficulty
 ): Promise<string> {
     const { data } = await apiClient.post<GameUrlResponse>(
         `${BACKEND_URL}/lobbies/${lobbyId}/start`,
         request
     );
     return data.url;
+}
+
+export async function addBot(
+    lobbyId: string,
+    request: Difficulty
+): Promise<void> {
+    await apiClient.patch(
+        `${BACKEND_URL}/lobbies/${lobbyId}/addBot`,
+        request
+    )
+}
+
+export async function removeBot(
+    lobbyId: string,
+    request: number
+): Promise<void> {
+    await apiClient.patch(
+        `${BACKEND_URL}/lobbies/${lobbyId}/removeBot`,
+        request
+    )
 }
