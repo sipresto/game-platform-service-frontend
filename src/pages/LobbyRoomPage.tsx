@@ -17,7 +17,7 @@ import { StartGameDialog } from '../components/lobby/StartGameDialog';
 import { LobbyRoomHeader } from '../components/lobby/LobbyRoomHeader';
 import { PlayerList } from '../components/lobby/PlayerList';
 import { NotificationAlert } from '../components/NotificationAlert';
-import type { Difficulty } from '../model/lobby';
+import type {GameStartRequest, RemoveBotRequest} from '../model/lobby';
 import {AddBotDialog} from "../components/lobby/AddBotDialog.tsx";
 import {BotList} from "../components/lobby/BotList.tsx";
 
@@ -60,13 +60,13 @@ export const LobbyRoomPage = () => {
     const hanleAddBot = () => {
         if (!lobbyId) return;
 
-        const aiDifficultyMap: Record<string, Difficulty['difficulty']> = {
+        const aiDifficultyMap: Record<string, GameStartRequest['difficulty']> = {
             'EASY': 'EASY',
             'MEDIUM': 'HARD',
             'HARD': 'IMPOSSIBLE'
         };
 
-        const request: Difficulty = {
+        const request: GameStartRequest = {
             difficulty: aiDifficultyMap[difficulty],
         };
 
@@ -90,8 +90,12 @@ export const LobbyRoomPage = () => {
     const handleRemoveBot = (bot: number) => {
         if (!lobbyId) return;
 
+        const request: RemoveBotRequest = {
+            botNumber: bot,
+        }
+
         removeBot.mutate(
-            { lobbyId, request: bot },
+            { lobbyId, request },
             {
                 onError: () => {
                     setNotification({
@@ -107,18 +111,8 @@ export const LobbyRoomPage = () => {
     const handleStartGameConfirm = () => {
         if (!lobbyId || !gameId || !lobby || !game) return;
 
-        const aiDifficultyMap: Record<string, Difficulty['difficulty']> = {
-            'EASY': 'EASY',
-            'MEDIUM': 'HARD',
-            'HARD': 'IMPOSSIBLE'
-        };
-
-        const request: Difficulty = {
-            difficulty: aiDifficultyMap[difficulty],
-        };
-
         startGame.mutate(
-            { lobbyId, request },
+            { lobbyId },
             {
                 onError: () => {
                     setNotification({
@@ -208,10 +202,12 @@ export const LobbyRoomPage = () => {
                     hostId={lobby.hostId}
                 />
 
-                <BotList
-                    bots={lobby.bots}
-                    onRemove={handleRemoveBot}
-                />
+                {lobby.bots.length !== 0 && (
+                    <BotList
+                        bots={lobby.bots}
+                        onRemove={handleRemoveBot}
+                    />
+                )}
 
                 <Box sx={{
                     display: 'flex',
@@ -249,7 +245,7 @@ export const LobbyRoomPage = () => {
                                 color="primary"
                                 startIcon={<PlayIcon />}
                                 onClick={() => setStartDialogOpen(true)}
-                                disabled={startGame.isPending || lobby.started}
+                                disabled={startGame.isPending || lobby.started || lobby.currentPlayerCount !== lobby.maxPlayers}
                             >
                                 {lobby.started ? 'Game Started' : 'Start Game'}
                             </Button>
@@ -272,8 +268,7 @@ export const LobbyRoomPage = () => {
                 <StartGameDialog
                     open={startDialogOpen}
                     onClose={() => setStartDialogOpen(false)}
-                    difficulty={difficulty}
-                    onDifficultyChange={setDifficulty}
+                    gameName={game.name}
                     onStartGame={handleStartGameConfirm}
                     isStarting={startGame.isPending}
                 />

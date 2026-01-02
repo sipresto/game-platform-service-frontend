@@ -13,7 +13,7 @@ import {
 import type {
     CreateLobbyRequest,
     JoinLobbyRequest,
-    Difficulty
+    GameStartRequest, RemoveBotRequest
 } from '../model/lobby';
 import { useUserProfile } from "./useUserProfile.ts";
 
@@ -126,8 +126,8 @@ export function useLobbyActions(gameId: string | undefined) {
     });
 
     const startMutation = useMutation({
-        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: Difficulty }) =>
-            startGame(lobbyId, request),
+        mutationFn: ({ lobbyId }: { lobbyId: string; }) =>
+            startGame(lobbyId),
         onSuccess: (gameUrl, variables) => {
             let finalUrl = window.location.origin + gameUrl;
 
@@ -155,7 +155,7 @@ export function useLobbyActions(gameId: string | undefined) {
     });
 
     const addBotMutation = useMutation({
-        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: Difficulty }) =>
+        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: GameStartRequest }) =>
             addBot(lobbyId, request),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
@@ -163,7 +163,7 @@ export function useLobbyActions(gameId: string | undefined) {
     });
 
     const removeBotMutation = useMutation({
-        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: number }) =>
+        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: RemoveBotRequest }) =>
             removeBot(lobbyId, request),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });

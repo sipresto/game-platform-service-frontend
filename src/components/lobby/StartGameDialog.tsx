@@ -4,8 +4,6 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    TextField,
-    MenuItem,
     Box,
     Typography,
     CircularProgress
@@ -16,8 +14,6 @@ interface StartGameDialogProps {
     open: boolean;
     onClose: () => void;
     gameName?: string;
-    difficulty: 'EASY' | 'MEDIUM' | 'HARD';
-    onDifficultyChange: (value: 'EASY' | 'MEDIUM' | 'HARD') => void;
     onStartGame: () => void;
     isStarting?: boolean;
 }
@@ -26,8 +22,6 @@ export const StartGameDialog = ({
                                     open,
                                     onClose,
                                     gameName,
-                                    difficulty,
-                                    onDifficultyChange,
                                     onStartGame,
                                     isStarting
                                 }: StartGameDialogProps) => {
@@ -40,20 +34,6 @@ export const StartGameDialog = ({
         >
             <DialogTitle>Start {gameName || 'Game'}</DialogTitle>
             <DialogContent>
-                <TextField
-                    select
-                    label="Difficulty"
-                    value={difficulty}
-                    onChange={(e) => onDifficultyChange(e.target.value as 'EASY' | 'MEDIUM' | 'HARD')}
-                    fullWidth
-                    sx={{ mt: 1 }}
-                    disabled={isStarting}
-                >
-                    <MenuItem value="EASY">Easy</MenuItem>
-                    <MenuItem value="MEDIUM">Medium</MenuItem>
-                    <MenuItem value="HARD">Hard</MenuItem>
-                </TextField>
-
                 {isStarting && (
                     <Box sx={{
                         display: 'flex',
