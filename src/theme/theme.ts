@@ -39,6 +39,12 @@ export const theme = createTheme({
                     primary: gray[100],
                     secondary: gray[300],
                 },
+                destructive: {
+                    light: red[300],
+                    main: red[500],
+                    dark: red[700],
+                    contrastText: gray[50],
+                },
             },
         },
         light: {
@@ -73,6 +79,12 @@ export const theme = createTheme({
                 text: {
                     primary: gray[900],
                     secondary: gray[600],
+                },
+                destructive: {
+                    light: red[300],
+                    main: red[500],
+                    dark: red[700],
+                    contrastText: gray[50],
                 },
             },
         },

@@ -1,8 +1,7 @@
-import { CardActions, Button, Box, IconButton, Tooltip } from '@mui/material';
-import { useTheme, alpha } from '@mui/material/styles';
+import { Box, Button, CardActions, IconButton, Tooltip } from '@mui/material';
+import { alpha, useTheme } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import MessageIcon from '@mui/icons-material/Message';
 
 interface FriendCardActionsProps {
     userId: string;
