@@ -38,7 +38,7 @@ export function MessageInput({ chatId }: { chatId: string }) {
                     borderRadius: '4px',
                 },
                 scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(0,0,0,0.3) transparent',
+                scrollbarColor: 'rgba(0,0,0,0.2) transparent',
             }}>
                 <TextField
                     fullWidth

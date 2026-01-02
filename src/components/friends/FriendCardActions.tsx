@@ -8,14 +8,9 @@ interface FriendCardActionsProps {
     userId: string;
     keycloakId: string;
     onRemoveFriend?: (userId: string) => void;
-    onMessage?: (userId: string) => void;
 }
 
-export function FriendCardActions({
-                                      userId,
-                                      onRemoveFriend,
-                                      onMessage
-                                  }: FriendCardActionsProps) {
+export function FriendCardActions({ userId, onRemoveFriend }: FriendCardActionsProps) {
     const theme = useTheme();
 
     return (
@@ -24,8 +19,7 @@ export function FriendCardActions({
                 p: 1.5,
                 pt: 0.5,
                 gap: 1,
-                borderTop: `1px solid ${alpha(theme.palette.divider, 0.08)}`,
-                backgroundColor: alpha(theme.palette.background.default, 0.6),
+                backgroundColor: 'background.paper',
             }}
         >
             <Button
@@ -40,11 +34,6 @@ export function FriendCardActions({
                     fontWeight: 500,
                     boxShadow: 'none',
                     color: theme.palette.primary.contrastText,
-                    '&:hover': {
-                        boxShadow: `0 2px 6px ${alpha(theme.palette.primary.main, 0.2)}`,
-                        backgroundColor: theme.palette.primary.dark,
-                    },
-                    textDecoration: 'none',
                     '&:hover, &:active, &:visited, &:link': {
                         color: theme.palette.primary.contrastText,
                     }
@@ -54,26 +43,6 @@ export function FriendCardActions({
             </Button>
 
             <Box sx={{ display: 'flex', gap: 0.5 }}>
-                {onMessage && (
-                    <Tooltip title="Message">
-                        <IconButton
-                            size="small"
-                            onClick={() => onMessage(userId)}
-                            sx={{
-                                border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-                                backgroundColor: alpha(theme.palette.primary.main, 0.04),
-                                color: theme.palette.text.secondary,
-                                '&:hover': {
-                                    backgroundColor: alpha(theme.palette.primary.main, 0.12),
-                                    color: theme.palette.primary.main,
-                                }
-                            }}
-                        >
-                            <MessageIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                )}
-
                 {onRemoveFriend && (
                     <Tooltip title="Remove Friend">
                         <IconButton

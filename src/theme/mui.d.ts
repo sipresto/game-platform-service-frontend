@@ -3,10 +3,6 @@ import "@mui/material/styles";
 declare module '@mui/material/styles' {
     interface Theme {
         custom: {
-            logout: {
-                main: string;
-                contrastText: string;
-            };
             notification: {
                 badge: string;
                 contrastText: string;
@@ -15,14 +11,21 @@ declare module '@mui/material/styles' {
     }
     interface ThemeOptions {
         custom?: {
-            logout?: {
-                main?: string;
-                contrastText?: string;
-            };
             notification?: {
                 badge?: string;
                 contrastText?: string;
             };
         };
+    }
+
+    interface TypeBackground {
+        elevated?: string;
+    }
+
+    interface Palette {
+        destructive: Palette['primary'];
+    }
+    interface PaletteOptions {
+        destructive?: PaletteOptions['primary'];
     }
 }

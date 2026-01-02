@@ -9,11 +9,10 @@ import {cardStyles, contentStyles} from "../../utils/friendCardUtils.ts";
 interface FriendCardProps {
     user: PublicUserProfile;
     onRemoveFriend?: (userId: string) => void;
-    onMessage?: (userId: string) => void;
     showActions?: boolean;
 }
 
-export function FriendCard({ user, onRemoveFriend, onMessage, showActions = true }: FriendCardProps) {
+export function FriendCard({ user, onRemoveFriend, showActions = true }: FriendCardProps) {
     const theme = useTheme();
     const userId = user.id;
     const { profileImageUrl, isLoading, hasError } = useProfileImageLoader(userId);
@@ -36,7 +35,6 @@ export function FriendCard({ user, onRemoveFriend, onMessage, showActions = true
                     userId={userId}
                     keycloakId={user.keycloakId}
                     onRemoveFriend={onRemoveFriend}
-                    onMessage={onMessage}
                 />
             )}
         </Card>

@@ -33,9 +33,10 @@ export const theme = createTheme({
                 background: {
                     default: gray[800],
                     paper: gray[750],
+                    elevated: gray[500],
                 },
                 text: {
-                    primary: gray[50],
+                    primary: gray[100],
                     secondary: gray[300],
                 },
             },
@@ -67,6 +68,7 @@ export const theme = createTheme({
                 background: {
                     default: gray[100],
                     paper: gray[200],
+                    elevated: gray[300],
                 },
                 text: {
                     primary: gray[900],
@@ -79,10 +81,6 @@ export const theme = createTheme({
         fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     },
     custom: {
-        logout: {
-            main: red[500],
-            contrastText: gray[50],
-        },
         notification: {
             badge: red[500],
             contrastText: gray[50],
