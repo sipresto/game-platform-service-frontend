@@ -7,6 +7,10 @@ declare module '@mui/material/styles' {
                 badge: string;
                 contrastText: string;
             };
+            favorite: {
+                main: string;
+                hover: string;
+            }
         };
     }
     interface ThemeOptions {
@@ -15,6 +19,10 @@ declare module '@mui/material/styles' {
                 badge?: string;
                 contrastText?: string;
             };
+            favorite?: {
+                main?: string;
+                hover?: string;
+            }
         };
     }
 

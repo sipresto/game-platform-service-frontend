@@ -1,18 +1,10 @@
-import {
-    Card,
-    CardContent,
-    CardMedia,
-    Typography,
-    Box,
-    Chip,
-    IconButton
-} from '@mui/material';
-import {useNavigate} from 'react-router';
-import React, {useContext} from 'react';
+import { Box, Card, CardContent, CardMedia, Chip, IconButton, Typography } from '@mui/material';
+import { useNavigate } from 'react-router';
+import React, { useContext } from 'react';
 import SecurityContext from '../../context/SecurityContext.ts';
-import type {Game, LibraryGame} from "../../model/game.ts";
-import {useToggleFavoriteGame} from "../../hooks/useFavorites.ts";
-import {Star, StarBorder} from "@mui/icons-material";
+import type { Game, LibraryGame } from "../../model/game.ts";
+import { useToggleFavoriteGame } from "../../hooks/useFavorites.ts";
+import { Star, StarBorder } from "@mui/icons-material";
 
 interface GameCardProps {
     game: Game | LibraryGame;
@@ -20,10 +12,10 @@ interface GameCardProps {
     isOwned?: boolean;
 }
 
-export function GameCard({game, isLibrary = false, isOwned = false}: GameCardProps) {
+export function GameCard({ game, isLibrary = false, isOwned = false }: GameCardProps) {
     const navigate = useNavigate();
-    const {toggleFavorite, isPending} = useToggleFavoriteGame();
-    const {isAuthenticated} = useContext(SecurityContext);
+    const { toggleFavorite, isPending } = useToggleFavoriteGame();
+    const { isAuthenticated } = useContext(SecurityContext);
     const descriptionLimit = 150;
 
     const handleGameClick = () => {
@@ -44,7 +36,7 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
     const handleToggleFavorite = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!isLibraryGame(game)) return;
-        toggleFavorite({...game});
+        toggleFavorite({ ...game });
     };
 
     return (
@@ -54,12 +46,13 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                 textAlign: 'left',
                 borderRadius: 1,
                 cursor: 'pointer',
+                borderColor: 'action.disabled',
                 '&:hover': {
                     cursor: 'pointer',
                     '& .game-card': {
                         transform: 'translateY(-2px)',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    }
+                    },
                 },
             }}
             onClick={handleGameClick}
@@ -82,7 +75,7 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                     },
                 }}
             >
-                <Box sx={{width: '100%', height: 140, position: 'relative'}}>
+                <Box sx={{ width: '100%', height: 140, position: 'relative' }}>
                     <CardMedia
                         component="img"
                         image={game.imageUrl || `https://placehold.co/400x140/1B2838/FFFFFF?text=${encodeURIComponent(game.name)}`}
@@ -102,15 +95,30 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                                 position: 'absolute',
                                 top: 8,
                                 right: 8,
-                                bgcolor: 'background.paper',
                                 boxShadow: 1,
                                 p: 0.5,
                             }}
                         >
                             {game.isFavorited ? (
-                                <Star fontSize="small" color="primary"/>
+                                <Star
+                                    fontSize="small"
+                                    sx={(theme) => ({
+                                        color: theme.custom.favorite.main,
+                                        '&:hover': {
+                                            color: theme.custom.favorite.hover,
+                                        },
+                                    })}
+                                />
                             ) : (
-                                <StarBorder fontSize="small"/>
+                                <StarBorder
+                                    fontSize="small"
+                                    sx={(theme) => ({
+                                        color: theme.custom.favorite.main,
+                                        '&:hover': {
+                                            color: theme.custom.favorite.hover,
+                                        },
+                                    })}
+                                />
                             )}
                         </IconButton>
                     )}
@@ -123,7 +131,7 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                     gap: 1.5,
                     flexGrow: 1,
                 }}>
-                    <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1}}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                         <Typography
                             variant="h6"
                             component="h2"
@@ -145,10 +153,10 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                         {!isLibrary && (
                             <Typography
                                 variant="h6"
-                                color="primary.main"
+                                color="text.primary"
                                 fontWeight="bold"
                                 sx={{
-                                    fontSize: '1.1rem',
+                                    fontSize: '1rem',
                                     flexShrink: 0,
                                     whiteSpace: 'nowrap',
                                 }}
@@ -158,7 +166,7 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                         )}
                     </Box>
 
-                    <Box sx={{display: 'flex', gap: 0.5, flexWrap: 'wrap', mb: 1.5}}>
+                    <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mb: 1.5 }}>
                         {game.categories.slice(0, 4).map((category) => (
                             <Chip
                                 key={category}
@@ -189,10 +197,10 @@ export function GameCard({game, isLibrary = false, isOwned = false}: GameCardPro
                         {game.description.length > descriptionLimit ? '...' : ''}
                     </Typography>
 
-                    <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: 1}}>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
                         <Typography
                             variant="caption"
-                            color={isAuthenticated() ? "primary.main" : "text.secondary"}
+                            color="text.secondary"
                             sx={{
                                 fontWeight: 'bold',
                                 fontSize: '0.75rem',

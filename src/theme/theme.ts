@@ -1,5 +1,5 @@
 import { alpha, createTheme } from "@mui/material"
-import { brand, gray, green, red, orange } from "./colors"
+import { brand, gray, green, red, orange, yellow } from "./colors"
 
 export const theme = createTheme({
     cssVariables: {
@@ -47,9 +47,9 @@ export const theme = createTheme({
                 },
                 custom: {
                     tabs: {
-                        active: brand[400],
+                        active: brand[300],
                         inactive: gray[300],
-                        hover: brand[300],
+                        hover: brand[400],
                     }
                 },
             },
@@ -110,6 +110,10 @@ export const theme = createTheme({
         notification: {
             badge: red[500],
             contrastText: gray[50],
+        },
+        favorite: {
+            main: yellow[400],
+            hover: yellow[500],
         },
     },
 })
