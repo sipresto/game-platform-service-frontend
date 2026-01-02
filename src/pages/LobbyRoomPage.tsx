@@ -16,7 +16,7 @@ import { useGameDetails } from "../hooks/useGames";
 import { StartGameDialog } from '../components/lobby/StartGameDialog';
 import { LobbyRoomHeader } from '../components/lobby/LobbyRoomHeader';
 import { PlayerList } from '../components/lobby/PlayerList';
-import { NotificationAlert } from '../components/NotificationAlert';
+import { NotificationAlert } from '../components/lobby/NotificationAlert.tsx';
 import type { StartGameRequest } from '../model/lobby';
 
 export const LobbyRoomPage = () => {

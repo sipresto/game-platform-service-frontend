@@ -9,9 +9,9 @@ import {
 } from '@mui/material';
 import {useNavigate} from 'react-router';
 import React, {useContext} from 'react';
-import SecurityContext from '../context/SecurityContext';
-import type {Game, LibraryGame} from "../model/game.ts";
-import {useToggleFavoriteGame} from "../hooks/useFavorites.ts";
+import SecurityContext from '../../context/SecurityContext.ts';
+import type {Game, LibraryGame} from "../../model/game.ts";
+import {useToggleFavoriteGame} from "../../hooks/useFavorites.ts";
 import {Star, StarBorder} from "@mui/icons-material";
 
 interface GameCardProps {

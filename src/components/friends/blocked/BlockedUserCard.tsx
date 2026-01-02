@@ -28,7 +28,7 @@ export function BlockedUserCard({ user, onUnblock }: BlockedUserCardProps) {
     };
 
     return (
-        <Card sx={cardStyles(theme)}>
+        <Card sx={cardStyles}>
             <CardContent sx={contentStyles(true)}>
                 <Box sx={{
                     display: 'flex',

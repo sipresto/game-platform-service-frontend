@@ -2,7 +2,7 @@ import type React from "react"
 import { useState } from "react"
 import { Button, Menu, Box, Typography, Slider, FormGroup, FormControlLabel, Checkbox, Divider } from "@mui/material"
 import FilterListIcon from "@mui/icons-material/FilterList"
-import type { GameFilterRequest } from "../model/gameRequest"
+import type { GameFilterRequest } from "../../model/gameRequest.ts"
 
 interface GameFilterProps {
     filters: GameFilterRequest

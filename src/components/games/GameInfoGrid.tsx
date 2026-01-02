@@ -13,11 +13,11 @@ import {
 } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import type { Game } from "../model/game.ts";
+import type { Game } from "../../model/game.ts";
 import { useNavigate } from "react-router";
 import { useContext, useEffect, useState } from "react";
-import SecurityContext from "../context/SecurityContext.ts";
-import { useMyOwnedGames } from "../hooks/useOwnedGames.ts";
+import SecurityContext from "../../context/SecurityContext.ts";
+import { useMyOwnedGames } from "../../hooks/useOwnedGames.ts";
 
 interface GameInfoGridProps {
     game: Game;

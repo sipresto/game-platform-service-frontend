@@ -1,6 +1,6 @@
-import { Box, Button, CardActions, IconButton, Tooltip } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router';
+import {Box, Button, CardActions, IconButton, Tooltip} from '@mui/material';
+import {useTheme} from '@mui/material/styles';
+import {Link as RouterLink} from 'react-router';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 
 interface FriendCardActionsProps {
@@ -18,7 +18,6 @@ export function FriendCardActions({ userId, onRemoveFriend }: FriendCardActionsP
                 p: 1.5,
                 pt: 0.5,
                 gap: 1,
-                backgroundColor: 'background.paper',
             }}
         >
             <Button
@@ -48,7 +47,7 @@ export function FriendCardActions({ userId, onRemoveFriend }: FriendCardActionsP
                             size="small"
                             onClick={() => onRemoveFriend(userId)}
                             sx={{
-                                color: theme.palette.text.secondary,
+                                color: 'text.primary',
                                 '&:hover': {
                                     color: 'destructive.main',
                                 }

@@ -1,7 +1,7 @@
 import { Box, Grid, Typography, } from '@mui/material';
-import { GameCard } from './GameCard';
-import type { GameFilterRequest } from "../model/gameRequest";
-import type { Game, LibraryGame } from "../model/game";
+import { GameCard } from './GameCard.tsx';
+import type { GameFilterRequest } from "../../model/gameRequest.ts";
+import type { Game, LibraryGame } from "../../model/game.ts";
 
 type GameListDisplayProps =
     | {
