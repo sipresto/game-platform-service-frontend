@@ -13,22 +13,22 @@ export function ResultBadge({ result }: ResultBadgeProps) {
             case 'WIN':
                 return {
                     color: 'success' as const,
-                    bgcolor: 'success.light',
-                    icon: <MilitaryTech />,
+                    bgcolor: 'success.main',
+                    icon: <MilitaryTech sx={{ color: 'text.primary' }} />,
                     label: 'Win'
                 };
             case 'LOSS':
                 return {
                     color: 'error' as const,
-                    bgcolor: 'error.light',
-                    icon: <Block />,
+                    bgcolor: 'error.main',
+                    icon: <Block sx={{ color: 'text.primary' }} />,
                     label: 'Loss'
                 };
             case 'DRAW':
                 return {
                     color: 'warning' as const,
-                    bgcolor: 'warning.light',
-                    icon: <Handshake />,
+                    bgcolor: 'warning.main',
+                    icon: <Handshake sx={{ color: 'text.primary' }} />,
                     label: 'Draw'
                 };
             case 'LOADING':
@@ -42,7 +42,7 @@ export function ResultBadge({ result }: ResultBadgeProps) {
                 return {
                     color: 'default' as const,
                     bgcolor: 'grey.300',
-                    icon: <Gamepad />,
+                    icon: <Gamepad sx={{ color: 'text.primary' }} />,
                     label: 'Unknown'
                 };
         }
