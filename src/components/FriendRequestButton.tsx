@@ -1,10 +1,10 @@
-import { Button, CircularProgress, Box } from '@mui/material';
-import { PersonAdd, Check, Close, HourglassEmpty } from '@mui/icons-material';
+import { Box, Button, CircularProgress } from '@mui/material';
+import { Check, Close, HourglassEmpty, PersonAdd } from '@mui/icons-material';
 import {
     useAcceptFriendRequest,
-    useSendFriendRequest,
+    useFriendshipStatus,
     useRejectFriendRequest,
-    useFriendshipStatus
+    useSendFriendRequest
 } from "../hooks/useFriendRequests.ts";
 import { useUserProfile } from "../hooks/useUserProfile.ts";
 
@@ -74,7 +74,7 @@ export function FriendRequestButton({
                 variant={variant}
                 fullWidth={fullWidth}
                 disabled
-                startIcon={<Check />}
+                startIcon={<Check/>}
             >
                 Friends
             </Button>
@@ -88,7 +88,7 @@ export function FriendRequestButton({
                 variant={variant}
                 fullWidth={fullWidth}
                 disabled
-                startIcon={<HourglassEmpty />}
+                startIcon={<HourglassEmpty/>}
             >
                 Request Pending
             </Button>
@@ -108,7 +108,7 @@ export function FriendRequestButton({
                     variant="contained"
                     color="success"
                     fullWidth={fullWidth}
-                    startIcon={acceptMutation.isPending ? <CircularProgress size={16} /> : <Check />}
+                    startIcon={acceptMutation.isPending ? <CircularProgress size={16}/> : <Check/>}
                     disabled={acceptMutation.isPending || rejectMutation.isPending}
                     onClick={handleAccept}
                     sx={{ flex: 1 }}
@@ -120,7 +120,7 @@ export function FriendRequestButton({
                     variant="outlined"
                     color="error"
                     fullWidth={fullWidth}
-                    startIcon={rejectMutation.isPending ? <CircularProgress size={16} /> : <Close />}
+                    startIcon={rejectMutation.isPending ? <CircularProgress size={16}/> : <Close/>}
                     disabled={acceptMutation.isPending || rejectMutation.isPending}
                     onClick={handleReject}
                     sx={{ flex: 1 }}
@@ -136,9 +136,16 @@ export function FriendRequestButton({
             size={size}
             variant={variant}
             fullWidth={fullWidth}
-            startIcon={sendMutation.isPending ? <CircularProgress size={16} /> : <PersonAdd />}
+            startIcon={sendMutation.isPending ? <CircularProgress size={16}/> : <PersonAdd/>}
             disabled={sendMutation.isPending}
             onClick={handleSendRequest}
+            sx={{
+                color: 'success.main',
+                borderColor: 'success.main',
+                '&:hover': {
+                    borderColor: 'success.dark',
+                }
+            }}
         >
             Add Friend
         </Button>

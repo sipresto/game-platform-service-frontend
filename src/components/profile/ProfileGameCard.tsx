@@ -3,31 +3,17 @@ import type { BaseGame } from '../../model/game';
 
 interface GameCardProps {
     game: BaseGame;
-    onClick?: () => void;
 }
 
-export function ProfileGameCard({ game, onClick }: GameCardProps) {
+export function ProfileGameCard({ game }: GameCardProps) {
     return (
-        <Card
-            onClick={onClick}
-            sx={{
-                cursor: onClick ? 'pointer' : 'default',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'all 0.2s',
-                '&:hover': {
-                    transform: onClick ? 'translateY(-4px)' : 'none',
-                    boxShadow: onClick ? 4 : 1,
-                },
-            }}
-        >
+        <Card>
             <CardMedia
                 component="img"
                 height="140"
                 image={game.imageUrl || `https://placehold.co/400x200/1B2838/FFFFFF?text=${encodeURIComponent(game.name)}`}
                 alt={game.name}
-                sx={{ objectFit: 'contain', bgcolor: 'grey.100' }}
+                sx={{ objectFit: 'contain' }}
             />
             <Box sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
                 <Typography
@@ -46,7 +32,7 @@ export function ProfileGameCard({ game, onClick }: GameCardProps) {
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 'auto' }}>
                     {game.categories?.slice(0, 2).map((category) => (
-                        <Chip key={category} label={category} size="small" />
+                        <Chip key={category} label={category} size="small"/>
                     ))}
                 </Box>
             </Box>

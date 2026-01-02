@@ -33,7 +33,7 @@ export const theme = createTheme({
                 background: {
                     default: gray[800],
                     paper: gray[750],
-                    elevated: gray[500],
+                    elevated: gray[700],
                 },
                 text: {
                     primary: gray[100],
@@ -65,7 +65,7 @@ export const theme = createTheme({
                 success: {
                     light: green[300],
                     main: green[500],
-                    dark: green[700],
+                    dark: green[600],
                 },
                 error: {
                     light: red[300],

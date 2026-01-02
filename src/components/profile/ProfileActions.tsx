@@ -20,7 +20,7 @@ export function ProfileActions({user, isOwnProfile}: ProfileActionsProps) {
                 <FriendRequestButton
                     targetUserId={user.id}
                     targetUserKeycloakId={user.keycloakId}
-                    variant="contained"
+                    variant="outlined"
                     fullWidth
                 />
 
