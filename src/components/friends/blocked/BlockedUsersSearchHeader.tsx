@@ -43,14 +43,7 @@ export function BlockedUsersSearchHeader({
                         <IconButton
                             onClick={handleRefresh}
                             disabled={isRefreshing}
-                            sx={{
-                                bgcolor: 'background.paper',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                '&:hover': {
-                                    bgcolor: 'action.hover'
-                                }
-                            }}
+                            size="small"
                         >
                             <Refresh
                                 sx={{

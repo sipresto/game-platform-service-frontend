@@ -20,9 +20,8 @@ export function FriendCardHeader({
     return (
         <Box sx={{
             display: 'flex',
-            alignItems: 'flex-start',
-            gap: 2,
-            mb: 2,
+            alignItems: 'center',
+            gap: 1
         }}>
             <Box>
                 <UserAvatar
@@ -37,16 +36,7 @@ export function FriendCardHeader({
 
             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                 <Box sx={{ mb: 1 }}>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        fontWeight="600"
-                        sx={{
-                            color: 'text.primary',
-                            fontSize: '1.1rem',
-                        }}
-                        align="left"
-                    >
+                    <Typography variant="h6" noWrap fontWeight="bold" align="left">
                         {displayName}
                     </Typography>
                 </Box>

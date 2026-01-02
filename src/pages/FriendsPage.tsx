@@ -141,6 +141,18 @@ export function FriendsPage() {
                     onChange={handleTabChange}
                     aria-label="friends tabs"
                     variant="fullWidth"
+                    sx={{
+                        '& .MuiTab-root': {
+                            color: 'custom.tabs.inactive',
+
+                            '&:hover': {
+                                color: 'custom.tabs.hover',
+                            },
+                        },
+                        '& .Mui-selected': {
+                            color: 'custom.tabs.active'
+                        },
+                    }}
                 >
                     <Tab
                         icon={<Group />}

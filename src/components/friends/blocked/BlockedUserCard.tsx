@@ -1,10 +1,9 @@
-import { Card, CardContent, Box, Typography, IconButton, Tooltip } from '@mui/material';
-import { useTheme, alpha } from '@mui/material/styles';
+import { Box, Card, CardContent, IconButton, Tooltip, Typography } from '@mui/material';
 import { UserAvatar } from '../../users/UserAvatar';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useProfileImageLoader } from '../../../hooks/useProfileImageLoader';
 import { cardStyles, contentStyles } from "../../../utils/friendCardUtils";
-import type {BlockedUser} from "../../../model/userProfile.ts";
+import type { BlockedUser } from "../../../model/userProfile.ts";
 
 interface BlockedUserCardProps {
     user: BlockedUser;
@@ -12,20 +11,8 @@ interface BlockedUserCardProps {
 }
 
 export function BlockedUserCard({ user, onUnblock }: BlockedUserCardProps) {
-    const theme = useTheme();
     const { profileImageUrl, isLoading, hasError } = useProfileImageLoader(user.id);
     const displayName = user.profile?.displayName || user.username;
-
-    const unblockButtonStyles = {
-        border: `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
-        backgroundColor: alpha(theme.palette.success.main, 0.04),
-        color: theme.palette.text.secondary,
-        '&:hover': {
-            backgroundColor: alpha(theme.palette.success.main, 0.12),
-            color: theme.palette.success.main,
-            borderColor: alpha(theme.palette.success.main, 0.4),
-        }
-    };
 
     return (
         <Card sx={cardStyles}>
@@ -63,7 +50,7 @@ export function BlockedUserCard({ user, onUnblock }: BlockedUserCardProps) {
                                 noWrap
                                 fontWeight="600"
                                 sx={{
-                                    color: theme.palette.text.primary,
+                                    color: 'text.primary',
                                     fontSize: '1.1rem',
                                     lineHeight: '1.2',
                                     pr: 1,
@@ -77,9 +64,14 @@ export function BlockedUserCard({ user, onUnblock }: BlockedUserCardProps) {
                                     <IconButton
                                         size="small"
                                         onClick={() => onUnblock(user.id)}
-                                        sx={unblockButtonStyles}
+                                        sx={{
+                                            color: 'text.primary',
+                                            '&:hover': {
+                                                color: 'destructive.main',
+                                            }
+                                        }}
                                     >
-                                        <LockOpenIcon fontSize="small" />
+                                        <LockOpenIcon fontSize="small"/>
                                     </IconButton>
                                 </Tooltip>
                             )}

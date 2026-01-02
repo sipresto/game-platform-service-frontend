@@ -46,14 +46,6 @@ export function FriendRequestsListHeader({
                             onClick={handleRefresh}
                             disabled={isRefreshing}
                             size="small"
-                            sx={{
-                                bgcolor: 'background.paper',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                '&:hover': {
-                                    bgcolor: 'action.hover'
-                                }
-                            }}
                         >
                             <Refresh
                                 sx={{

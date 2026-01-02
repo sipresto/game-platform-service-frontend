@@ -29,7 +29,6 @@ export function EmptyFriendRequestsState({ onRefresh, isRefreshing }: EmptyFrien
                         <IconButton
                             onClick={handleRefresh}
                             disabled={isRefreshing}
-                            size="small"
                         >
                             <Refresh
                                 sx={{

@@ -16,7 +16,13 @@ export function FriendRequestActions({
                                          onReject
                                      }: FriendRequestActionsProps) {
     return (
-        <CardActions sx={{ mt: 'auto', gap: 1, p: 2 }}>
+        <CardActions
+            sx={{
+                p: 1.5,
+                pt: 0.5,
+                gap: 1,
+            }}
+        >
             <Button
                 fullWidth
                 variant="contained"
@@ -30,10 +36,16 @@ export function FriendRequestActions({
             <Button
                 fullWidth
                 variant="outlined"
-                color="error"
                 startIcon={isProcessing ? <CircularProgress size={16} /> : <Close />}
                 onClick={onReject}
                 disabled={isProcessing}
+                sx={{
+                    color: 'destructive.main',
+                    borderColor: 'destructive.main',
+                    '&:hover': {
+                        borderColor: 'destructive.dark'
+                    }
+                }}
             >
                 Reject
             </Button>
@@ -42,6 +54,7 @@ export function FriendRequestActions({
                 component={RouterLink}
                 to={`/profile/${userId}`}
                 disabled={isProcessing}
+                sx={{ color: 'text.secondary' }}
             >
                 View
             </Button>

@@ -24,8 +24,22 @@ declare module '@mui/material/styles' {
 
     interface Palette {
         destructive: Palette['primary'];
+        custom: {
+            tabs: {
+                active: string
+                inactive: string
+                hover: string
+            }
+        };
     }
     interface PaletteOptions {
         destructive?: PaletteOptions['primary'];
+        custom?: {
+            tabs?: {
+                active?: string;
+                inactive?: string;
+                hover?: string;
+            };
+        };
     }
 }

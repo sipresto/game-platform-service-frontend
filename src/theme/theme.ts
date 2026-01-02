@@ -45,6 +45,13 @@ export const theme = createTheme({
                     dark: red[700],
                     contrastText: gray[50],
                 },
+                custom: {
+                    tabs: {
+                        active: brand[400],
+                        inactive: gray[300],
+                        hover: brand[300],
+                    }
+                },
             },
         },
         light: {
@@ -85,6 +92,13 @@ export const theme = createTheme({
                     main: red[500],
                     dark: red[700],
                     contrastText: gray[50],
+                },
+                custom: {
+                    tabs: {
+                        active: brand[500],
+                        inactive: gray[500],
+                        hover: brand[600],
+                    }
                 },
             },
         },
