@@ -61,7 +61,7 @@ export function MessageInput({ chatId, onSendOverride, enableUpload = false, onU
                             ref={fileInputRef}
                             style={{ display: 'none' }}
                             onChange={handleFileChange}
-                            accept=".pdf,.txt,.md,.docx"
+                            accept=".pdf,.txt,.docx"
                         />
                         <IconButton
                             onClick={() => fileInputRef.current?.click()}
