@@ -31,7 +31,7 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
         >
             <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1 }}>
                 {isCompleted ?
-                    <TrophyIcon sx={{ color: "primary.main", fontSize: 28, flexShrink: 0, position: "absolute" }} />
+                    <TrophyIcon sx={{ color: "primary.secondary", fontSize: 28, flexShrink: 0, position: "absolute" }} />
                     : null
                 }
                 <Box sx={{ flexGrow: 1, minWidth: 0 }}>
@@ -42,11 +42,12 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
                             mb: 0.5,
                             overflow: "hidden",
                             textOverflow: "ellipsis",
+                            color: 'text.primary'
                         }}
                     >
                         {achievement.achievementName}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+                    <Typography variant="caption" sx={{ display: "block", mb: 1, color:'text.primary' }}>
                         {achievement.gameName}
                     </Typography>
                 </Box>

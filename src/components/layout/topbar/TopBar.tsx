@@ -12,12 +12,11 @@ export function TopBar({ onDrawerToggle }: TopBarProps) {
             position="fixed"
             sx={{
                 zIndex: (theme) => theme.zIndex.drawer + 1,
-                bgcolor: 'primary.main',
                 height: 64,
                 justifyContent: 'center',
             }}
         >
-            <Toolbar sx={{ justifyContent: 'space-between' }}>
+            <Toolbar sx={{ justifyContent: 'space-between', backgroundColor: 'primary.main' }}>
                 <TopBarLeft onDrawerToggle={onDrawerToggle}/>
                 <TopBarRight/>
             </Toolbar>
