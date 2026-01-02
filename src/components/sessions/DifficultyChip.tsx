@@ -16,13 +16,13 @@ export function DifficultyChip({ difficulty }: DifficultyChipProps) {
         const displayName = getDifficultyDisplayName(difficulty);
         switch (difficulty) {
             case 'EASY':
-                return { color: 'success' as const, label: displayName, icon: <SentimentVerySatisfied sx={{ color: 'text.primary' }} /> };
+                return { color: 'success' as const, label: displayName, icon: <SentimentVerySatisfied /> };
             case 'HARD':
-                return { color: 'warning' as const, label: displayName, icon: <SentimentNeutral sx={{ color: 'text.primary' }} /> };
+                return { color: 'warning' as const, label: displayName, icon: <SentimentNeutral /> };
             case 'IMPOSSIBLE':
-                return { color: 'error' as const, label: displayName, icon: <SentimentVeryDissatisfied sx={{ color: 'text.primary' }} /> };
+                return { color: 'error' as const, label: displayName, icon: <SentimentVeryDissatisfied /> };
             default:
-                return { color: 'default' as const, label: displayName, icon: <Gamepad sx={{ color: 'text.primary' }} /> };
+                return { color: 'default' as const, label: displayName, icon: <Gamepad /> };
         }
     };
 
@@ -34,7 +34,7 @@ export function DifficultyChip({ difficulty }: DifficultyChipProps) {
             color={config.color}
             size="small"
             icon={config.icon}
-            sx={{ color: 'text.primary' }}
+            sx={{ color: 'common.white' }}
         />
     );
 }

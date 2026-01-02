@@ -87,7 +87,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                             bgcolor: `${resultConfig.color}.main`,
                             width: 56, height: 56,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: 'text.primary'
+                            color: 'common.white'
                         }}>
                             {resultConfig.icon}
                         </Avatar>
@@ -112,7 +112,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                             <Typography sx={{ color: 'text.primary' }} variant="subtitle2" fontWeight={600}>Game Information</Typography>
                         </Box>
                         {session.isAgainstAI && (
-                            <Chip label="vs AI" color="info" size="small" icon={<SmartToy />} sx={{ height: 24, color: 'text.primary' }} />
+                            <Chip label="vs AI" color="info" size="small" icon={<SmartToy />} sx={{ height: 24, color: 'common.white' }} />
                         )}
                     </Box>
                     {gameLoading ? (

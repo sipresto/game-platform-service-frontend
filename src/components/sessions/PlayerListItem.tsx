@@ -34,7 +34,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
                 }}
             >
                 <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: isWinner ? 'info.main' : 'background.elevated', color: 'text.primary' }}>
+                    <Avatar sx={{ bgcolor: isWinner ? 'info.main' : 'background.elevated', color: 'common.white' }}>
                         <SmartToy />
                     </Avatar>
                 </ListItemAvatar>
@@ -85,7 +85,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
             <ListItemAvatar>
                 <Avatar sx={{
                     bgcolor: isWinner ? 'warning.main' : (isCurrentUser ? 'primary.main' : 'secondary.main'),
-                    color: 'text.primary'
+                    color: 'common.white'
                 }}>
                     {isWinner ? <EmojiEvents /> : (isCurrentUser ? <Person /> : <Gamepad />)}
                 </Avatar>
@@ -102,7 +102,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
                                 size="small"
                                 color="warning"
                                 icon={<EmojiEvents sx={{ fontSize: 16 }} />}
-                                sx={{ height: 20, fontSize: '0.7rem', color: 'text.primary' }}
+                                sx={{ height: 20, fontSize: '0.7rem', color: 'common.white' }}
                             />
                         )}
                         {isCurrentUser && !isWinner && (
