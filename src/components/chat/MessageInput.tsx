@@ -1,23 +1,13 @@
-import { Box, IconButton, TextField, Typography, CircularProgress } from '@mui/material';
-import { Send, AttachFile } from '@mui/icons-material';
-import React, { useState, useRef } from 'react';
+import { Box, IconButton, TextField, Typography } from '@mui/material';
+import { Send } from '@mui/icons-material';
+import React, { useState } from 'react';
 import { useSendMessage } from '../../hooks/useChats';
 
 const MAX_LENGTH = 1000;
 
-type Props = {
-    chatId: string;
-    onSendOverride?: (msg: string) => void;
-    enableUpload?: boolean;
-    onUpload?: (file: File) => void;
-    isUploading?: boolean;
-};
-
-export function MessageInput({ chatId, onSendOverride, enableUpload = false, onUpload, isUploading = false }: Props) {
+export function MessageInput({ chatId, onSendOverride }: { chatId: string, onSendOverride?: (msg: string) => void }) {
     const [message, setMessage] = useState('');
     const { sendChatMessage: sendDbMessage } = useSendMessage(chatId);
-
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSend = () => {
         if (!message.trim() || message.length > MAX_LENGTH) return;
@@ -32,17 +22,10 @@ export function MessageInput({ chatId, onSendOverride, enableUpload = false, onU
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Enter') {
             e.preventDefault();
             handleSend();
         }
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0] && onUpload) {
-            onUpload(e.target.files[0]);
-        }
-        if (e.target.value) e.target.value = '';
     };
 
     const isOverLimit = message.length > MAX_LENGTH;
@@ -53,26 +36,16 @@ export function MessageInput({ chatId, onSendOverride, enableUpload = false, onU
                 display: 'flex',
                 alignItems: 'flex-end',
                 gap: 1,
+                '&::-webkit-scrollbar': {
+                    width: '8px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: 'rgba(0,0,0,0.2)',
+                    borderRadius: '4px',
+                },
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'rgba(0,0,0,0.3) transparent',
             }}>
-                {enableUpload && (
-                    <>
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            style={{ display: 'none' }}
-                            onChange={handleFileChange}
-                            accept=".pdf,.txt,.docx"
-                        />
-                        <IconButton
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={isUploading}
-                            color="primary"
-                        >
-                            {isUploading ? <CircularProgress size={24} /> : <AttachFile />}
-                        </IconButton>
-                    </>
-                )}
-
                 <TextField
                     fullWidth
                     multiline
@@ -82,14 +55,13 @@ export function MessageInput({ chatId, onSendOverride, enableUpload = false, onU
                     onChange={e => setMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
                     error={isOverLimit}
-                    disabled={isUploading}
                     sx={{
                         '& .MuiInputBase-root': {
                             alignItems: 'flex-end',
                         },
                     }}
                 />
-                <IconButton onClick={handleSend} disabled={isOverLimit || isUploading || !message.trim()}>
+                <IconButton onClick={handleSend} disabled={isOverLimit}>
                     <Send />
                 </IconButton>
             </Box>

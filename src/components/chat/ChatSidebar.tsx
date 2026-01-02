@@ -66,7 +66,7 @@ export function ChatSidebar({ selectedChatId }: { selectedChatId?: string }) {
                         <SmartToy sx={{ mr: 2, color: 'primary.main' }} />
                         <ListItemText
                             primary="AI Assistant"
-                            secondary="Ask me anything about the rules of the game!"
+                            secondary="Ask me anything..."
                         />
                     </ListItemButton>
                     <Divider sx={{ my: 1 }} />

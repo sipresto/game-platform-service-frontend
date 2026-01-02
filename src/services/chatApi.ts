@@ -1,4 +1,4 @@
-import type {Chat, ChatList, CreateChatRequest, RagUploadResponse, SendMessageRequest} from "../model/chat.ts";
+import type {Chat, ChatList, CreateChatRequest, SendMessageRequest} from "../model/chat.ts";
 import apiClient from "./axiosInstance.ts";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -37,23 +37,6 @@ export async function askAi(message: string): Promise<string> {
     const { data } = await apiClient.post<string>(
         `${BACKEND_URL}/ai/chat`,
         { message }
-    );
-    return data;
-}
-
-export async function uploadDocument(file: File): Promise<RagUploadResponse> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const { data } = await apiClient.post<RagUploadResponse>(
-        `${BACKEND_URL}/ai/upload`,
-        formData,
-        {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-            timeout: 60000
-        }
     );
     return data;
 }

@@ -1,17 +1,17 @@
-import { Box, LinearProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import type { Chat } from '../../model/chat';
 import { ChatHeader } from './ChatHeader';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
+import { LinearProgress } from '@mui/material';
 
 type Props = {
     chat: Chat;
     onSend: (content: string) => void;
-    onUpload: (file: File) => void;
     isThinking: boolean;
 };
 
-export function AiChatPanel({ chat, onSend, onUpload, isThinking }: Props) {
+export function AiChatPanel({ chat, onSend, isThinking }: Props) {
     return (
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <ChatHeader name={chat.name} />
@@ -24,13 +24,7 @@ export function AiChatPanel({ chat, onSend, onUpload, isThinking }: Props) {
                 participants={chat.participants}
             />
 
-            <MessageInput
-                chatId={chat.id}
-                onSendOverride={onSend}
-                enableUpload={true}
-                onUpload={onUpload}
-                isUploading={isThinking}
-            />
+            <MessageInput chatId={chat.id} onSendOverride={onSend} />
         </Box>
     );
 }
