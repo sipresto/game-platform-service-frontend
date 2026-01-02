@@ -306,14 +306,6 @@ export function MainLayout() {
                                 Login
                             </Button>
                         )}
-
-                        {isAuthenticated() && (
-                            <IconButton color="inherit" size="small">
-                                <Badge color="default" sx={{ '& .MuiBadge-badge': { bgcolor: 'white', color: 'black' } }}>
-                                    <ChatBubble fontSize="small" />
-                                </Badge>
-                            </IconButton>
-                        )}
                     </Box>
                 </Toolbar>
             </AppBar>
