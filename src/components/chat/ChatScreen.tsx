@@ -12,11 +12,13 @@ function RealChatContainer({ id }: { id: string }) {
 }
 
 function AiChatContainer() {
-    const { chat, sendMessage, isPending } = useAiChat();
+    const { chat, sendMessage, uploadFile, isPending } = useAiChat();
+
     return (
         <AiChatPanel
             chat={chat}
             onSend={sendMessage}
+            onUpload={uploadFile}
             isThinking={isPending}
         />
     );

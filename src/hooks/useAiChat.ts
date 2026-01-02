@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { askAi } from '../services/chatApi';
+import { askAi, uploadDocument } from '../services/chatApi';
 import type { Chat, ChatMessageDetail } from '../model/chat';
 
 export const AI_CHAT_ID = 'ai-assistant';
@@ -16,7 +16,7 @@ export function useAiChat() {
         }
     ]);
 
-    const { mutate: sendMessage, isPending } = useMutation({
+    const { mutate: sendMessage, isPending: isSending } = useMutation({
         mutationFn: async (content: string) => {
             return await askAi(content);
         },
@@ -52,6 +52,42 @@ export function useAiChat() {
         }
     });
 
+    const { mutate: uploadFile, isPending: isUploading } = useMutation({
+        mutationFn: async (file: File) => {
+            return await uploadDocument(file);
+        },
+        onMutate: (file) => {
+            const pendingMsg: ChatMessageDetail = {
+                id: crypto.randomUUID(),
+                senderId: 'system',
+                isMine: true,
+                content: `Uploading ${file.name}...`,
+                sentAt: new Date().toISOString()
+            };
+            setMessages(prev => [...prev, pendingMsg]);
+        },
+        onSuccess: (response) => {
+            const successMsg: ChatMessageDetail = {
+                id: crypto.randomUUID(),
+                senderId: 'ai-bot',
+                isMine: false,
+                content: `I have indexed "${response.data.filename}". You can now ask me questions about it!`,
+                sentAt: new Date().toISOString()
+            };
+            setMessages(prev => [...prev, successMsg]);
+        },
+        onError: (error) => {
+            const errorMsg: ChatMessageDetail = {
+                id: crypto.randomUUID(),
+                senderId: 'ai-bot',
+                isMine: false,
+                content: `Failed to upload file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                sentAt: new Date().toISOString()
+            };
+            setMessages(prev => [...prev, errorMsg]);
+        }
+    });
+
     const aiChat: Chat = {
         id: AI_CHAT_ID,
         name: 'AI Assistant',
@@ -62,6 +98,7 @@ export function useAiChat() {
     return {
         chat: aiChat,
         sendMessage,
-        isPending
+        uploadFile,
+        isPending: isSending || isUploading
     };
 }
