@@ -1,10 +1,9 @@
 import { Card, CardContent } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import type {PublicUserProfile} from '../../model/userProfile';
+import type { PublicUserProfile } from '../../model/userProfile';
 import { useProfileImageLoader } from '../../hooks/useProfileImageLoader.ts';
 import { FriendCardHeader } from './FriendCardHeader';
 import { FriendCardActions } from './FriendCardActions';
-import {cardStyles, contentStyles} from "../../utils/friendCardUtils.ts";
+import { cardStyles, contentStyles } from "../../utils/friendCardUtils.ts";
 
 interface FriendCardProps {
     user: PublicUserProfile;
@@ -13,13 +12,12 @@ interface FriendCardProps {
 }
 
 export function FriendCard({ user, onRemoveFriend, showActions = true }: FriendCardProps) {
-    const theme = useTheme();
     const userId = user.id;
     const { profileImageUrl, isLoading, hasError } = useProfileImageLoader(userId);
     const displayName = user.profile?.displayName || user.username;
 
     return (
-        <Card sx={cardStyles(theme)}>
+        <Card sx={cardStyles}>
             <CardContent sx={contentStyles(showActions)}>
                 <FriendCardHeader
                     user={user}

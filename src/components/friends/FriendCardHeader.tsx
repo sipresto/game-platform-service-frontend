@@ -27,6 +27,7 @@ export function FriendCardHeader({
             alignItems: 'flex-start',
             gap: 2,
             mb: 2,
+            backgroundColor: 'background.paper',
         }}>
             <Box>
                 <UserAvatar

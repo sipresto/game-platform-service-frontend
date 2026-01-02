@@ -1,5 +1,4 @@
-import type {SxProps} from '@mui/material';
-import type {Theme} from '@mui/material/styles';
+import type { SxProps } from '@mui/material';
 
 export const getVisibilityLabel = (visibility: string) => {
     switch (visibility) {
@@ -14,13 +13,11 @@ export const getVisibilityLabel = (visibility: string) => {
     }
 };
 
-export const cardStyles = (theme: Theme): SxProps => ({
+export const cardStyles = ({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
     borderRadius: 2,
-    border: `1px solid ${theme.palette.divider}08`,
-    background: theme.palette.background.paper,
     transition: 'all 0.2s ease',
     position: 'relative',
     overflow: 'hidden',
