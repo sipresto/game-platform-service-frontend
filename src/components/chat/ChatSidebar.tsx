@@ -66,7 +66,7 @@ export function ChatSidebar({ selectedChatId }: { selectedChatId?: string }) {
                         <SmartToy sx={{ mr: 2, color: 'primary.main' }} />
                         <ListItemText
                             primary="AI Assistant"
-                            secondary="Ask me anything..."
+                            secondary="Upload a pdf, docx or txt file. Then ask me about it!"
                         />
                     </ListItemButton>
                     <Divider sx={{ my: 1 }} />
