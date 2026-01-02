@@ -6,6 +6,7 @@ export interface Lobby {
 
 export interface CreateLobbyRequest {
     password?: string | null;
+    maxPlayers: number;
     gameId: string;
 }
 

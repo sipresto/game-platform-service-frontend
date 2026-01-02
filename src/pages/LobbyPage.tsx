@@ -27,6 +27,8 @@ export const LobbyPage = () => {
     const [joinDialogOpen, setJoinDialogOpen] = useState(false);
     const [selectedLobbyId, setSelectedLobbyId] = useState<string | null>(null);
 
+    const [maxPlayers, setMaxPlayers] = useState(2);
+    const [isPrivate, setIsPrivate] = useState(false);
     const [password, setPassword] = useState('');
     const [joinPassword, setJoinPassword] = useState('');
 
@@ -84,6 +86,8 @@ export const LobbyPage = () => {
     };
 
     const resetCreateForm = () => {
+        setMaxPlayers(2);
+        setIsPrivate(false);
         setPassword('');
     };
 
@@ -92,7 +96,8 @@ export const LobbyPage = () => {
 
         const request: CreateLobbyRequest = {
             gameId,
-            password: password ? password : null,
+            maxPlayers,
+            password: isPrivate && password ? password : null,
         };
 
         createLobby.mutate(request, {
@@ -177,7 +182,11 @@ export const LobbyPage = () => {
                 open={createDialogOpen}
                 onClose={() => setCreateDialogOpen(false)}
                 gameName={game.name}
+                maxPlayers={maxPlayers}
+                isPrivate={isPrivate}
                 password={password}
+                onMaxPlayersChange={setMaxPlayers}
+                onIsPrivateChange={setIsPrivate}
                 onPasswordChange={setPassword}
                 onCreateLobby={handleCreateLobby}
                 isCreating={createLobby.isPending}
