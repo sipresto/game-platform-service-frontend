@@ -1,8 +1,8 @@
 import type React from "react"
-import { useState } from "react"
-import { Button, Menu, Box, Typography, Slider, FormGroup, FormControlLabel, Checkbox, Divider } from "@mui/material"
+import {useState} from "react"
+import {Box, Button, Checkbox, Divider, FormControlLabel, FormGroup, Menu, Slider, Typography} from "@mui/material"
 import FilterListIcon from "@mui/icons-material/FilterList"
-import type { GameFilterRequest } from "../../model/gameRequest.ts"
+import type {GameFilterRequest} from "../../model/gameRequest.ts"
 
 interface GameFilterProps {
     filters: GameFilterRequest
@@ -74,7 +74,12 @@ export function GameFilter({ filters, onFiltersChange }: GameFilterProps) {
                 startIcon={<FilterListIcon />}
                 onClick={handleClick}
                 size="small"
-                sx={{ height: '40px' }}
+                sx={{
+                    height: '40px', color: 'text.primary', borderColor: 'action.disabled',
+                    '&:hover': {
+                        borderColor: 'text.primary'
+                    }
+                }}
             >
                 Filters
                 {activeFilterCount > 0 && ` (${activeFilterCount})`}
@@ -137,7 +142,7 @@ export function GameFilter({ filters, onFiltersChange }: GameFilterProps) {
                     <Divider sx={{ my: 2 }} />
 
                     <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-                        <Button onClick={handleClearFilters} size="small">
+                        <Button onClick={handleClearFilters} size="small" sx={{color: 'text.primary'}}>
                             Clear
                         </Button>
                         <Button onClick={handleApplyFilters} variant="contained" size="small">

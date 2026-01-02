@@ -62,6 +62,7 @@ export function UserCard({ user }: UserCardProps) {
                     size="small"
                     component={RouterLink}
                     to={`/profile/${user.id}`}
+                    sx={{color: 'text.primary'}}
                 >
                     View Profile
                 </Button>
