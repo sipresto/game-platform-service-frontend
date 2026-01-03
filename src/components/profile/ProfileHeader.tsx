@@ -36,6 +36,10 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
         );
     };
 
+    const handleProfileEdit = () => {
+        navigate(`/profile/edit`);
+    }
+
     return (
         <Paper
             sx={{
@@ -90,15 +94,24 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
                     </Box>
                 )}
 
-                {!isOwnProfile && (
+                {!isOwnProfile ? (
                     <Button
                         fullWidth
                         variant="contained"
-                        startIcon={<ChatBubble/>}
+                        startIcon={<ChatBubble />}
                         onClick={handleStartChat}
                         sx={{ mt: 2 }}
                     >
                         Send message
+                    </Button>
+                ) : (
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={handleProfileEdit}
+                        sx={{ mt: 2 }}
+                    >
+                        Edit Profile
                     </Button>
                 )}
             </Box>
