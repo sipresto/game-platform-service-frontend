@@ -34,6 +34,7 @@ export function DifficultyChip({ difficulty }: DifficultyChipProps) {
             color={config.color}
             size="small"
             icon={config.icon}
+            sx={{ color: 'common.white' }}
         />
     );
 }

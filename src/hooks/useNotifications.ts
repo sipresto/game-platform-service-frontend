@@ -62,8 +62,8 @@ export function useNotificationPreferences() {
     const updateMutation = useMutation({
         mutationFn: ({ notificationType, channel, enabled }: NotificationPreferenceUpdate) =>
             updateNotificationPreference(notificationType, channel, enabled),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notificationPreferences'] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['notificationPreferences'] });
         }
     });
 

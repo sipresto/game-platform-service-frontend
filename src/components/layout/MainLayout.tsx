@@ -1,346 +1,25 @@
-import React, { useContext, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router';
-import {
-    Box, AppBar, Toolbar, Typography, Drawer, List, ListItem,
-    ListItemButton, ListItemIcon, ListItemText, IconButton, Badge,
-    CssBaseline, Button, Menu, MenuItem, Avatar
-} from '@mui/material';
-import {
-    ArrowLeft, ChatBubble, Diversity3, Edit, EmojiEvents,
-    Gamepad, Group, Login, Logout, Menu as MenuIcon, Notifications,
-    Person, Settings, Store, VerticalSplit
-} from '@mui/icons-material';
-
-import SecurityContext from '../../context/SecurityContext';
-import { useUserProfile } from '../../hooks/useUserProfile';
-import { useNotifications } from "../../hooks/useNotifications.ts";
-import { useProfileImageLoader } from "../../hooks/useProfileImageLoader.ts";
-import { NotificationList } from "./notifications/NotificationList.tsx";
+import { useState } from 'react';
+import { Outlet, useLocation } from 'react-router';
+import { Box } from '@mui/material';
+import { NavSidebar } from "./sidebar/NavSidebar.tsx";
+import { TopBar } from "./topbar/TopBar.tsx";
 
 const DRAWER_WIDTH = 240;
 
 export function MainLayout() {
-    const navigate = useNavigate();
     const location = useLocation();
     const isProfilePage = location.pathname.startsWith('/profile');
-
-    const { loggedInUser, logout, isAuthenticated, login } = useContext(SecurityContext);
-    const { profile: userProfile } = useUserProfile();
-    const { notifications = [] } = useNotifications();
-    const unreadCount = notifications.filter(n => !n.read).length;
-    const imageUrl = useProfileImageLoader(userProfile?.id || '').profileImageUrl;
-
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
-    const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
 
-    const handleNotificationsOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setNotificationAnchor(event.currentTarget);
-    };
-
-    const handleNotificationsClose = () => {
-        setNotificationAnchor(null);
-    };
-
-    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setUserMenuAnchor(event.currentTarget);
-    };
-
-    const handleUserMenuClose = () => {
-        setUserMenuAnchor(null);
-    };
-
-    const handleLogout = () => {
-        handleUserMenuClose();
-        logout();
-    };
-
-    const handleLogin = () => {
-        login();
-    };
-
-    const handleEditProfile = () => {
-        handleUserMenuClose();
-        navigate('/profile/edit');
-    };
-
-    const handleViewProfile = () => {
-        handleUserMenuClose();
-        const userId = userProfile?.id;
-        if (userId) {
-            navigate(`/profile/${userId}`);
-        }
-    };
-
-    const displayName = userProfile?.profile?.displayName ||
-        loggedInUser?.name ||
-        'Gamer';
-
-    const publicMenuItems = [
-        { text: 'Store', path: '/store', icon: <Store /> },
-    ];
-
-    const userId = userProfile?.id || '';
-
-    const protectedMenuItems = [
-        { text: 'Library', path: '/library', icon: <VerticalSplit /> },
-        { text: 'Sessions', path: '/sessions', icon: <Gamepad /> },
-        { text: 'Profile', path: `/profile/${userId}`, icon: <Person /> },
-        { text: 'Friends', path: '/friends', icon: <Group /> },
-        { text: 'Users', path: '/users', icon: <Diversity3 /> },
-        { text: 'Chats', path: '/chat', icon: <ChatBubble /> },
-        { text: 'Perks', path: '/perks', icon: <EmojiEvents /> },
-        { text: 'Settings', path: '/profile/edit', icon: <Settings /> },
-    ];
-
-    const menuItems = [
-        ...publicMenuItems,
-        ...(isAuthenticated() ? protectedMenuItems : [])
-    ];
-
-    const drawerContent = (
-        <Box sx={{ overflow: 'auto', mt: '64px' }}>
-            <List disablePadding>
-                {menuItems.map((item) => {
-                    const isActive = location.pathname.startsWith(item.path);
-                    return (
-                        <ListItem key={item.text} disablePadding>
-                            <ListItemButton
-                                onClick={() => {
-                                    navigate(item.path);
-                                    setMobileOpen(false);
-                                }}
-                                sx={{
-                                    py: 1.5,
-                                    bgcolor: isActive ? '#333333' : 'transparent',
-                                    color: isActive ? 'white' : 'text.primary',
-                                    '&:hover': { bgcolor: isActive ? '#333333' : 'rgba(0,0,0,0.05)' },
-                                    display: 'flex', justifyContent: 'space-between'
-                                }}
-                            >
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <ListItemIcon sx={{ minWidth: 40, color: isActive ? 'white' : 'text.primary' }}>
-                                        {item.icon}
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={item.text}
-                                    />
-                                </Box>
-                                {isActive && <ArrowLeft sx={{ color: 'white', fontSize: 30, mr: -1 }} />}
-                            </ListItemButton>
-                        </ListItem>
-                    );
-                })}
-
-                <ListItem disablePadding>
-                    <ListItemButton
-                        onClick={isAuthenticated() ? handleLogout : handleLogin}
-                        sx={{
-                            py: 1.5,
-                            mt: 2,
-                            display: { sm: 'none' },
-                            justifyContent: 'center',
-                            bgcolor: isAuthenticated() ? 'error.main' : 'primary.main',
-                            color: 'white',
-                            '&:hover': {
-                                bgcolor: isAuthenticated() ? 'error.dark' : 'primary.dark'
-                            },
-                        }}
-                    >
-                        <ListItemIcon sx={{ minWidth: 40, color: 'white' }}>
-                            {isAuthenticated() ? <Logout /> : <Login />}
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={isAuthenticated() ? "Logout" : "Login"}
-                        />
-                    </ListItemButton>
-                </ListItem>
-            </List>
-        </Box>
-    );
-
     return (
         <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-            <CssBaseline />
+            <TopBar onDrawerToggle={handleDrawerToggle}/>
 
-            <AppBar
-                position="fixed"
-                sx={{
-                    zIndex: (theme) => theme.zIndex.drawer + 1,
-                    bgcolor: '#333333',
-                    height: '64px',
-                    justifyContent: 'center'
-                }}
-            >
-                <Toolbar sx={{ justifyContent: 'space-between' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge="start"
-                            onClick={handleDrawerToggle}
-                            sx={{ mr: 2, display: { sm: 'none' } }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Store fontSize="small" />
-                            <Typography variant="h6" fontWeight="bold">VibeGames</Typography>
-                        </Box>
-                    </Box>
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        {isAuthenticated() && (
-                            <Typography variant="body2" sx={{ fontWeight: 500, display: { xs: 'none', sm: 'block' } }}>
-                                Hi, {displayName}!
-                            </Typography>
-                        )}
-
-                        {isAuthenticated() ? (
-                            <>
-                                <IconButton
-                                    color="inherit"
-                                    size="small"
-                                    onClick={handleNotificationsOpen}
-                                    title="Notifications"
-                                    sx={{
-                                        '&:hover': {
-                                            backgroundColor: 'rgba(255,255,255,0.1)'
-                                        }
-                                    }}
-                                >
-                                    <Badge badgeContent={unreadCount} color="error">
-                                        <Notifications fontSize="small" />
-                                    </Badge>
-                                </IconButton>
-
-                                <NotificationList
-                                    anchorEl={notificationAnchor}
-                                    onClose={handleNotificationsClose}
-                                    notifications={notifications}
-                                />
-
-                                <IconButton
-                                    color="inherit"
-                                    size="small"
-                                    onClick={handleLogout}
-                                    title="Logout"
-                                    sx={{
-                                        display: { xs: 'none', sm: 'inline-flex' },
-                                        '&:hover': {
-                                            backgroundColor: 'rgba(255,255,255,0.1)'
-                                        }
-                                    }}
-                                >
-                                    <Logout fontSize="small" />
-                                </IconButton>
-
-                                <IconButton
-                                    color="inherit"
-                                    size="small"
-                                    onClick={handleUserMenuOpen}
-                                    sx={{
-                                        '&:hover': {
-                                            backgroundColor: 'rgba(255,255,255,0.1)'
-                                        }
-                                    }}
-                                >
-                                    <Avatar
-                                        src={imageUrl || undefined}
-                                        sx={{
-                                            width: 32,
-                                            height: 32,
-                                            fontSize: 14,
-                                            bgcolor: 'primary.main',
-                                        }}
-                                    >
-                                        {displayName?.charAt(0)?.toUpperCase() || 'U'}
-                                    </Avatar>
-                                </IconButton>
-
-                                <Menu
-                                    anchorEl={userMenuAnchor}
-                                    open={Boolean(userMenuAnchor)}
-                                    onClose={handleUserMenuClose}
-                                    onClick={handleUserMenuClose}
-                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                                >
-                                    <MenuItem onClick={handleViewProfile}>
-                                        <ListItemIcon>
-                                            <Person fontSize="small" />
-                                        </ListItemIcon>
-                                        View Profile
-                                    </MenuItem>
-                                    <MenuItem onClick={handleEditProfile}>
-                                        <ListItemIcon>
-                                            <Edit fontSize="small" />
-                                        </ListItemIcon>
-                                        Edit Profile
-                                    </MenuItem>
-                                    <MenuItem onClick={handleLogout}>
-                                        <ListItemIcon>
-                                            <Logout fontSize="small" />
-                                        </ListItemIcon>
-                                        Logout
-                                    </MenuItem>
-                                </Menu>
-                            </>
-                        ) : (
-                            <Button
-                                color="inherit"
-                                startIcon={<Login />}
-                                onClick={handleLogin}
-                                sx={{
-                                    display: { xs: 'none', sm: 'flex' },
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(255,255,255,0.1)'
-                                    }
-                                }}
-                            >
-                                Login
-                            </Button>
-                        )}
-                    </Box>
-                </Toolbar>
-            </AppBar>
-
-            <Box component="nav" sx={{ width: { sm: DRAWER_WIDTH }, flexShrink: { sm: 0 } }}>
-                <Drawer
-                    variant="temporary"
-                    open={mobileOpen}
-                    onClose={handleDrawerToggle}
-                    ModalProps={{ keepMounted: true }}
-                    sx={{
-                        display: { xs: 'block', sm: 'none' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: DRAWER_WIDTH, bgcolor: '#E0E0E0' },
-                    }}
-                >
-                    {drawerContent}
-                </Drawer>
-
-                <Drawer
-                    variant="permanent"
-                    sx={{
-                        display: { xs: 'none', sm: 'block' },
-                        '& .MuiDrawer-paper': {
-                            boxSizing: 'border-box',
-                            width: DRAWER_WIDTH,
-                            bgcolor: '#E0E0E0',
-                            borderRight: 'none',
-                            height: '100vh'
-                        },
-                    }}
-                    open
-                >
-                    {drawerContent}
-                </Drawer>
-            </Box>
+            <NavSidebar drawerWidth={DRAWER_WIDTH} mobileOpen={mobileOpen} onDrawerToggle={handleDrawerToggle}/>
 
             <Box
                 component="main"
@@ -348,13 +27,12 @@ export function MainLayout() {
                     flexGrow: 1,
                     p: isProfilePage ? 0 : 3,
                     mt: '64px',
-                    bgcolor: isProfilePage ? 'transparent' : '#FFFFFF',
                     height: 'calc(100vh - 64px)',
                     overflow: 'auto',
                     width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` }
                 }}
             >
-                <Outlet />
+                <Outlet/>
             </Box>
         </Box>
     );

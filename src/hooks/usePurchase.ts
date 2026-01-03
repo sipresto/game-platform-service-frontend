@@ -20,9 +20,9 @@ export function usePurchaseGame() {
 
             return await completePurchase(gameId, chargeResponse.id);
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['userProfile'] });
-            queryClient.invalidateQueries({ queryKey: ['ownedGames'] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+            await queryClient.invalidateQueries({ queryKey: ['ownedGames'] });
         },
         onError: (error) => {
             console.error('Purchase failed:', error);

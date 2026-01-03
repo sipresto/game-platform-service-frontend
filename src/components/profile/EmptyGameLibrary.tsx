@@ -1,4 +1,4 @@
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { SportsEsports as GameIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router';
 
@@ -18,11 +18,11 @@ export function EmptyGameLibrary({ isOwnProfile }: EmptyGameLibraryProps) {
                 textAlign: 'center',
             }}
         >
-            <GameIcon sx={{ fontSize: 80, color: 'text.disabled', mb: 2 }} />
+            <GameIcon sx={{ fontSize: 80, mb: 2 }}/>
             <Typography variant="h5" gutterBottom fontWeight={600}>
                 No games yet
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography variant="body1" sx={{ mb: 3 }}>
                 {isOwnProfile ? 'Start building your collection' : "This user hasn't added any games yet"}
             </Typography>
             {isOwnProfile && (

@@ -22,9 +22,8 @@ export function AdvancedPrivacyView({
                 sx={{
                     p: 3,
                     border: 1,
-                    borderColor: 'divider',
-                    borderRadius: 2,
-                    backgroundColor: 'background.default'
+                    borderColor: 'action.disabled',
+                    borderRadius: 2
                 }}
             >
                 <Typography variant="subtitle1" sx={{fontWeight: 600, mb: 1}}>
@@ -34,7 +33,6 @@ export function AdvancedPrivacyView({
                     Customize visibility for each type of information separately.
                 </Typography>
                 <Box sx={{
-                    bgcolor: 'grey.50',
                     border: 1,
                     borderColor: 'grey.300',
                     borderRadius: 1,
@@ -60,9 +58,8 @@ export function AdvancedPrivacyView({
                                         elevation={0}
                                         sx={{
                                             p: 2,
-                                            bgcolor: 'grey.50',
                                             border: 1,
-                                            borderColor: 'grey.300',
+                                            borderColor: 'action.disabled',
                                             borderRadius: 1
                                         }}
                                     >

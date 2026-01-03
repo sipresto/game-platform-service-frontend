@@ -44,7 +44,7 @@ export function MessageInput({ chatId, onSendOverride }: { chatId: string, onSen
                     borderRadius: '4px',
                 },
                 scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(0,0,0,0.3) transparent',
+                scrollbarColor: 'rgba(0,0,0,0.2) transparent',
             }}>
                 <TextField
                     fullWidth

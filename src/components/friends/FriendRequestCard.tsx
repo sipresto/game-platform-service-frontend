@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Card, CardContent, Box } from '@mui/material';
-import type {PublicUserProfile} from '../../model/userProfile';
+import { Box, Card, CardContent } from '@mui/material';
+import type { PublicUserProfile } from '../../model/userProfile';
 import { useProfileImageLoader } from '../../hooks/useProfileImageLoader.ts';
 import { useAcceptFriendRequest, useRejectFriendRequest } from '../../hooks/useFriendRequests';
 import { UserInfoSection } from './UserInfoSection';
 import { TimeChip } from './TimeChip';
 import { FriendRequestActions } from './FriendRequestActions';
+import { useNavigate } from "react-router";
 
 interface FriendRequestCardProps {
     user: PublicUserProfile;
@@ -13,33 +14,42 @@ interface FriendRequestCardProps {
 }
 
 export function FriendRequestCard({ user, createdAt }: FriendRequestCardProps) {
+    const navigate = useNavigate();
     const userId = user.id;
     const { profileImageUrl, isLoading: imageLoading, hasError } = useProfileImageLoader(userId);
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const acceptMutation = useAcceptFriendRequest();
-    const rejectMutation = useRejectFriendRequest();
+    const { acceptFriendRequest } = useAcceptFriendRequest();
+    const { rejectFriendRequest } = useRejectFriendRequest();
 
-    const handleAccept = async () => {
+    const handleAccept = () => {
         setIsProcessing(true);
-        try {
-            await acceptMutation.mutateAsync(userId);
-        } finally {
-            setIsProcessing(false);
-        }
+        acceptFriendRequest(userId);
     };
 
     const handleReject = async () => {
         setIsProcessing(true);
-        try {
-            await rejectMutation.mutateAsync(userId);
-        } finally {
-            setIsProcessing(false);
-        }
+        rejectFriendRequest(userId);
     };
 
+    const handleProfileClick = () => {
+        navigate(`/profile/${userId}`);
+    }
+
     return (
-        <Card sx={cardStyles}>
+        <Card
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+                '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: 4,
+                    cursor: 'pointer',
+                }
+            }}
+            onClick={handleProfileClick}
+        >
             <CardContent sx={{ flexGrow: 1, p: 2 }}>
                 <Box sx={{
                     display: 'flex',
@@ -59,13 +69,12 @@ export function FriendRequestCard({ user, createdAt }: FriendRequestCardProps) {
                     </Box>
 
                     <Box>
-                        <TimeChip createdAt={createdAt} />
+                        <TimeChip createdAt={createdAt}/>
                     </Box>
                 </Box>
 
                 <Box sx={{ mt: 1 }}>
                     <FriendRequestActions
-                        userId={userId}
                         isProcessing={isProcessing}
                         onAccept={handleAccept}
                         onReject={handleReject}
@@ -75,13 +84,3 @@ export function FriendRequestCard({ user, createdAt }: FriendRequestCardProps) {
         </Card>
     );
 }
-
-const cardStyles = {
-    display: 'flex',
-    flexDirection: 'column',
-    transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-    '&:hover': {
-        transform: 'translateY(-2px)',
-        boxShadow: 4
-    }
-};

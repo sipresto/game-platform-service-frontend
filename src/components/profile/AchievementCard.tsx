@@ -1,4 +1,4 @@
-import { Box, Typography, Paper } from "@mui/material"
+import { Box, Paper, Typography } from "@mui/material"
 import { EmojiEvents as TrophyIcon } from "@mui/icons-material"
 import type { AchievementProgress } from "../../model/achievementProgress"
 
@@ -24,14 +24,13 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
                     transform: "translateY(-4px)",
                     boxShadow: 4,
                 },
-                backgroundColor: isCompleted ? "white" : "grey.100",
+                backgroundColor: isCompleted ? "background.default" : "background.paper",
                 opacity: isCompleted ? 1 : 0.7,
-                boxShadow: isCompleted ? 1 : 0,
             }}
         >
             <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 1 }}>
                 {isCompleted ?
-                    <TrophyIcon sx={{ color: "primary.main", fontSize: 28, flexShrink: 0, position: "absolute" }} />
+                    <TrophyIcon sx={{ color: "primary.secondary", fontSize: 28, flexShrink: 0, position: "absolute" }}/>
                     : null
                 }
                 <Box sx={{ flexGrow: 1, minWidth: 0 }}>
@@ -42,11 +41,12 @@ export function AchievementCard({ achievement }: AchievementCardProps) {
                             mb: 0.5,
                             overflow: "hidden",
                             textOverflow: "ellipsis",
+                            color: 'text.primary'
                         }}
                     >
                         {achievement.achievementName}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+                    <Typography variant="caption" sx={{ display: "block", mb: 1, color: 'text.primary' }}>
                         {achievement.gameName}
                     </Typography>
                 </Box>

@@ -36,6 +36,7 @@ export function GameSummary({ game }: GameSummaryProps) {
                                     size="small"
                                     color="primary"
                                     variant="outlined"
+                                    sx={{color: 'text.primary'}}
                                 />
                             ))}
                         </Stack>
@@ -56,7 +57,7 @@ export function GameSummary({ game }: GameSummaryProps) {
                     <Typography variant="body2" color="text.secondary">
                         Total Price
                     </Typography>
-                    <Typography variant="h4" color="primary" fontWeight="bold">
+                    <Typography variant="h4" color="primary" fontWeight="bold" sx={{color: 'text.primary'}}>
                         €{game.price?.toFixed(2) || '0.00'}
                     </Typography>
                 </Box>

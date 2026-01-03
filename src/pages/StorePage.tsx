@@ -1,9 +1,9 @@
 import { Suspense, useState } from 'react';
 import { Alert, Box, Button, CircularProgress, Paper, Typography } from '@mui/material';
-import { GameSearch } from "../components/Searchbar";
-import { StoreGameList } from "../components/GameList";
+import { GameSearch } from "../components/games/Searchbar.tsx";
+import { StoreGameList } from "../components/games/GameList.tsx";
 import type { GameFilterRequest } from "../model/gameRequest";
-import { GameFilter } from "../components/GameFilter.tsx";
+import { GameFilter } from "../components/games/GameFilter.tsx";
 import { ErrorBoundary } from "react-error-boundary";
 
 export function StorePage() {

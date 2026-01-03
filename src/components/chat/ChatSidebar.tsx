@@ -42,7 +42,7 @@ export function ChatSidebar({ selectedChatId }: { selectedChatId?: string }) {
                     borderRadius: '4px',
                 },
                 scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(0,0,0,0.3) transparent',
+                scrollbarColor: 'rgba(0,0,0,0.2) transparent',
             }}
         >
             <Typography sx={{ p: 2, fontWeight: 600 }}>Chats</Typography>

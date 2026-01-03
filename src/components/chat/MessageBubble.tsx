@@ -31,8 +31,8 @@ export function MessageBubble({ message, showName, senderName }: Props) {
 
             <Box
                 sx={{
-                    bgcolor: message.isMine ? 'primary.main' : 'grey.300',
-                    color: message.isMine ? 'white' : 'black',
+                    bgcolor: message.isMine ? 'primary.main' : 'background.elevated',
+                    color: message.isMine ? 'primary.contrastText' : 'text.primary',
                     px: 2,
                     py: 1,
                     borderRadius: 2,
