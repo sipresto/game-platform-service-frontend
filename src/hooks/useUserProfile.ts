@@ -92,6 +92,7 @@ export function useUserProfileById(userId: string): UseQueryResult<PublicUserPro
             try {
                 return await getUser(userId);
             } catch (error) {
+                console.error(`Failed to get user by ID ${userId}:`, error);
                 return null;
             }
         },
@@ -141,10 +142,11 @@ export function useUpdateProfile(): UseMutationResult<
 
             return { previousProfile };
         },
-        onError: (_error, _variables, context) => {
+        onError: (error, _variables, context) => {
             if (context?.previousProfile) {
                 queryClient.setQueryData(['userProfile'], context.previousProfile);
             }
+            console.error('Profile update failed:', error);
         },
         onSettled: async () => {
             await queryClient.invalidateQueries({ queryKey: ['userProfile'] });
@@ -194,10 +196,11 @@ export function useUpdateGlobalVisibility(): UseMutationResult<
 
             return { previousSettings };
         },
-        onError: (_error, _variables, context) => {
+        onError: (error, _variables, context) => {
             if (context?.previousSettings) {
                 queryClient.setQueryData(['visibilitySettings'], context.previousSettings);
             }
+            console.error('Failed to update global visibility:', error);
         },
         onSettled: async () => {
             await queryClient.invalidateQueries({ queryKey: ['visibilitySettings'] });
@@ -233,10 +236,11 @@ export function useUpdateFieldVisibility(): UseMutationResult<
 
             return { previousSettings };
         },
-        onError: (_error, _variables, context) => {
+        onError: (error, _variables, context) => {
             if (context?.previousSettings) {
                 queryClient.setQueryData(['visibilitySettings'], context.previousSettings);
             }
+            console.error('Failed to update field visibility:', error);
         },
         onSettled: async () => {
             await queryClient.invalidateQueries({ queryKey: ['visibilitySettings'] });
@@ -270,7 +274,13 @@ export function useAllUsers() {
         isError: publicUsersQuery.isError || friendsQuery.isError,
         error: publicUsersQuery.error || friendsQuery.error,
         refetchFriends: friendsQuery.refetch,
-        refetchPublicUsers: publicUsersQuery.refetch
+        refetchPublicUsers: publicUsersQuery.refetch,
+        refetchAll: async () => {
+            await Promise.all([
+                friendsQuery.refetch(),
+                publicUsersQuery.refetch()
+            ]);
+        }
     };
 }
 
@@ -286,6 +296,9 @@ export function useRemoveFriend(): UseMutationResult<void, Error, string> {
             await queryClient.invalidateQueries({ queryKey: ['userProfile'] });
             await queryClient.invalidateQueries({ queryKey: ['publicUsers'] });
         },
+        onError: (error) => {
+            console.error('Failed to remove friend:', error);
+        }
     });
 }
 
@@ -302,6 +315,9 @@ export function useBlockUser(): UseMutationResult<void, Error, string> {
             await queryClient.invalidateQueries({ queryKey: ['userProfile'] });
             await queryClient.invalidateQueries({ queryKey: ['publicUsers'] });
         },
+        onError: (error) => {
+            console.error('Failed to block user:', error);
+        }
     });
 }
 
@@ -316,6 +332,9 @@ export function useUnblockUser(): UseMutationResult<void, Error, string> {
             await queryClient.invalidateQueries({ queryKey: ['blockedUsers'] });
             await queryClient.invalidateQueries({ queryKey: ['publicUsers'] });
         },
+        onError: (error) => {
+            console.error('Failed to unblock user:', error);
+        }
     });
 }
 
