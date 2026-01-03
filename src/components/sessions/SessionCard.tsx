@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import { CalendarToday, Gamepad, SmartToy } from '@mui/icons-material';
 import { ResultBadge } from './ResultBadge';
-import { DifficultyChip } from './DifficultyChip';
 import { formatDate } from '../../utils/dateUtils';
 import type { EnhancedSession } from '../../utils/sessionEnhancer';
 import { useGameDetails } from "../../hooks/useGames";
@@ -21,6 +20,8 @@ interface SessionCardProps {
 
 export function SessionCard({ session, onClick }: SessionCardProps) {
     const { game, loading: gameLoading } = useGameDetails(session.gameId);
+
+    const difficultyText: string = "vs (" + session.difficulty.toLowerCase() + ") AI";
 
     const resultColors: Record<string, string> = {
         WIN: 'success.light',
@@ -64,15 +65,12 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
 
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                             {session.isAgainstAI && (
-                                <DifficultyChip difficulty={session.difficulty} />
-                            )}
-                            {session.isAgainstAI && (
                                 <Chip
-                                    label="vs AI"
+                                    label={difficultyText}
                                     size="small"
                                     variant="outlined"
                                     color="info"
-                                    icon={<SmartToy fontSize="small" />}
+                                    icon={<SmartToy sx={{color: 'text.primary' }} fontSize="small" />}
                                 />
                             )}
                         </Box>

@@ -11,7 +11,13 @@ interface GameLibrarySectionProps {
 
 export function GameLibrarySection({ games, isOwnProfile }: GameLibrarySectionProps) {
     return (
-        <Paper elevation={1} sx={{ p: 3, borderRadius: 2, flexGrow: 1 }}>
+        <Paper
+            sx={{
+                p: 3,
+                borderRadius: 2,
+                flexGrow: 1
+            }}
+        >
             <Box
                 sx={{
                     display: 'flex',
@@ -24,23 +30,23 @@ export function GameLibrarySection({ games, isOwnProfile }: GameLibrarySectionPr
                 }}
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <GamesIcon sx={{ fontSize: 28, color: 'primary.main' }} />
+                    <GamesIcon sx={{ fontSize: 28, color: 'primary.main' }}/>
                     <Typography variant="h5" fontWeight={700}>
                         Game Library
                     </Typography>
                 </Box>
-                <Chip label={`${games.length} ${games.length === 1 ? 'game' : 'games'}`} color="primary" />
+                <Chip label={`${games.length} ${games.length === 1 ? 'game' : 'games'}`} color="primary"/>
             </Box>
             {games.length > 0 ? (
                 <Grid container spacing={2}>
                     {games.map((game) => (
                         <Grid key={game.gameId} size={{ xs: 6, sm: 4, md: 4, lg: 3 }}>
-                            <ProfileGameCard game={game} />
+                            <ProfileGameCard game={game}/>
                         </Grid>
                     ))}
                 </Grid>
             ) : (
-                <EmptyGameLibrary isOwnProfile={isOwnProfile} />
+                <EmptyGameLibrary isOwnProfile={isOwnProfile}/>
             )}
         </Paper>
     );

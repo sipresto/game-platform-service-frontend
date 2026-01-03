@@ -34,7 +34,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
                 }}
             >
                 <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: isWinner ? 'info.main' : 'grey.500' }}>
+                    <Avatar sx={{ bgcolor: isWinner ? 'info.main' : 'background.elevated', color: 'common.white' }}>
                         <SmartToy />
                     </Avatar>
                 </ListItemAvatar>
@@ -47,7 +47,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
                                     size="small"
                                     color="info"
                                     icon={<EmojiEvents sx={{ fontSize: 16 }} />}
-                                    sx={{ height: 20, fontSize: '0.7rem' }}
+                                    sx={{ height: 20, fontSize: '0.7rem', color: 'text.primary' }}
                                 />
                             )}
                         </Box>
@@ -84,7 +84,8 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
         >
             <ListItemAvatar>
                 <Avatar sx={{
-                    bgcolor: isWinner ? 'warning.main' : (isCurrentUser ? 'primary.main' : 'secondary.main')
+                    bgcolor: isWinner ? 'warning.main' : (isCurrentUser ? 'primary.main' : 'secondary.main'),
+                    color: 'common.white'
                 }}>
                     {isWinner ? <EmojiEvents /> : (isCurrentUser ? <Person /> : <Gamepad />)}
                 </Avatar>
@@ -92,7 +93,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
             <ListItemText
                 primary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body1" fontWeight={isWinner || isCurrentUser ? 600 : 400}>
+                        <Typography sx={{ color: 'text.primary' }} variant="body1" fontWeight={isWinner || isCurrentUser ? 600 : 400}>
                             {profile?.profile?.displayName ?? 'Unknown Player'}
                         </Typography>
                         {isWinner && (
@@ -101,7 +102,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
                                 size="small"
                                 color="warning"
                                 icon={<EmojiEvents sx={{ fontSize: 16 }} />}
-                                sx={{ height: 20, fontSize: '0.7rem' }}
+                                sx={{ height: 20, fontSize: '0.7rem', color: 'common.white' }}
                             />
                         )}
                         {isCurrentUser && !isWinner && (
@@ -109,7 +110,7 @@ export function PlayerListItem({ playerId, isWinner, isCurrentUser, isAI = false
                                 label="You"
                                 size="small"
                                 color="primary"
-                                sx={{ height: 20, fontSize: '0.7rem' }}
+                                sx={{ height: 20, fontSize: '0.7rem', color: 'text.primary' }}
                             />
                         )}
                     </Box>

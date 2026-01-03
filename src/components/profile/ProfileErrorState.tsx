@@ -1,25 +1,14 @@
-import { Container, Alert, Typography, Box } from '@mui/material';
-import { ProfileRefreshButton } from './ProfileRefreshButton';
+import { Container, Alert, Typography } from '@mui/material';
 
 interface ProfileErrorStateProps {
     errorMessage?: string;
-    onRefresh: () => void;
-    isRefreshing: boolean;
 }
 
 export function ProfileErrorState({
-                                      errorMessage,
-                                      onRefresh,
-                                      isRefreshing
+                                      errorMessage
                                   }: ProfileErrorStateProps) {
     return (
         <Container maxWidth="md" sx={{ py: 4, position: 'relative' }}>
-            <Box sx={{ position: 'absolute', top: 16, left: 16 }}>
-                <ProfileRefreshButton
-                    onRefresh={onRefresh}
-                    isRefreshing={isRefreshing}
-                />
-            </Box>
             <Alert severity="error">
                 <Typography variant="h6" gutterBottom>
                     Profile Not Available

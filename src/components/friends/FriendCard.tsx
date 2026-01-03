@@ -1,26 +1,29 @@
 import { Card, CardContent } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import type {PublicUserProfile} from '../../model/userProfile';
+import type { PublicUserProfile } from '../../model/userProfile';
 import { useProfileImageLoader } from '../../hooks/useProfileImageLoader.ts';
 import { FriendCardHeader } from './FriendCardHeader';
 import { FriendCardActions } from './FriendCardActions';
-import {cardStyles, contentStyles} from "../../utils/friendCardUtils.ts";
+import { cardStyles, contentStyles } from "../../utils/friendCardUtils.ts";
+import { useNavigate } from "react-router";
 
 interface FriendCardProps {
     user: PublicUserProfile;
     onRemoveFriend?: (userId: string) => void;
-    onMessage?: (userId: string) => void;
     showActions?: boolean;
 }
 
-export function FriendCard({ user, onRemoveFriend, onMessage, showActions = true }: FriendCardProps) {
-    const theme = useTheme();
+export function FriendCard({ user, onRemoveFriend, showActions = true }: FriendCardProps) {
+    const navigate = useNavigate();
     const userId = user.id;
     const { profileImageUrl, isLoading, hasError } = useProfileImageLoader(userId);
     const displayName = user.profile?.displayName || user.username;
 
+    const handleProfileClick = () => {
+        navigate(`/profile/${userId}`);
+    }
+
     return (
-        <Card sx={cardStyles(theme)}>
+        <Card sx={cardStyles} onClick={handleProfileClick}>
             <CardContent sx={contentStyles(showActions)}>
                 <FriendCardHeader
                     user={user}
@@ -36,7 +39,6 @@ export function FriendCard({ user, onRemoveFriend, onMessage, showActions = true
                     userId={userId}
                     keycloakId={user.keycloakId}
                     onRemoveFriend={onRemoveFriend}
-                    onMessage={onMessage}
                 />
             )}
         </Card>

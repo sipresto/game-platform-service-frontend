@@ -4,7 +4,7 @@ import { Container, Alert, Box, CircularProgress } from '@mui/material';
 import { LobbyHeader } from '../components/lobby/LobbyHeader';
 import { CreateLobbyDialog } from '../components/lobby/CreateLobbyDialog';
 import { JoinLobbyDialog } from '../components/lobby/JoinLobbyDialog';
-import { NotificationAlert } from '../components/NotificationAlert';
+import { NotificationAlert } from '../components/lobby/NotificationAlert.tsx';
 import { LobbyGrid } from '../components/lobby/LobbyGrid';
 import { LobbyEmptyState } from '../components/lobby/LobbyEmptyState';
 import { useLobbies, useLobbyActions } from "../hooks/useLobby";

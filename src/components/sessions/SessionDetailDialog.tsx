@@ -86,7 +86,8 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                         <Avatar sx={{
                             bgcolor: `${resultConfig.color}.main`,
                             width: 56, height: 56,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: 'common.white'
                         }}>
                             {resultConfig.icon}
                         </Avatar>
@@ -104,14 +105,14 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
             </DialogTitle>
 
             <DialogContent>
-                <Paper elevation={0} sx={{ p: 2, mb: 2, bgcolor: 'grey.50' }}>
+                <Paper elevation={0} sx={{ p: 2, mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                             <Gamepad sx={{ color: 'primary.main' }} />
-                            <Typography variant="subtitle2" fontWeight={600}>Game Information</Typography>
+                            <Typography sx={{ color: 'text.primary' }} variant="subtitle2" fontWeight={600}>Game Information</Typography>
                         </Box>
                         {session.isAgainstAI && (
-                            <Chip label="vs AI" color="info" size="small" icon={<SmartToy />} sx={{ height: 24 }} />
+                            <Chip label="vs AI" color="info" size="small" icon={<SmartToy />} sx={{ height: 24, color: 'common.white' }} />
                         )}
                     </Box>
                     {gameLoading ? (
@@ -129,19 +130,19 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                     gap: 2,
                     mb: 2
                 }}>
-                    <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50' }}>
+                    <Paper elevation={0} sx={{ p: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                             <CalendarToday sx={{ fontSize: 20, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary">Completed</Typography>
+                            <Typography sx={{ color: 'text.primary' }} variant="caption" color="text.secondary">Completed</Typography>
                         </Box>
-                        <Typography variant="body2" fontWeight={600}>{formatFullDate(session.completedAt)}</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.primary' }} fontWeight={600}>{formatFullDate(session.completedAt)}</Typography>
                     </Paper>
 
                     {session.isAgainstAI && (
-                        <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50' }}>
+                        <Paper elevation={0} sx={{ p: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                                 <Timer sx={{ fontSize: 20, color: 'text.secondary' }} />
-                                <Typography variant="caption" color="text.secondary">Difficulty</Typography>
+                                <Typography variant="caption" sx={{ color: 'text.primary' }} color="text.secondary">Difficulty</Typography>
                             </Box>
                             <DifficultyChip difficulty={session.difficulty} />
                         </Paper>
@@ -150,13 +151,14 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
 
                 <Divider sx={{ my: 2 }} />
 
+                <Paper elevation={0} sx={{ p: 2 }}>
                 <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                         {session.isAgainstAI ?
                             <SmartToy sx={{ color: 'info.main' }} /> :
                             <Group sx={{ color: 'primary.main' }} />
                         }
-                        <Typography variant="subtitle2" fontWeight={600}>
+                        <Typography variant="subtitle2" fontWeight={600} sx={{ color: 'text.primary' }}>
                             {session.isAgainstAI ? 'Player vs AI' : `Players (${session.playerIds?.length || 0})`}
                         </Typography>
                     </Box>
@@ -182,6 +184,7 @@ export function SessionDetailDialog({ open, onClose, session }: SessionDetailDia
                         )}
                     </List>
                 </Box>
+                </Paper>
             </DialogContent>
         </Dialog>
     );

@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, Tooltip, IconButton } from '@mui/material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { Group, Refresh } from '@mui/icons-material';
 
 interface EmptyFriendsStateProps {
@@ -17,16 +17,14 @@ export function EmptyFriendsState({ onRefresh, isRefreshing }: EmptyFriendsState
     };
 
     return (
-        <Paper
+        <Box
             sx={{
-                p: 6,
                 textAlign: 'center',
-                bgcolor: 'background.default',
                 position: 'relative'
             }}
         >
             {onRefresh && (
-                <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+                <Box sx={{ position: 'absolute', right: 16 }}>
                     <Tooltip title="Refresh friends list">
                         <IconButton
                             onClick={handleRefresh}
@@ -50,6 +48,6 @@ export function EmptyFriendsState({ onRefresh, isRefreshing }: EmptyFriendsState
             <Typography variant="body2" color="text.secondary">
                 Start connecting with other players! Browse the Users page to find people to add as friends.
             </Typography>
-        </Paper>
+        </Box>
     );
 }

@@ -57,7 +57,7 @@ export function SessionList({ sessions, loading, error, refresh }: SessionListPr
                 textAlign: 'center',
                 py: 10,
                 px: 2,
-                bgcolor: 'grey.50',
+                bgcolor: 'background.paper',
                 borderRadius: 2,
                 border: '2px dashed',
                 borderColor: 'grey.300'
