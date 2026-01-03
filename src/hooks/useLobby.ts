@@ -24,17 +24,14 @@ const useToken = () => {
 };
 
 const constructGameUrl = (backendUrl: string) => {
-    if (backendUrl.startsWith('http://') || backendUrl.startsWith('https://')) {
-        if (backendUrl.includes('localhost:3333')) {
-            return backendUrl.replace('https://', 'http://');
-        }
+    if (backendUrl.startsWith('http://')) {
         return backendUrl;
     }
     return window.location.origin + (backendUrl.startsWith('/') ? backendUrl : `/${backendUrl}`);
 };
 
 const shouldAttachToken = (originalBackendUrl: string) => {
-    return !(originalBackendUrl.startsWith('http://') || originalBackendUrl.startsWith('https://'));
+    return !(originalBackendUrl.startsWith('http://'));
 };
 
 export function useLobbies(gameId: string | undefined) {
