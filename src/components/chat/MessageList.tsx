@@ -49,7 +49,7 @@ export function MessageList({ chatId, messages, participants }: Props) {
                     borderRadius: '4px',
                 },
                 scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(0,0,0,0.3) transparent',
+                scrollbarColor: 'rgba(0,0,0,0.2) transparent',
             }}
         >
             {messages.map(msg => {

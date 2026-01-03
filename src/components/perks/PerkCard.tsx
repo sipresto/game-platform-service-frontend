@@ -56,6 +56,7 @@ export default function PerkCard({
                     fullWidth
                     onClick={() => onEquip(perk.perkId)}
                     disabled={isEquipping}
+                    sx={{color: 'text.primary', borderColor: 'action.disabled'}}
                 >
                     {isEquipping ? 'Equipping...' : 'Equip'}
                 </Button>
@@ -107,7 +108,7 @@ export default function PerkCard({
                             size="small"
                             color="primary"
                             variant="outlined"
-                            sx={{ flexShrink: 0 }}
+                            sx={{ flexShrink: 0, color: 'text.primary' }}
                         />
                     )}
                     {perk.purchased && !perk.equipped && (

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useGameDetails } from "../hooks/useGames.ts";
 import { useParams } from "react-router";
-import { GameInfoGrid } from "../components/GameInfoGrid.tsx";
+import { GameInfoGrid } from "../components/games/GameInfoGrid.tsx";
 
 export function GamePage() {
     const { gameId } = useParams<{ gameId: string }>();

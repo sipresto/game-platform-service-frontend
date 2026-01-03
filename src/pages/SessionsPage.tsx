@@ -1,28 +1,28 @@
-import { useState, useCallback } from 'react';
+import {useCallback, useState} from 'react';
 import {
     Box,
-    Typography,
-    Paper,
-    Grid,
-    TextField,
+    Button,
     FormControl,
+    Grid,
     InputLabel,
-    Select,
     MenuItem,
-    Button
+    Paper,
+    Select,
+    TextField,
+    Typography
 } from '@mui/material';
-import { SortByAlpha } from '@mui/icons-material';
-import { SessionList } from "../components/sessions/SessionList";
-import { FilterChips } from "../components/sessions/FilterChips";
-import { useSessions } from '../hooks/useSessions';
-import { useUserProfile } from "../hooks/useUserProfile";
-import { SessionFilterPopup } from "../components/sessions/SessionFilters";
-import { useAllGames } from '../hooks/useGames';
-import { enhanceSession } from '../utils/sessionEnhancer';
-import { filterSessions } from '../utils/sessionFilter';
-import { sortSessions } from '../utils/sessionSort';
-import type { Filters } from '../utils/sessionFilter';
-import type { SortField, SortDirection } from '../utils/sessionSort';
+import {SortByAlpha} from '@mui/icons-material';
+import {SessionList} from "../components/sessions/SessionList";
+import {FilterChips} from "../components/sessions/FilterChips";
+import {useSessions} from '../hooks/useSessions';
+import {useUserProfile} from "../hooks/useUserProfile";
+import {SessionFilterPopup} from "../components/sessions/SessionFilters";
+import {useAllGames} from '../hooks/useGames';
+import {enhanceSession} from '../utils/sessionEnhancer';
+import type {Filters} from '../utils/sessionFilter';
+import {filterSessions} from '../utils/sessionFilter';
+import type {SortDirection, SortField} from '../utils/sessionSort';
+import {sortSessions} from '../utils/sessionSort';
 
 export function SessionsPage() {
     const { sessions, loading, error, refresh } = useSessions();
@@ -118,7 +118,12 @@ export function SessionsPage() {
                             variant="outlined"
                             onClick={handleSortDirectionToggle}
                             startIcon={sortDirection === 'asc' ? <SortByAlpha /> : <SortByAlpha />}
-                            sx={{ height: '40px' }}
+                            sx={{
+                                height: '40px', color: 'text.primary', borderColor: 'action.disabled',
+                                '&:hover': {
+                                    borderColor: 'text.primary'
+                                }
+                            }}
                             size="small"
                         >
                             {sortDirection === 'asc' ? 'Asc' : 'Desc'}

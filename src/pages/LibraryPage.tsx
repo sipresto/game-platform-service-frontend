@@ -1,8 +1,8 @@
 import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Alert, Box, Button, CircularProgress, Paper, Typography } from '@mui/material';
-import { LibraryGameList } from "../components/GameList";
-import { GameSearch } from "../components/Searchbar.tsx";
+import { LibraryGameList } from "../components/games/GameList.tsx";
+import { GameSearch } from "../components/games/Searchbar.tsx";
 
 export function LibraryPage() {
     const [searchTerm, setSearchTerm] = useState('');

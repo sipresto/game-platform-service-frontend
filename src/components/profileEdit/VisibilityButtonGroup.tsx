@@ -33,7 +33,7 @@ export function VisibilityButtonGroup({ value, onChange, disabled }: VisibilityB
                 '& .MuiToggleButton-root': {
                     py: 1.5,
                     textTransform: 'none',
-                    fontWeight: 500
+                    fontWeight: 500,
                 }
             }}
         >

@@ -1,10 +1,14 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, TextField } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, TextField, FormControlLabel, Switch } from '@mui/material';
 
 interface CreateLobbyDialogProps {
     open: boolean;
     onClose: () => void;
     gameName?: string;
+    maxPlayers: number;
+    isPrivate: boolean;
     password: string;
+    onMaxPlayersChange: (value: number) => void;
+    onIsPrivateChange: (value: boolean) => void;
     onPasswordChange: (value: string) => void;
     onCreateLobby: () => void;
     isCreating?: boolean;
@@ -14,7 +18,11 @@ export const CreateLobbyDialog = ({
                                       open,
                                       onClose,
                                       gameName,
+                                      maxPlayers,
+                                      isPrivate,
                                       password,
+                                      onMaxPlayersChange,
+                                      onIsPrivateChange,
                                       onPasswordChange,
                                       onCreateLobby,
                                       isCreating
@@ -27,12 +35,31 @@ export const CreateLobbyDialog = ({
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
                     <TextField
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => onPasswordChange(e.target.value)}
+                        label="Max Players"
+                        type="number"
+                        value={maxPlayers}
+                        onChange={(e) => onMaxPlayersChange(Number(e.target.value))}
                         fullWidth
                     />
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={isPrivate}
+                                onChange={(e) => onIsPrivateChange(e.target.checked)}
+                            />
+                        }
+                        label="Private Lobby"
+                    />
+                    {isPrivate && (
+                        <TextField
+                            label="Password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => onPasswordChange(e.target.value)}
+                            fullWidth
+                            required
+                        />
+                    )}
                 </Box>
             </DialogContent>
             <DialogActions>
@@ -40,7 +67,7 @@ export const CreateLobbyDialog = ({
                 <Button
                     onClick={onCreateLobby}
                     variant="contained"
-                    disabled={isCreating}
+                    disabled={isCreating || (isPrivate && !password)}
                 >
                     {isCreating ? 'Creating...' : 'Create Lobby'}
                 </Button>

@@ -5,13 +5,19 @@ import { useSendMessage } from '../../hooks/useChats';
 
 const MAX_LENGTH = 1000;
 
-export function MessageInput({ chatId }: { chatId: string }) {
+export function MessageInput({ chatId, onSendOverride }: { chatId: string, onSendOverride?: (msg: string) => void }) {
     const [message, setMessage] = useState('');
-    const { sendChatMessage } = useSendMessage(chatId);
+    const { sendChatMessage: sendDbMessage } = useSendMessage(chatId);
 
     const handleSend = () => {
         if (!message.trim() || message.length > MAX_LENGTH) return;
-        sendChatMessage({ content: message });
+
+        if (onSendOverride) {
+            onSendOverride(message);
+        } else {
+            sendDbMessage({ content: message });
+        }
+
         setMessage('');
     };
 
@@ -38,7 +44,7 @@ export function MessageInput({ chatId }: { chatId: string }) {
                     borderRadius: '4px',
                 },
                 scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(0,0,0,0.3) transparent',
+                scrollbarColor: 'rgba(0,0,0,0.2) transparent',
             }}>
                 <TextField
                     fullWidth

@@ -1,4 +1,4 @@
-import { Box, Paper, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { RemoveConfirmationDialog } from './RemoveConfirmationDialog';
 import { AvatarSection } from './AvatarSection';
 import { ControlSection } from './ControlSection';
@@ -37,14 +37,12 @@ export const ProfileImageUpload = ({
 
     return (
         <>
-            <Paper
-                elevation={0}
+            <Box
                 sx={{
                     p: 3,
                     border: 1,
-                    borderColor: 'divider',
+                    borderColor: 'action.disabled',
                     borderRadius: 2,
-                    backgroundColor: 'background.default',
                     mb: 3,
                 }}
             >
@@ -94,7 +92,7 @@ export const ProfileImageUpload = ({
                         </Stack>
                     </Box>
                 </Stack>
-            </Paper>
+            </Box>
 
             <RemoveConfirmationDialog
                 open={isRemoveDialogOpen}

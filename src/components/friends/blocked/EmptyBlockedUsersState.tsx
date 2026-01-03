@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, Tooltip, IconButton } from '@mui/material';
+import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { Block, Refresh } from '@mui/icons-material';
 
 interface EmptyBlockedUsersStateProps {
@@ -17,16 +17,14 @@ export function EmptyBlockedUsersState({ onRefresh, isRefreshing }: EmptyBlocked
     };
 
     return (
-        <Paper
+        <Box
             sx={{
-                p: 6,
                 textAlign: 'center',
-                bgcolor: 'background.default',
                 position: 'relative'
             }}
         >
             {onRefresh && (
-                <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+                <Box sx={{ position: 'absolute', right: 16 }}>
                     <Tooltip title="Refresh blocked users">
                         <IconButton
                             onClick={handleRefresh}
@@ -50,6 +48,6 @@ export function EmptyBlockedUsersState({ onRefresh, isRefreshing }: EmptyBlocked
             <Typography variant="body2" color="text.secondary">
                 You haven't blocked anyone yet.
             </Typography>
-        </Paper>
+        </Box>
     );
 }

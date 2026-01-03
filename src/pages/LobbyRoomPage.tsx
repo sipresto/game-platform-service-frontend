@@ -16,10 +16,10 @@ import { useGameDetails } from "../hooks/useGames";
 import { StartGameDialog } from '../components/lobby/StartGameDialog';
 import { LobbyRoomHeader } from '../components/lobby/LobbyRoomHeader';
 import { PlayerList } from '../components/lobby/PlayerList';
-import { NotificationAlert } from '../components/NotificationAlert';
-import type {GameStartRequest, RemoveBotRequest} from '../model/lobby';
-import {AddBotDialog} from "../components/lobby/AddBotDialog.tsx";
-import {BotList} from "../components/lobby/BotList.tsx";
+import { NotificationAlert } from '../components/lobby/NotificationAlert.tsx';
+import type { GameStartRequest, RemoveBotRequest } from '../model/lobby';
+import { AddBotDialog } from "../components/lobby/AddBotDialog.tsx";
+import { BotList } from "../components/lobby/BotList.tsx";
 
 export const LobbyRoomPage = () => {
     const { gameId, lobbyId } = useParams<{ gameId: string; lobbyId: string }>();

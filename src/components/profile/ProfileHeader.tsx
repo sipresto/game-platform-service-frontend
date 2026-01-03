@@ -1,10 +1,10 @@
-import {Paper, Box, Avatar, Typography, Button, Chip} from '@mui/material';
-import {ChatBubble, EmojiEvents as TitleIcon} from '@mui/icons-material';
-import {useNavigate} from 'react-router';
-import {useCreateChat} from "../../hooks/useChats.ts";
-import {useProfileImageLoader} from "../../hooks/useProfileImageLoader.ts";
-import type {PublicUserProfile} from "../../model/userProfile.ts";
-import {BORDER_STYLES, TITLE_LABELS} from "../../utils/perkConstants.ts";
+import { Avatar, Box, Button, Chip, Paper, Typography } from '@mui/material';
+import { ChatBubble, EmojiEvents as TitleIcon } from '@mui/icons-material';
+import { useNavigate } from 'react-router';
+import { useCreateChat } from "../../hooks/useChats.ts";
+import { useProfileImageLoader } from "../../hooks/useProfileImageLoader.ts";
+import type { PublicUserProfile } from "../../model/userProfile.ts";
+import { BORDER_STYLES, TITLE_LABELS } from "../../utils/perkConstants.ts";
 
 interface ProfileHeaderProps {
     user: PublicUserProfile & {
@@ -15,12 +15,12 @@ interface ProfileHeaderProps {
     isOwnProfile: boolean;
 }
 
-export function ProfileHeader({user, isOwnProfile}: ProfileHeaderProps) {
+export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
     const userId = user.id || user.keycloakId || '';
     const displayName = user.profile?.displayName || user.username;
     const initial = displayName.charAt(0).toUpperCase();
     const navigate = useNavigate();
-    const {createNewChat} = useCreateChat();
+    const { createNewChat } = useCreateChat();
 
     const profileImageUrl = useProfileImageLoader(userId).profileImageUrl;
 
@@ -29,16 +29,19 @@ export function ProfileHeader({user, isOwnProfile}: ProfileHeaderProps) {
 
     const handleStartChat = () => {
         createNewChat(
-            {participantUserIds: [userId]},
+            { participantUserIds: [userId] },
             {
                 onSuccess: (chat) => navigate(`/chat/${chat.id}`),
             }
         );
     };
 
+    const handleProfileEdit = () => {
+        navigate(`/profile/edit`);
+    }
+
     return (
         <Paper
-            elevation={2}
             sx={{
                 p: 4,
                 borderRadius: 2,
@@ -46,7 +49,7 @@ export function ProfileHeader({user, isOwnProfile}: ProfileHeaderProps) {
                 transition: 'background 0.3s ease',
             }}
         >
-            <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center'}}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
                 <Avatar
                     src={profileImageUrl || undefined}
                     sx={{
@@ -64,42 +67,51 @@ export function ProfileHeader({user, isOwnProfile}: ProfileHeaderProps) {
 
                 {titleLabel && (
                     <Chip
-                        icon={<TitleIcon sx={{fontSize: 16}}/>}
+                        icon={<TitleIcon sx={{ fontSize: 16 }}/>}
                         label={titleLabel}
                         size="small"
                         color="secondary"
                         variant="outlined"
-                        sx={{mb: 2, fontWeight: 'bold'}}
+                        sx={{ mb: 2, fontWeight: 'bold' }}
                     />
                 )}
 
                 <Typography variant="h4" fontWeight={700} gutterBottom>
                     {displayName}
                 </Typography>
-                <Typography variant="body1" color="text.secondary" gutterBottom>
+                <Typography variant="body1" gutterBottom>
                     @{user.username}
                 </Typography>
 
                 {user.profile?.bio && (
-                    <Box sx={{width: '100%', mb: 3}}>
-                        <Typography variant="overline" color="text.secondary" fontWeight={600}>
+                    <Box sx={{ width: '100%', mb: 3 }}>
+                        <Typography variant="overline" fontWeight={600}>
                             About
                         </Typography>
-                        <Typography variant="body2" sx={{mt: 1, whiteSpace: 'pre-wrap'}}>
+                        <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>
                             {user.profile.bio}
                         </Typography>
                     </Box>
                 )}
 
-                {!isOwnProfile && (
+                {!isOwnProfile ? (
                     <Button
                         fullWidth
                         variant="contained"
-                        startIcon={<ChatBubble/>}
+                        startIcon={<ChatBubble />}
                         onClick={handleStartChat}
-                        sx={{mt: 2}}
+                        sx={{ mt: 2 }}
                     >
                         Send message
+                    </Button>
+                ) : (
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        onClick={handleProfileEdit}
+                        sx={{ mt: 2 }}
+                    >
+                        Edit Profile
                     </Button>
                 )}
             </Box>

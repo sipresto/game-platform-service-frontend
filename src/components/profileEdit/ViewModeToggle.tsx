@@ -16,7 +16,7 @@ export function ViewModeToggle({ viewMode, onChange }: ViewModeToggleProps) {
                 p: 1,
                 mb: 3,
                 border: 1,
-                borderColor: 'divider',
+                borderColor: 'action.disabled',
                 display: 'inline-flex',
                 borderRadius: 2
             }}

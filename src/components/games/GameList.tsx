@@ -1,6 +1,6 @@
-import { useFilteredGames } from '../hooks/useGames';
-import type { GameFilterRequest } from "../model/gameRequest";
-import { useMyOwnedGames } from "../hooks/useOwnedGames.ts";
+import { useFilteredGames } from '../../hooks/useGames.ts';
+import type { GameFilterRequest } from "../../model/gameRequest.ts";
+import { useMyOwnedGames } from "../../hooks/useOwnedGames.ts";
 import { GameListDisplay } from "./GameListDisplay.tsx";
 import { Alert, Box, Button, CircularProgress } from "@mui/material";
 
