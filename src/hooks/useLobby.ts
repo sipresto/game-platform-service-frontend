@@ -21,6 +21,20 @@ const useToken = () => {
     return loggedInUser?.accessToken ?? loggedInUser?.idToken;
 };
 
+const constructGameUrl = (backendUrl: string) => {
+    if (backendUrl.startsWith('http://') || backendUrl.startsWith('https://')) {
+        if (backendUrl.includes('localhost:3333')) {
+            return backendUrl.replace('https://', 'http://');
+        }
+        return backendUrl;
+    }
+    return window.location.origin + (backendUrl.startsWith('/') ? backendUrl : `/${backendUrl}`);
+};
+
+const shouldAttachToken = (originalBackendUrl: string) => {
+    return !(originalBackendUrl.startsWith('http://') || originalBackendUrl.startsWith('https://'));
+};
+
 export function useLobbies(gameId: string | undefined) {
     const token = useToken();
 
@@ -51,12 +65,7 @@ export function useLobbyDetail(lobbyId: string | undefined) {
 
     const myUserId = profile?.id;
     const hostId = query.data?.hostId;
-
-    const isHost = !!(
-        query.data &&
-        myUserId &&
-        (hostId === myUserId)
-    );
+    const isHost = !!(query.data && myUserId && (hostId === myUserId));
 
     useEffect(() => {
         if (!query.data || redirectAttemptedRef.current || !lobbyId) return;
@@ -66,20 +75,20 @@ export function useLobbyDetail(lobbyId: string | undefined) {
         if (currentLobby.started && currentLobby.gameUrl && !redirectAttemptedRef.current) {
             redirectAttemptedRef.current = true;
 
-            let finalUrl = window.location.origin + currentLobby.gameUrl;
+            let finalUrl = constructGameUrl(currentLobby.gameUrl);
 
-            const token = loggedInUser?.accessToken ?? loggedInUser?.idToken;
-            if (token) {
-                try {
-                    const urlObj = new URL(finalUrl);
-                    urlObj.searchParams.set('token', token);
-
-                    localStorage.setItem('gameAccessToken', token);
-                    sessionStorage.setItem('gameAccessToken', token);
-
-                    finalUrl = urlObj.toString();
-                } catch (error) {
-                    console.error('Failed to add token to URL:', error);
+            if (shouldAttachToken(currentLobby.gameUrl)) {
+                const token = loggedInUser?.accessToken ?? loggedInUser?.idToken;
+                if (token) {
+                    try {
+                        const urlObj = new URL(finalUrl);
+                        urlObj.searchParams.set('token', token);
+                        localStorage.setItem('gameAccessToken', token);
+                        sessionStorage.setItem('gameAccessToken', token);
+                        finalUrl = urlObj.toString();
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             }
 
@@ -128,7 +137,7 @@ export function useLobbyActions(gameId: string | undefined) {
         mutationFn: ({ lobbyId, request }: { lobbyId: string; request: StartGameRequest }) =>
             startGame(lobbyId, request),
         onSuccess: (gameUrl, variables) => {
-            let finalUrl = window.location.origin + gameUrl;
+            let finalUrl = constructGameUrl(gameUrl);
 
             localStorage.setItem(`game_${variables.lobbyId}_url`, finalUrl);
             sessionStorage.setItem(`game_started_${variables.lobbyId}`, 'true');
@@ -136,14 +145,16 @@ export function useLobbyActions(gameId: string | undefined) {
             queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
             queryClient.invalidateQueries({ queryKey: ['lobby', variables.lobbyId] });
 
-            if (token) {
-                try {
-                    const urlObj = new URL(finalUrl);
-                    urlObj.searchParams.set('token', token);
-                    localStorage.setItem('gameAccessToken', token);
-                    finalUrl = urlObj.toString();
-                } catch (error) {
-                    console.error('Failed to add token to URL:', error);
+            if (shouldAttachToken(gameUrl)) {
+                if (token) {
+                    try {
+                        const urlObj = new URL(finalUrl);
+                        urlObj.searchParams.set('token', token);
+                        localStorage.setItem('gameAccessToken', token);
+                        finalUrl = urlObj.toString();
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             }
 
