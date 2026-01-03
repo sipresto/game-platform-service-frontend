@@ -14,7 +14,13 @@ export function AchievementsSection({ achievements, achievementsVisible }: Achie
     const completedCount = achievements.filter(a => a.completedAt !== null).length
 
     return (
-        <Paper elevation={1} sx={{ p: 3, borderRadius: 2, flexGrow: 1 }}>
+        <Paper
+            sx={{
+                p: 3,
+                borderRadius: 2,
+                flexGrow: 1
+            }}
+        >
             <Box
                 sx={{
                     display: "flex",
@@ -73,13 +79,13 @@ export function AchievementsSection({ achievements, achievementsVisible }: Achie
                 ) : (
                     achievementsVisible ?
                         <Box sx={{ textAlign: "center", py: 4 }}>
-                            <Typography variant="body1" color="text.secondary">
+                            <Typography variant="body1">
                                 No achievements unlocked yet
                             </Typography>
                         </Box>
                         :
                         <Box sx={{ textAlign: "center", py: 4 }}>
-                            <Typography variant="body1" color="text.secondary">
+                            <Typography variant="body1">
                                 This user's achievements are not visible
                             </Typography>
                         </Box>

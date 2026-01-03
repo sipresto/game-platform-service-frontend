@@ -10,14 +10,14 @@ export const theme = createTheme({
             palette: {
                 primary: {
                     light: brand[300],
-                    main: brand[500],
+                    main: brand[400],
                     dark: brand[700],
                     contrastText: brand[50],
                 },
                 success: {
                     light: green[300],
                     main: green[400],
-                    dark: green[700],
+                    dark: green[600],
                 },
                 error: {
                     light: red[300],
@@ -29,7 +29,7 @@ export const theme = createTheme({
                     main: orange[400],
                     dark: orange[700],
                 },
-                divider: alpha(gray[600], 0.5),
+                divider: alpha(gray[500], 0.5),
                 background: {
                     default: gray[800],
                     paper: gray[750],
@@ -58,13 +58,13 @@ export const theme = createTheme({
             palette: {
                 primary: {
                     light: brand[200],
-                    main: brand[500],
+                    main: brand[400],
                     dark: brand[700],
                     contrastText: brand[50],
                 },
                 success: {
                     light: green[300],
-                    main: green[500],
+                    main: green[400],
                     dark: green[600],
                 },
                 error: {
@@ -77,7 +77,7 @@ export const theme = createTheme({
                     main: orange[500],
                     dark: orange[700],
                 },
-                divider: alpha(gray[300], 0.4),
+                divider: alpha(gray[400], 0.5),
                 background: {
                     default: gray[100],
                     paper: gray[200],

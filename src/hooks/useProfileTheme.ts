@@ -17,11 +17,13 @@ export function useProfileTheme({ equippedThemeId, baseTheme }: UseProfileThemeO
 
         return createTheme(baseTheme, {
             palette: {
-                ...baseTheme.palette,
                 primary: {
                     main: themeConfig.accentColor,
                     contrastText: '#ffffff',
                 },
+                text: {
+                    secondary: themeConfig.secondaryTextColor,
+                }
             },
             components: {
                 MuiCssBaseline: {

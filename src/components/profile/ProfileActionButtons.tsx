@@ -13,6 +13,7 @@ import {
 import { Block, PersonRemove } from '@mui/icons-material';
 import { useBlockUser, useRemoveFriend, useUserProfile } from '../../hooks/useUserProfile.ts';
 import type { PublicUserProfile } from '../../model/userProfile.ts';
+import { useNavigate } from "react-router";
 
 interface ProfileActionButtonsProps {
     user: PublicUserProfile;
@@ -21,6 +22,7 @@ interface ProfileActionButtonsProps {
 type ActionType = 'block' | 'unfriend' | null;
 
 export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
+    const navigate = useNavigate();
     const [confirmDialog, setConfirmDialog] = useState<ActionType>(null);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
@@ -46,6 +48,7 @@ export function ProfileActionButtons({ user }: ProfileActionButtonsProps) {
             if (action === 'block') {
                 await blockMutation.mutateAsync(user.id);
                 setSnackbar({ open: true, message: 'User blocked successfully', severity: 'success' });
+                navigate('/friends');
             } else if (action === 'unfriend') {
                 await removeFriendMutation.mutateAsync(user.id);
                 setSnackbar({ open: true, message: 'Friend removed successfully', severity: 'success' });

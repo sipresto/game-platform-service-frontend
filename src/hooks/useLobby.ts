@@ -104,37 +104,37 @@ export function useLobbyActions(gameId: string | undefined) {
 
     const createMutation = useMutation({
         mutationFn: (request: CreateLobbyRequest) => createLobby(request),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
         },
     });
 
     const joinMutation = useMutation({
         mutationFn: ({ lobbyId, request }: { lobbyId: string; request: JoinLobbyRequest }) =>
             joinLobby(lobbyId, request),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
         },
     });
 
     const leaveMutation = useMutation({
         mutationFn: ({ lobbyId }: { lobbyId: string }) => leaveLobby(lobbyId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
         },
     });
 
     const startMutation = useMutation({
         mutationFn: ({ lobbyId, request }: { lobbyId: string; request: StartGameRequest }) =>
             startGame(lobbyId, request),
-        onSuccess: (gameUrl, variables) => {
+        onSuccess: async (gameUrl, variables) => {
             let finalUrl = window.location.origin + gameUrl;
 
             localStorage.setItem(`game_${variables.lobbyId}_url`, finalUrl);
             sessionStorage.setItem(`game_started_${variables.lobbyId}`, 'true');
 
-            queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
-            queryClient.invalidateQueries({ queryKey: ['lobby', variables.lobbyId] });
+            await queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+            await queryClient.invalidateQueries({ queryKey: ['lobby', variables.lobbyId] });
 
             if (token) {
                 try {

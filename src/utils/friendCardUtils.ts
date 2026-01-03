@@ -1,18 +1,5 @@
 import type { SxProps } from '@mui/material';
 
-export const getVisibilityLabel = (visibility: string) => {
-    switch (visibility) {
-        case 'PUBLIC':
-            return 'Public';
-        case 'FRIENDS_ONLY':
-            return 'Friends Only';
-        case 'PRIVATE':
-            return 'Private';
-        default:
-            return visibility;
-    }
-};
-
 export const cardStyles = ({
     height: '100%',
     display: 'flex',
@@ -24,6 +11,7 @@ export const cardStyles = ({
     '&:hover': {
         transform: 'translateY(-2px)',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        cursor: 'pointer',
     }
 });
 

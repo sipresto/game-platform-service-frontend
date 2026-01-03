@@ -30,37 +30,22 @@ export function FriendRequestButton({
         hasOutgoingRequest
     } = useFriendshipStatus(targetUserId);
 
-    const sendMutation = useSendFriendRequest();
-    const acceptMutation = useAcceptFriendRequest();
-    const rejectMutation = useRejectFriendRequest();
+    const { sendFriendRequest, isPending: sendIsPending } = useSendFriendRequest();
+    const { acceptFriendRequest, isPending: acceptIsPending } = useAcceptFriendRequest();
+    const { rejectFriendRequest, isPending: rejectIsPending } = useRejectFriendRequest();
 
-    const handleAccept = async () => {
-        try {
-            await acceptMutation.mutateAsync(targetUserId);
-        } catch (error) {
-            console.error('Failed to accept friend request:', error);
-        }
+    const handleAccept = () => {
+        acceptFriendRequest(targetUserId);
     };
 
-    const handleReject = async () => {
-        try {
-            await rejectMutation.mutateAsync(targetUserId);
-        } catch (error) {
-            console.error('Failed to reject friend request:', error);
-        }
+    const handleReject = () => {
+        rejectFriendRequest(targetUserId);
     };
 
-    const handleSendRequest = async () => {
+    const handleSendRequest = () => {
         if (!currentUser?.id) return;
 
-        try {
-            await sendMutation.mutateAsync({
-                receiverId: targetUserId,
-                senderId: currentUser.id
-            });
-        } catch (error) {
-            console.error('Failed to send friend request:', error);
-        }
+        sendFriendRequest({ receiverId: targetUserId, senderId: currentUser.id });
     };
 
     if (isCurrentUser || !currentUser) {
@@ -108,9 +93,12 @@ export function FriendRequestButton({
                     variant="contained"
                     color="success"
                     fullWidth={fullWidth}
-                    startIcon={acceptMutation.isPending ? <CircularProgress size={16}/> : <Check/>}
-                    disabled={acceptMutation.isPending || rejectMutation.isPending}
-                    onClick={handleAccept}
+                    startIcon={acceptIsPending ? <CircularProgress size={16}/> : <Check/>}
+                    disabled={acceptIsPending || rejectIsPending}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleAccept();
+                    }}
                     sx={{ flex: 1 }}
                 >
                     Accept
@@ -120,9 +108,12 @@ export function FriendRequestButton({
                     variant="outlined"
                     color="error"
                     fullWidth={fullWidth}
-                    startIcon={rejectMutation.isPending ? <CircularProgress size={16}/> : <Close/>}
-                    disabled={acceptMutation.isPending || rejectMutation.isPending}
-                    onClick={handleReject}
+                    startIcon={rejectIsPending ? <CircularProgress size={16}/> : <Close/>}
+                    disabled={acceptIsPending || rejectIsPending}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleReject();
+                    }}
                     sx={{ flex: 1 }}
                 >
                     Reject
@@ -136,9 +127,12 @@ export function FriendRequestButton({
             size={size}
             variant={variant}
             fullWidth={fullWidth}
-            startIcon={sendMutation.isPending ? <CircularProgress size={16}/> : <PersonAdd/>}
-            disabled={sendMutation.isPending}
-            onClick={handleSendRequest}
+            startIcon={sendIsPending ? <CircularProgress size={16}/> : <PersonAdd/>}
+            disabled={sendIsPending}
+            onClick={(e) => {
+                e.stopPropagation();
+                handleSendRequest();
+            }}
             sx={{
                 color: 'success.main',
                 borderColor: 'success.main',
