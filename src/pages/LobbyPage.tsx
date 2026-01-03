@@ -96,7 +96,6 @@ export const LobbyPage = () => {
 
         const request: CreateLobbyRequest = {
             gameId,
-            maxPlayers,
             password: isPrivate && password ? password : null,
         };
 
