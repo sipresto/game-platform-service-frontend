@@ -2,17 +2,19 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useContext, useEffect, useRef } from 'react';
 import SecurityContext from '../context/SecurityContext';
 import {
+    addBot,
     createLobby,
     getLobbiesForGame,
     getLobbyDetails,
     joinLobby,
-    leaveLobby,
+    leaveLobby, removeBot,
     startGame
 } from '../services/lobbyApi';
 import type {
     CreateLobbyRequest,
     JoinLobbyRequest,
-    StartGameRequest
+    GameStartRequest,
+    RemoveBotRequest
 } from '../model/lobby';
 import { useUserProfile } from "./useUserProfile.ts";
 
@@ -134,9 +136,8 @@ export function useLobbyActions(gameId: string | undefined) {
     });
 
     const startMutation = useMutation({
-        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: StartGameRequest }) =>
-            startGame(lobbyId, request),
-            
+        mutationFn: ({ lobbyId }: { lobbyId: string; }) =>
+            startGame(lobbyId),
         onSuccess: async (gameUrl, variables) => {
             let finalUrl = constructGameUrl(gameUrl);
 
@@ -165,10 +166,28 @@ export function useLobbyActions(gameId: string | undefined) {
         },
     });
 
+    const addBotMutation = useMutation({
+        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: GameStartRequest }) =>
+            addBot(lobbyId, request),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        },
+    });
+
+    const removeBotMutation = useMutation({
+        mutationFn: ({ lobbyId, request }: { lobbyId: string; request: RemoveBotRequest }) =>
+            removeBot(lobbyId, request),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        },
+    });
+
     return {
         createLobby: createMutation,
         joinLobby: joinMutation,
         leaveLobby: leaveMutation,
         startGame: startMutation,
+        addBot: addBotMutation,
+        removeBot: removeBotMutation,
     };
 }
