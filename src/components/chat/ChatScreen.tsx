@@ -3,17 +3,36 @@ import { useParams } from 'react-router';
 import { useChat } from '../../hooks/useChats';
 import { ChatSidebar } from "./ChatSidebar.tsx";
 import { ChatPanel } from "./ChatPanel.tsx";
+import { useAiChat, AI_CHAT_ID } from '../../hooks/useAiChat';
+import { AiChatPanel } from './AiChatPanel';
+
+function RealChatContainer({ id }: { id: string }) {
+    const { chat } = useChat(id);
+    return <ChatPanel chat={chat} />;
+}
+
+function AiChatContainer() {
+    const { chat, sendMessage, isPending } = useAiChat();
+    return (
+        <AiChatPanel
+            chat={chat}
+            onSend={sendMessage}
+            isThinking={isPending}
+        />
+    );
+}
 
 export function ChatScreen() {
     const { id } = useParams<{ id: string }>();
-    const { chat } = id ? useChat(id) : { chat: null };
 
     return (
         <Box sx={{ display: 'flex', height: '100%', width: '100%' }}>
-            <ChatSidebar selectedChatId={chat?.id} />
+            <ChatSidebar selectedChatId={id} />
 
-            {chat ? (
-                <ChatPanel chat={chat} />
+            {id === AI_CHAT_ID ? (
+                <AiChatContainer />
+            ) : id ? (
+                <RealChatContainer id={id} />
             ) : (
                 <Box
                     sx={{

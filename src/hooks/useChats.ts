@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tansta
 import type { Chat, ChatList, CreateChatRequest, SendMessageRequest } from "../model/chat.ts";
 import { createChat, getChatById, getChats, sendMessage } from "../services/chatApi.ts";
 import { useEffect } from "react";
+import {AI_CHAT_ID} from "./useAiChat.ts";
 
 export function useChats() {
     const { data: chats, isLoading, error } = useQuery<ChatList[]>({
@@ -55,6 +56,7 @@ export function usePollChat(chatId: string, intervalMs: number = 1000) {
     const queryClient = useQueryClient();
 
     useEffect(() => {
+        if (chatId === AI_CHAT_ID) return;
         const intervalId = setInterval(async () => {
             await queryClient.invalidateQueries({ queryKey: ['chat', chatId] });
         }, intervalMs);
