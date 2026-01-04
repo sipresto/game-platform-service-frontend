@@ -2,7 +2,7 @@ import { Box, Card, CardContent, IconButton, Tooltip, Typography } from '@mui/ma
 import { UserAvatar } from '../../users/UserAvatar';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useProfileImageLoader } from '../../../hooks/useProfileImageLoader';
-import { cardStyles, contentStyles } from "../../../utils/friendCardUtils";
+import { contentStyles } from "../../../utils/friendCardUtils";
 import type { BlockedUser } from "../../../model/userProfile.ts";
 
 interface BlockedUserCardProps {
@@ -15,7 +15,21 @@ export function BlockedUserCard({ user, onUnblock }: BlockedUserCardProps) {
     const displayName = user.profile?.displayName || user.username;
 
     return (
-        <Card sx={cardStyles}>
+        <Card
+            sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: 2,
+                transition: 'all 0.2s ease',
+                position: 'relative',
+                overflow: 'hidden',
+                '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                }
+            }}
+        >
             <CardContent sx={contentStyles(true)}>
                 <Box sx={{
                     display: 'flex',
