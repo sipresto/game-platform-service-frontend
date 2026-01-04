@@ -49,6 +49,12 @@ export interface GameUrlResponse {
     url: string;
 }
 
+export interface LobbyListResponse {
+    availableLobbies: Lobby[];
+    currentLobby: LobbyDetail | null;
+    differentGameName: string | null;
+}
+
 export interface InvitePlayerRequest {
     userId: string;
 }

@@ -1,18 +1,20 @@
 import apiClient from './axiosInstance';
 import type {
     CreateLobbyRequest,
+    GameStartRequest,
     GameUrlResponse,
+    InvitePlayerRequest,
     JoinLobbyRequest,
-    Lobby,
     LobbyCreatedResponse,
     LobbyDetail,
-    GameStartRequest, RemoveBotRequest, InvitePlayerRequest
+    LobbyListResponse,
+    RemoveBotRequest
 } from '../model/lobby';
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
 
-export async function getLobbiesForGame(gameId: string): Promise<Lobby[]> {
-    const { data } = await apiClient.get<Lobby[]>(
+export async function getLobbiesForGame(gameId: string): Promise<LobbyListResponse> {
+    const { data } = await apiClient.get<LobbyListResponse>(
         `${BACKEND_URL}/lobbies/game/${gameId}`
     );
     return data;
