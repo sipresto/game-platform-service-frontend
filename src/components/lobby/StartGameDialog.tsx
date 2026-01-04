@@ -60,7 +60,7 @@ export const StartGameDialog = ({
                 )}
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button onClick={onClose} disabled={isStarting}>
+                <Button onClick={onClose} disabled={isStarting} sx={{color: 'text.primary'}}>
                     Cancel
                 </Button>
                 <Button
