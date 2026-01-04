@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { useParams, useNavigate } from 'react-router';
 import {
     Container,
@@ -11,31 +11,51 @@ import {
 } from '@mui/material';
 import { ExitToApp as ExitIcon, PlayArrow as PlayIcon } from '@mui/icons-material';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { useLobbyDetail, useLobbyActions } from "../hooks/useLobby";
 import { useGameDetails } from "../hooks/useGames";
 import { StartGameDialog } from '../components/lobby/StartGameDialog';
 import { LobbyRoomHeader } from '../components/lobby/LobbyRoomHeader';
 import { PlayerList } from '../components/lobby/PlayerList';
 import { NotificationAlert } from '../components/lobby/NotificationAlert.tsx';
-import type { GameStartRequest, RemoveBotRequest } from '../model/lobby';
+import type {GameStartRequest, InvitePlayerRequest, RemoveBotRequest} from '../model/lobby';
 import { AddBotDialog } from "../components/lobby/AddBotDialog.tsx";
+import { InviteFriendDialog } from "../components/lobby/InviteFriendDialog.tsx";
 import { BotList } from "../components/lobby/BotList.tsx";
+import {getFriendsList} from "../services/userApi.ts";
+import type {PublicUserProfile} from "../model/userProfile.ts";
 
 export const LobbyRoomPage = () => {
     const { gameId, lobbyId } = useParams<{ gameId: string; lobbyId: string }>();
     const navigate = useNavigate();
+    const [friends, setFriends] = useState<PublicUserProfile[]>([]);
 
     const { game, loading: gameLoading, error: gameError } = useGameDetails(gameId);
     const { lobby, isHost, isLoading, error } = useLobbyDetail(lobbyId);
-    const { leaveLobby, startGame, addBot, removeBot } = useLobbyActions(gameId);
+    const { leaveLobby, startGame, addBot, removeBot, invitePlayer } = useLobbyActions(gameId);
 
     const [startDialogOpen, setStartDialogOpen] = useState(false);
     const [botDialogOpen, setBotDialogOpen] = useState(false);
+    const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
     const [difficulty, setDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
     const [notification, setNotification] = useState<{
         type: 'success' | 'error';
         message: string;
     } | null>(null);
+
+    useEffect(() => {
+        // Fetch friends when component is mounted
+        const fetchFriends = async () => {
+            try {
+                const friendsList = await getFriendsList();
+                setFriends(friendsList);
+            } catch (error) {
+                console.error('Error fetching friends list:', error);
+            }
+        };
+
+        fetchFriends();
+    }, []);
 
     const handleLeave = () => {
         if (!lobbyId) return;
@@ -103,6 +123,34 @@ export const LobbyRoomPage = () => {
                         message: 'Failed to remove bot. Please try again.',
                     });
                     setStartDialogOpen(false);
+                }
+            }
+        )
+    }
+
+    const handleInvitePlayer = (id: string) => {
+        if (!lobbyId || !gameId || !lobby || !game) return;
+
+        const request: InvitePlayerRequest = {
+            userId: id,
+        }
+
+        invitePlayer.mutate(
+            { lobbyId, request },
+            {
+                onSuccess: () => {
+                    setNotification({
+                        type: 'success',
+                        message: 'Invitation sent!'
+                    });
+                    setInviteDialogOpen(true);
+                },
+                onError: () => {
+                    setNotification({
+                        type: 'error',
+                        message: 'Failed to invite user. Please try again.',
+                    });
+                    setInviteDialogOpen(false);
                 }
             }
         )
@@ -219,15 +267,27 @@ export const LobbyRoomPage = () => {
                 }}>
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         {isHost && (
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                startIcon={<SmartToyIcon />}
-                                onClick={() => setBotDialogOpen(true)}
-                                disabled={lobby.currentPlayerCount === lobby.maxPlayers}
-                            >
-                                Add a bot
-                            </Button>
+                            <>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    startIcon={<PersonAddIcon/>}
+                                    onClick={() => setInviteDialogOpen(true)}
+                                    disabled={lobby.currentPlayerCount === lobby.maxPlayers}
+                                >
+                                    Invite a friend
+                                </Button>
+
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    startIcon={<SmartToyIcon/>}
+                                    onClick={() => setBotDialogOpen(true)}
+                                    disabled={lobby.currentPlayerCount === lobby.maxPlayers}
+                                >
+                                    Add a bot
+                                </Button>
+                            </>
                         )}
                         <Button
                             variant="outlined"
@@ -282,6 +342,16 @@ export const LobbyRoomPage = () => {
                     onDifficultyChange={setDifficulty}
                     onAddBot={hanleAddBot}
                     isAdding={addBot.isPending}
+                />
+            )}
+
+            {!lobby.started && (
+                <InviteFriendDialog
+                    open={inviteDialogOpen}
+                    onClose={() => setInviteDialogOpen(false)}
+                    onInviteUser={handleInvitePlayer}
+                    friends={friends}
+                    isInviting={addBot.isPending}
                 />
             )}
         </Container>
