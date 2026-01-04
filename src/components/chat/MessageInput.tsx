@@ -62,7 +62,7 @@ export function MessageInput({ chatId, blocked, onSendOverride }: { chatId: stri
                         },
                     }}
                 />
-                <IconButton onClick={handleSend} disabled={isOverLimit}>
+                <IconButton onClick={handleSend} disabled={isOverLimit || blocked}>
                     <Send />
                 </IconButton>
             </Box>
