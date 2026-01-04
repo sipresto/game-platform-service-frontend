@@ -143,7 +143,7 @@ export const LobbyRoomPage = () => {
                         type: 'success',
                         message: 'Invitation sent!'
                     });
-                    setInviteDialogOpen(true);
+                    setInviteDialogOpen(false);
                 },
                 onError: () => {
                     setNotification({

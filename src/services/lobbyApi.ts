@@ -86,7 +86,7 @@ export async function invitePlayer(
     lobbyId: string,
     request: InvitePlayerRequest
 ): Promise<void> {
-    await apiClient.post(
+    await apiClient.patch(
         `${BACKEND_URL}/lobbies/${lobbyId}/invite`,
         request
     )
