@@ -82,16 +82,14 @@ export function GamePage() {
 
                 <Divider />
 
-                <Box textAlign="center">
-                    <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
+                <Box>
+                    <Typography textAlign={"left"} variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
                         Rules
                     </Typography>
 
                     <Box
-                        component="ol"
                         sx={{
-                            listStylePosition: "inside",
-                            display: "inline-block",
+                            listStyleType: "none",
                             textAlign: "left",
                             color: "text.secondary",
                             fontSize: "1rem",
