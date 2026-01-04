@@ -4,6 +4,7 @@ export interface BaseGame {
     description: string;
     categories: string[];
     imageUrl?: string;
+    maxPlayers: number;
 }
 
 export interface Game extends BaseGame {

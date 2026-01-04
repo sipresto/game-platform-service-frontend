@@ -6,7 +6,7 @@ import type {
     Lobby,
     LobbyCreatedResponse,
     LobbyDetail,
-    GameStartRequest, RemoveBotRequest
+    GameStartRequest, RemoveBotRequest, InvitePlayerRequest
 } from '../model/lobby';
 
 const BACKEND_URL: string = import.meta.env.VITE_BACKEND_URL;
@@ -74,10 +74,20 @@ export async function addBot(
 
 export async function removeBot(
     lobbyId: string,
-    botNumber: RemoveBotRequest
+    request: RemoveBotRequest
 ): Promise<void> {
     await apiClient.patch(
         `${BACKEND_URL}/lobbies/${lobbyId}/removeBot`,
-        botNumber
+        request
+    )
+}
+
+export async function invitePlayer(
+    lobbyId: string,
+    request: InvitePlayerRequest
+): Promise<void> {
+    await apiClient.patch(
+        `${BACKEND_URL}/lobbies/${lobbyId}/invite`,
+        request
     )
 }

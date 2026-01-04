@@ -1,5 +1,4 @@
-import { Box, Typography, Button, Chip, IconButton } from '@mui/material';
-import { Add as AddIcon, Refresh as RefreshIcon } from '@mui/icons-material';
+import { Box, Typography } from '@mui/material';
 
 interface LobbyHeaderProps {
     game?: {
@@ -7,11 +6,9 @@ interface LobbyHeaderProps {
         description?: string;
         categories?: string[];
     };
-    onCreateLobby: () => void;
-    onRefresh: () => void;
 }
 
-export const LobbyHeader = ({ game, onCreateLobby, onRefresh }: LobbyHeaderProps) => {
+export const LobbyHeader = ({ game }: LobbyHeaderProps) => {
     return (
         <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box>
@@ -23,30 +20,6 @@ export const LobbyHeader = ({ game, onCreateLobby, onRefresh }: LobbyHeaderProps
                         {game.description}
                     </Typography>
                 )}
-                {game?.categories && game.categories.length > 0 && (
-                    <Box sx={{ display: 'flex', gap: 1, mt: 1, flexWrap: 'wrap' }}>
-                        {game.categories.map((category) => (
-                            <Chip
-                                key={category}
-                                label={category}
-                                size="small"
-                                variant="outlined"
-                            />
-                        ))}
-                    </Box>
-                )}
-            </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                <IconButton onClick={onRefresh} color="primary" title="Refresh lobbies">
-                    <RefreshIcon />
-                </IconButton>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={onCreateLobby}
-                >
-                    Create Lobby
-                </Button>
             </Box>
         </Box>
     );

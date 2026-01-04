@@ -5,7 +5,7 @@ import {
     addBot,
     createLobby,
     getLobbiesForGame,
-    getLobbyDetails,
+    getLobbyDetails, invitePlayer,
     joinLobby,
     leaveLobby, removeBot,
     startGame
@@ -14,7 +14,7 @@ import type {
     CreateLobbyRequest,
     JoinLobbyRequest,
     GameStartRequest,
-    RemoveBotRequest
+    RemoveBotRequest, InvitePlayerRequest
 } from '../model/lobby';
 import { useUserProfile } from "./useUserProfile.ts";
 
@@ -179,6 +179,14 @@ export function useLobbyActions(gameId: string | undefined) {
         },
     });
 
+    const invitePlayerMutation = useMutation({
+        mutationFn: ({lobbyId, request}: { lobbyId: string; request: InvitePlayerRequest }) =>
+            invitePlayer(lobbyId, request),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        },
+    })
+
     return {
         createLobby: createMutation,
         joinLobby: joinMutation,
@@ -186,5 +194,6 @@ export function useLobbyActions(gameId: string | undefined) {
         startGame: startMutation,
         addBot: addBotMutation,
         removeBot: removeBotMutation,
+        invitePlayer: invitePlayerMutation,
     };
 }

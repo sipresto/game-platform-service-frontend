@@ -48,3 +48,7 @@ export interface LobbyCreatedResponse {
 export interface GameUrlResponse {
     url: string;
 }
+
+export interface InvitePlayerRequest {
+    userId: string;
+}
