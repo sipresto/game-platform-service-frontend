@@ -3,6 +3,7 @@ export interface Chat {
     name: string;
     participants: ChatParticipant[];
     messages: ChatMessageDetail[];
+    blocked: boolean;
 }
 
 export interface ChatParticipant {

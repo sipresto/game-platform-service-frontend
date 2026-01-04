@@ -9,7 +9,7 @@ export function ChatPanel({ chat }: { chat: Chat }) {
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <ChatHeader name={chat.name} />
             <MessageList chatId={chat.id} messages={chat.messages} participants={chat.participants} />
-            <MessageInput chatId={chat.id} />
+            <MessageInput chatId={chat.id} blocked={chat.blocked} />
         </Box>
     );
 }
