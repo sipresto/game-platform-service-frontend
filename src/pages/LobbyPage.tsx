@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
-import { Container, Alert, Box, CircularProgress } from '@mui/material';
+import {Container, Alert, Box, CircularProgress, Button} from '@mui/material';
 import { LobbyHeader } from '../components/lobby/LobbyHeader';
 import { CreateLobbyDialog } from '../components/lobby/CreateLobbyDialog';
 import { JoinLobbyDialog } from '../components/lobby/JoinLobbyDialog';
@@ -9,6 +9,7 @@ import { LobbyGrid } from '../components/lobby/LobbyGrid';
 import { LobbyEmptyState } from '../components/lobby/LobbyEmptyState';
 import { useLobbies, useLobbyActions } from "../hooks/useLobby";
 import { useGameDetails } from "../hooks/useGames";
+import { Add as AddIcon } from '@mui/icons-material';
 import type {
     CreateLobbyRequest,
     JoinLobbyRequest,
@@ -19,7 +20,7 @@ export const LobbyPage = () => {
     const { gameId } = useParams<{ gameId: string }>();
     const navigate = useNavigate();
 
-    const { lobbies, isLoading, error, refetch } = useLobbies(gameId);
+    const { lobbies, isLoading, error } = useLobbies(gameId);
     const { game, loading: gameLoading, error: gameError } = useGameDetails(gameId);
     const { createLobby, joinLobby } = useLobbyActions(gameId);
 
@@ -140,14 +141,21 @@ export const LobbyPage = () => {
         <Container maxWidth="lg" sx={{ py: 4 }}>
             <LobbyHeader
                 game={game}
-                onCreateLobby={() => setCreateDialogOpen(true)}
-                onRefresh={refetch}
             />
 
             <NotificationAlert
                 notification={notification}
                 onClose={() => setNotification(null)}
             />
+
+            <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setCreateDialogOpen(true)}
+                sx={{mb:"2em"}}
+            >
+                Create Lobby
+            </Button>
 
             {isLoading && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
@@ -170,6 +178,7 @@ export const LobbyPage = () => {
                     lobbies={lobbies}
                     onJoinLobby={handleJoinLobby}
                     isJoining={joinLobby.isPending}
+                    amount={game.maxPlayers}
                 />
             )}
 

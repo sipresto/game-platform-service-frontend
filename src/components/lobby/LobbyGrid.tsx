@@ -1,17 +1,15 @@
 import { Grid } from '@mui/material';
 import { LobbyCard } from './LobbyCard';
+import type {Lobby} from "../../model/lobby.ts";
 
 interface LobbyGridProps {
-    lobbies: Array<{
-        id: string;
-        currentPlayerCount: number;
-        isPrivate: boolean;
-    }>;
+    lobbies: Lobby[];
     onJoinLobby: (lobbyId: string, isPrivate: boolean) => void;
     isJoining?: boolean;
+    amount: number;
 }
 
-export const LobbyGrid = ({ lobbies, onJoinLobby, isJoining }: LobbyGridProps) => {
+export const LobbyGrid = ({ lobbies, onJoinLobby, isJoining, amount }: LobbyGridProps) => {
     return (
         <Grid container spacing={3}>
             {lobbies.map((lobby) => (
@@ -20,6 +18,7 @@ export const LobbyGrid = ({ lobbies, onJoinLobby, isJoining }: LobbyGridProps) =
                         lobby={lobby}
                         onJoinLobby={onJoinLobby}
                         isJoining={isJoining}
+                        amount={amount}
                     />
                 </Grid>
             ))}

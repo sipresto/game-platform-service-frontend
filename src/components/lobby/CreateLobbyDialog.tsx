@@ -27,7 +27,7 @@ export const CreateLobbyDialog = ({
             <DialogContent>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
                     <TextField
-                        label="Password"
+                        label="Password (optional)"
                         type="password"
                         value={password}
                         onChange={(e) => onPasswordChange(e.target.value)}

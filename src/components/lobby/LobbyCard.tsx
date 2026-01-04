@@ -1,4 +1,4 @@
-import { Card, CardContent, CardActions, Button, Box, Typography, Chip } from '@mui/material';
+import {Card, CardContent, CardActions, Button, Box, Typography, Chip, Stack} from '@mui/material';
 import { People as PeopleIcon, Lock as LockIcon, LockOpen as LockOpenIcon } from '@mui/icons-material';
 
 interface LobbyCardProps {
@@ -9,10 +9,11 @@ interface LobbyCardProps {
     };
     onJoinLobby: (lobbyId: string, isPrivate: boolean) => void;
     isJoining?: boolean;
+    amount: number;
     children?: React.ReactNode;
 }
 
-export const LobbyCard = ({ lobby, onJoinLobby, isJoining, children }: LobbyCardProps) => {
+export const LobbyCard = ({ lobby, onJoinLobby, isJoining, amount, children }: LobbyCardProps) => {
     const getLobbyName = (lobbyId: string) => {
         const idSuffix = lobbyId.slice(-6).toUpperCase();
         return `Game Room ${idSuffix}`;
@@ -25,32 +26,25 @@ export const LobbyCard = ({ lobby, onJoinLobby, isJoining, children }: LobbyCard
     return (
         <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardContent sx={{ flexGrow: 1 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                    <Box>
+                <Stack>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <Typography variant="h6" component="h3" gutterBottom>
                             {getLobbyName(lobby.id)}
                         </Typography>
-                        <Chip
-                            icon={<PeopleIcon />}
-                            label={`${lobby.currentPlayerCount} Player${lobby.currentPlayerCount !== 1 ? 's' : ''}`}
-                            color="primary"
-                            variant="outlined"
-                            size="small"
-                        />
+                        {lobby.isPrivate ? (
+                            <LockIcon color="warning" />
+                        ) : (
+                            <LockOpenIcon color="success" />
+                        )}
                     </Box>
-                    {lobby.isPrivate ? (
-                        <LockIcon color="warning" />
-                    ) : (
-                        <LockOpenIcon color="success" />
-                    )}
-                </Box>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
                     <Chip
-                        label={lobby.isPrivate ? 'Private' : 'Public'}
-                        size="small"
+                        icon={<PeopleIcon />}
+                        label={`${lobby.currentPlayerCount}/${amount} Players`}
+                        color="primary"
                         variant="outlined"
+                        size="small"
                     />
-                </Box>
+                </Stack>
             </CardContent>
             <CardActions sx={{ p: 2, pt: 0 }}>
                 <Button
