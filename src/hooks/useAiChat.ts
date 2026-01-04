@@ -56,7 +56,8 @@ export function useAiChat() {
         id: AI_CHAT_ID,
         name: 'AI Assistant',
         participants: [{ id: 'ai-bot', username: 'AI Assistant' }],
-        messages: messages
+        messages: messages,
+        blocked: false
     };
 
     return {

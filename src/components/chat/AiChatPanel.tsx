@@ -24,7 +24,7 @@ export function AiChatPanel({ chat, onSend, isThinking }: Props) {
                 participants={chat.participants}
             />
 
-            <MessageInput chatId={chat.id} onSendOverride={onSend} />
+            <MessageInput chatId={chat.id} blocked={false} onSendOverride={onSend} />
         </Box>
     );
 }

@@ -5,7 +5,7 @@ import { useSendMessage } from '../../hooks/useChats';
 
 const MAX_LENGTH = 1000;
 
-export function MessageInput({ chatId, onSendOverride }: { chatId: string, onSendOverride?: (msg: string) => void }) {
+export function MessageInput({ chatId, blocked, onSendOverride }: { chatId: string, blocked: boolean, onSendOverride?: (msg: string) => void }) {
     const [message, setMessage] = useState('');
     const { sendChatMessage: sendDbMessage } = useSendMessage(chatId);
 
@@ -55,13 +55,14 @@ export function MessageInput({ chatId, onSendOverride }: { chatId: string, onSen
                     onChange={e => setMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
                     error={isOverLimit}
+                    disabled={blocked}
                     sx={{
                         '& .MuiInputBase-root': {
                             alignItems: 'flex-end',
                         },
                     }}
                 />
-                <IconButton onClick={handleSend} disabled={isOverLimit}>
+                <IconButton onClick={handleSend} disabled={isOverLimit || blocked}>
                     <Send />
                 </IconButton>
             </Box>
