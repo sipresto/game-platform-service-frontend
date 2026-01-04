@@ -45,7 +45,6 @@ export function ProfileForm({
                     onChange={handleChange('username')}
                     required
                     error={!formState.username.trim()}
-                    helperText="Your unique login identifier"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -53,30 +52,6 @@ export function ProfileForm({
 
             <Grid size={{ xs: 12 }}>
                 <Divider />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                    fullWidth
-                    label="First Name"
-                    value={formState.firstName}
-                    onChange={handleChange('firstName')}
-                    required
-                    error={!formState.firstName.trim()}
-                    variant="outlined"
-                    disabled={isSubmitting}
-                />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                    fullWidth
-                    label="Last Name"
-                    value={formState.lastName}
-                    onChange={handleChange('lastName')}
-                    variant="outlined"
-                    disabled={isSubmitting}
-                />
             </Grid>
 
             <Grid size={{ xs: 12 }}>
@@ -87,7 +62,6 @@ export function ProfileForm({
                     onChange={handleChange('displayName')}
                     required
                     error={!formState.displayName.trim()}
-                    helperText="This name appears to other users in the app"
                     variant="outlined"
                     disabled={isSubmitting}
                 />
@@ -103,7 +77,6 @@ export function ProfileForm({
                     rows={4}
                     variant="outlined"
                     disabled={isSubmitting}
-                    helperText="Tell others a bit about yourself"
                 />
             </Grid>
 
@@ -116,7 +89,6 @@ export function ProfileForm({
                         aria-readonly={true}
                         variant="outlined"
                         disabled
-                        helperText="Email is managed through your account settings"
                     />
                 </Grid>
             )}

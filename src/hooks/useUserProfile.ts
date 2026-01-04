@@ -58,6 +58,7 @@ export function useUserProfile() {
         enabled: !!token,
         staleTime: 1000 * 60 * 5,
         retry: 1,
+        refetchOnMount: 'always',
     });
 
     return {
@@ -257,6 +258,7 @@ export function useAllUsers() {
         queryFn: () => getPublicUsers(),
         enabled: !!token,
         staleTime: 1000 * 60 * 5,
+        refetchOnMount: 'always',
     });
 
     const friendsQuery = useQuery({
@@ -264,6 +266,7 @@ export function useAllUsers() {
         queryFn: () => getFriendsList(),
         enabled: !!token,
         staleTime: 1000 * 60 * 5,
+        refetchOnMount: 'always',
     });
 
     return {
@@ -347,5 +350,6 @@ export function useBlockedUsers(): UseQueryResult<BlockedUser[], Error> {
         enabled: !!token,
         staleTime: 1000 * 60 * 5,
         retry: 1,
+        refetchOnMount: 'always',
     });
 }

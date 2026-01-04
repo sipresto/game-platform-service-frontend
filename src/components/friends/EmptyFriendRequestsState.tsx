@@ -25,10 +25,11 @@ export function EmptyFriendRequestsState({ onRefresh, isRefreshing }: EmptyFrien
         >
             {onRefresh && (
                 <Box sx={{ position: 'absolute', right: 16 }}>
-                    <Tooltip title="Refresh friend requests">
+                    <Tooltip title="Refresh friends requests">
                         <IconButton
                             onClick={handleRefresh}
                             disabled={isRefreshing}
+                            size="small"
                         >
                             <Refresh
                                 sx={{

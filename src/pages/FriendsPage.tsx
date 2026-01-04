@@ -5,16 +5,25 @@ import {
     Tabs,
     Tab,
     Badge,
-    Snackbar, CircularProgress, Box, Typography, Alert, AlertTitle
+    Snackbar,
+    Box,
+    Typography,
+    Alert,
+    AlertTitle
 } from '@mui/material';
 import { Group, PersonAdd, Block } from '@mui/icons-material';
-import { useAllUsers, useUserProfile, useBlockedUsers, useUnblockUser, useRemoveFriend } from '../hooks/useUserProfile';
+import {
+    useAllUsers,
+    useUserProfile,
+    useBlockedUsers,
+    useUnblockUser,
+    useRemoveFriend
+} from '../hooks/useUserProfile';
 import { FriendsList } from '../components/friends/FriendsList';
 import { FriendRequestsList } from '../components/friends/FriendRequestsList';
 import { BlockedUsersList } from '../components/friends/blocked/BlockedUsersList';
 import { TabPanel } from '../components/friends/TabPanel';
 import { useFriendsSnackbar } from '../hooks/useFriendsSnackbar';
-import { useFriendsRefresh } from '../hooks/useFriendsRefresh';
 
 export function FriendsPage() {
     const [currentTab, setCurrentTab] = useState(0);
@@ -22,39 +31,22 @@ export function FriendsPage() {
 
     const {
         friends,
-        isLoading: friendsLoading,
         isError: friendsError,
         error: friendsErrorMsg
     } = useAllUsers();
 
     const {
         profile,
-        isLoading: profileLoading,
-        error: profileError,
-        refetch: refetchProfile
+        error: profileError
     } = useUserProfile();
 
     const {
         data: blockedUsers = [],
-        isLoading: blockedLoading,
-        error: blockedError,
-        refetch: refetchBlockedUsers
+        error: blockedError
     } = useBlockedUsers();
 
     const unblockMutation = useUnblockUser();
     const removeFriendMutation = useRemoveFriend();
-
-    const {
-        isFriendsRefreshing,
-        isRequestsRefreshing,
-        isBlockedRefreshing,
-        handleRefreshFriends,
-        handleRefreshFriendRequests,
-        handleRefreshBlockedUsers
-    } = useFriendsRefresh({
-        refetchProfile,
-        refetchBlockedUsers
-    });
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setCurrentTab(newValue);
@@ -65,7 +57,7 @@ export function FriendsPage() {
             await unblockMutation.mutateAsync(userId);
             showSnackbar('User unblocked successfully', 'success');
         } catch {
-            showSnackbar('Failed to refresh friends list: ', 'error');
+            showSnackbar('Failed to unblock user', 'error');
         }
     };
 
@@ -78,47 +70,16 @@ export function FriendsPage() {
         }
     };
 
-    const handleRefreshFriendsWithFeedback = async () => {
-        try {
-            await handleRefreshFriends();
-            showSnackbar('Friends list refreshed successfully', 'success');
-        } catch {
-            showSnackbar('Failed to refresh friends list', 'error');
-        }
-    };
-
-    const handleRefreshFriendRequestsWithFeedback = async () => {
-        try {
-            await handleRefreshFriendRequests();
-            showSnackbar('Friend requests refreshed successfully', 'success');
-        } catch {
-            showSnackbar('Failed to refresh friend requests', 'error');
-        }
-    };
-
-    const handleRefreshBlockedUsersWithFeedback = async () => {
-        try {
-            await handleRefreshBlockedUsers();
-            showSnackbar('Blocked users refreshed successfully', 'success');
-        } catch {
-            showSnackbar('Failed to refresh blocked users', 'error');
-        }
-    };
-
-    if (friendsLoading || profileLoading || blockedLoading) {
-        return (<Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
-            <CircularProgress />
-        </Box>)
-    }
-
     const errorMessage = friendsErrorMsg?.message || profileError?.message || blockedError?.message;
     if (friendsError || profileError || blockedError) {
-        return (<Container maxWidth="lg" sx={{ py: 4 }}>
-            <Alert severity="error">
-                <AlertTitle>Error Loading Data</AlertTitle>
-                {errorMessage || 'Failed to load data. Please try again later.'}
-            </Alert>
-        </Container>);
+        return (
+            <Container maxWidth="lg" sx={{ py: 4 }}>
+                <Alert severity="error">
+                    <AlertTitle>Error Loading Data</AlertTitle>
+                    {errorMessage || 'Failed to load data. Please try again later.'}
+                </Alert>
+            </Container>
+        );
     }
 
     const friendRequests = profile?.incomingFriendRequests || [];
@@ -144,7 +105,6 @@ export function FriendsPage() {
                     sx={{
                         '& .MuiTab-root': {
                             color: 'custom.tabs.inactive',
-
                             '&:hover': {
                                 color: 'custom.tabs.hover',
                             },
@@ -186,16 +146,12 @@ export function FriendsPage() {
                 <FriendsList
                     friends={friends}
                     onRemoveFriend={handleRemoveFriend}
-                    onRefresh={handleRefreshFriendsWithFeedback}
-                    isRefreshing={isFriendsRefreshing}
                 />
             </TabPanel>
 
             <TabPanel value={currentTab} index={1}>
                 <FriendRequestsList
                     friendRequests={friendRequests}
-                    onRefresh={handleRefreshFriendRequestsWithFeedback}
-                    isRefreshing={isRequestsRefreshing}
                 />
             </TabPanel>
 
@@ -203,8 +159,6 @@ export function FriendsPage() {
                 <BlockedUsersList
                     blockedUsers={blockedUsers}
                     onUnblock={handleUnblock}
-                    onRefresh={handleRefreshBlockedUsersWithFeedback}
-                    isRefreshing={isBlockedRefreshing}
                 />
             </TabPanel>
 

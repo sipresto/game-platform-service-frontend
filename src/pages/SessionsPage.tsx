@@ -11,7 +11,6 @@ import {
     TextField,
     Typography
 } from '@mui/material';
-import {SortByAlpha} from '@mui/icons-material';
 import {SessionList} from "../components/sessions/SessionList";
 import {FilterChips} from "../components/sessions/FilterChips";
 import {useSessions} from '../hooks/useSessions';
@@ -117,7 +116,7 @@ export function SessionsPage() {
                             fullWidth
                             variant="outlined"
                             onClick={handleSortDirectionToggle}
-                            startIcon={sortDirection === 'asc' ? <SortByAlpha /> : <SortByAlpha />}
+                            startIcon={sortDirection === 'asc'}
                             sx={{
                                 height: '40px', color: 'text.primary', borderColor: 'action.disabled',
                                 '&:hover': {
@@ -126,7 +125,7 @@ export function SessionsPage() {
                             }}
                             size="small"
                         >
-                            {sortDirection === 'asc' ? 'Asc' : 'Desc'}
+                            {sortDirection === 'asc' ? 'Ascending' : 'Descending'}
                         </Button>
                     </Grid>
 
