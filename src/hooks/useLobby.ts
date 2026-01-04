@@ -46,7 +46,9 @@ export function useLobbies(gameId: string | undefined) {
 
     return {
         ...query,
-        lobbies: query.data ?? [],
+        availableLobbies: query.data?.availableLobbies ?? [],
+        currentLobby: query.data?.currentLobby ?? null,
+        differentGameName: query.data?.differentGameName ?? null,
     };
 }
 
@@ -127,8 +129,9 @@ export function useLobbyActions(gameId: string | undefined) {
 
     const leaveMutation = useMutation({
         mutationFn: ({ lobbyId }: { lobbyId: string }) => leaveLobby(lobbyId),
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['lobbies', gameId] });
+        onSuccess: async (_, variables) => {
+            await queryClient.invalidateQueries({ queryKey: ['lobbies'] });
+            await queryClient.invalidateQueries({ queryKey: ['lobby', variables.lobbyId] });
         },
     });
 

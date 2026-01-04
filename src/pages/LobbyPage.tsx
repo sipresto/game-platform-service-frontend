@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import {Container, Alert, Box, CircularProgress, Button} from '@mui/material';
 import { LobbyHeader } from '../components/lobby/LobbyHeader';
@@ -15,17 +15,19 @@ import type {
     JoinLobbyRequest,
     LobbyCreatedResponse
 } from '../model/lobby';
+import { AlreadyInLobbyDialog } from "../components/lobby/AlreadyInLobbyDialog.tsx";
 
 export const LobbyPage = () => {
     const { gameId } = useParams<{ gameId: string }>();
     const navigate = useNavigate();
 
-    const { lobbies, isLoading, error } = useLobbies(gameId);
+    const { availableLobbies: lobbies, currentLobby, differentGameName, isLoading, error } = useLobbies(gameId);
     const { game, loading: gameLoading, error: gameError } = useGameDetails(gameId);
-    const { createLobby, joinLobby } = useLobbyActions(gameId);
+    const { createLobby, joinLobby, leaveLobby } = useLobbyActions(gameId);
 
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [joinDialogOpen, setJoinDialogOpen] = useState(false);
+    const [alreadyInLobbyDialogOpen, setAlreadyInLobbyDialogOpen] = useState(false);
     const [selectedLobbyId, setSelectedLobbyId] = useState<string | null>(null);
 
     const [password, setPassword] = useState('');
@@ -36,8 +38,44 @@ export const LobbyPage = () => {
         message: string;
     } | null>(null);
 
+    useEffect(() => {
+        if (!isLoading && currentLobby) {
+            if (differentGameName !== null) {
+                setAlreadyInLobbyDialogOpen(true);
+            } else {
+                const storedLobbyId = localStorage.getItem('currentLobbyId');
+                if (storedLobbyId === currentLobby.id) {
+                    navigate(`/game/${gameId}/lobby/${currentLobby.id}`);
+                }
+            }
+        }
+    }, [currentLobby, differentGameName, isLoading, gameId, navigate]);
+
     const showNotification = (type: 'success' | 'error', message: string) => {
         setNotification({ type, message });
+    };
+
+    const handleLeaveDifferentGameLobby = () => {
+        if (!currentLobby) return;
+
+        leaveLobby.mutate(
+            { lobbyId: currentLobby.id },
+            {
+                onSuccess: () => {
+                    localStorage.removeItem('currentLobbyId');
+                    localStorage.removeItem(`game_${currentLobby.id}_url`);
+                    setAlreadyInLobbyDialogOpen(false);
+                    showNotification('success', 'Left previous lobby successfully');
+                },
+                onError: () => {
+                    showNotification('error', 'Failed to leave lobby. Please try again.');
+                },
+            }
+        );
+    };
+
+    const handleReturnToLibrary = () => {
+        navigate('/library');
     };
 
     const handleJoinLobby = (lobbyId: string, isPrivateLobby: boolean) => {
@@ -199,6 +237,15 @@ export const LobbyPage = () => {
                 onPasswordChange={setJoinPassword}
                 onJoinLobby={handleJoinWithPassword}
                 isJoining={joinLobby.isPending}
+            />
+
+            <AlreadyInLobbyDialog
+                open={alreadyInLobbyDialogOpen}
+                onClose={() => setAlreadyInLobbyDialogOpen(false)}
+                onLeaveCurrent={handleLeaveDifferentGameLobby}
+                onReturnToLibrary={handleReturnToLibrary}
+                currentGameName={differentGameName || ''}
+                isLeaving={leaveLobby.isPending}
             />
         </Container>
     );
