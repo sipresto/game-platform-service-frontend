@@ -129,9 +129,9 @@ export function useLobbyActions(gameId: string | undefined) {
 
     const leaveMutation = useMutation({
         mutationFn: ({ lobbyId }: { lobbyId: string }) => leaveLobby(lobbyId),
-        onSuccess: async (_, variables) => {
+        onSettled: async (_, __, variables) => {
             await queryClient.invalidateQueries({ queryKey: ['lobbies'] });
-            await queryClient.invalidateQueries({ queryKey: ['lobby', variables.lobbyId] });
+            queryClient.removeQueries({ queryKey: ['lobby', variables.lobbyId] });
         },
     });
 

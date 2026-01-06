@@ -63,8 +63,9 @@ export const LobbyRoomPage = () => {
             { lobbyId },
             {
                 onSuccess: () => {
+                    navigate(`/lobby/${gameId}`, { replace: true });
+                    localStorage.removeItem('currentLobbyId');
                     localStorage.removeItem(`game_${lobbyId}_url`);
-                    navigate(`/lobby/${gameId}`);
                 },
                 onError: () => {
                     setNotification({
@@ -189,7 +190,7 @@ export const LobbyRoomPage = () => {
                         <Button
                             color="inherit"
                             size="small"
-                            onClick={() => navigate(`/game/${gameId}/lobbies`)}
+                            onClick={() => navigate(`/library`)}
                         >
                             Return to lobbies
                         </Button>
