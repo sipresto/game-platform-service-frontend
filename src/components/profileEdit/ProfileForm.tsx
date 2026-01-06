@@ -47,6 +47,18 @@ export function ProfileForm({
                     error={!formState.username.trim()}
                     variant="outlined"
                     disabled={isSubmitting}
+                    slotProps={{
+                        htmlInput: {
+                            maxLength: 100
+                        },
+                        formHelperText: {
+                            style: {
+                                textAlign: 'right',
+                                marginLeft: 'auto'
+                            }
+                        }
+                    }}
+                    helperText={`${formState.username.length}/100`}
                 />
             </Grid>
 
@@ -64,6 +76,18 @@ export function ProfileForm({
                     error={!formState.displayName.trim()}
                     variant="outlined"
                     disabled={isSubmitting}
+                    slotProps={{
+                        htmlInput: {
+                            maxLength: 100
+                        },
+                        formHelperText: {
+                            style: {
+                                textAlign: 'right',
+                                marginLeft: 'auto'
+                            }
+                        }
+                    }}
+                    helperText={`${formState.displayName.length}/100`}
                 />
             </Grid>
 
@@ -77,6 +101,18 @@ export function ProfileForm({
                     rows={4}
                     variant="outlined"
                     disabled={isSubmitting}
+                    slotProps={{
+                        htmlInput: {
+                            maxLength: 500
+                        },
+                        formHelperText: {
+                            style: {
+                                textAlign: 'right',
+                                marginLeft: 'auto'
+                            }
+                        }
+                    }}
+                    helperText={`${formState.bio.length}/500`}
                 />
             </Grid>
 

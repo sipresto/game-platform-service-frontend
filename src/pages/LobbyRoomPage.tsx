@@ -44,7 +44,6 @@ export const LobbyRoomPage = () => {
     } | null>(null);
 
     useEffect(() => {
-        // Fetch friends when component is mounted
         const fetchFriends = async () => {
             try {
                 const friendsList = await getFriendsList();
