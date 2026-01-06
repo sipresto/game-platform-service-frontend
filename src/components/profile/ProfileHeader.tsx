@@ -49,7 +49,13 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
                 transition: 'background 0.3s ease',
             }}
         >
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                gap: 2
+            }}>
                 <Avatar
                     src={profileImageUrl || undefined}
                     sx={{
@@ -57,7 +63,6 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
                         height: 120,
                         fontSize: 48,
                         bgcolor: 'primary.main',
-                        mb: 2,
                         border: '4px solid transparent',
                         ...borderStyle
                     }}
@@ -72,48 +77,89 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
                         size="small"
                         color="secondary"
                         variant="outlined"
-                        sx={{ mb: 2, fontWeight: 'bold' }}
+                        sx={{ fontWeight: 'bold' }}
                     />
                 )}
 
-                <Typography variant="h4" fontWeight={700} gutterBottom>
-                    {displayName}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                    @{user.username}
-                </Typography>
+                <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
+                }}>
+                    <Typography
+                        variant="h4"
+                        fontWeight={700}
+                        sx={{
+                            width: '100%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        {displayName}
+                    </Typography>
+                    <Typography
+                        variant="body1"
+                        sx={{
+                            width: '100%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        @{user.username}
+                    </Typography>
+                </Box>
 
                 {user.profile?.bio && (
-                    <Box sx={{ width: '100%', mb: 3 }}>
-                        <Typography variant="overline" fontWeight={600}>
+                    <Box sx={{
+                        width: '100%',
+                        textAlign: 'left',
+                        mt: 1
+                    }}>
+                        <Typography
+                            variant="overline"
+                            fontWeight={600}
+                            display="block"
+                        >
                             About
                         </Typography>
-                        <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>
+                        <Typography
+                            variant="body2"
+                            sx={{
+                                mt: 1,
+                                whiteSpace: 'pre-wrap',
+                                overflowWrap: 'break-word',
+                                maxHeight: '200px',
+                                overflow: 'auto'
+                            }}
+                        >
                             {user.profile.bio}
                         </Typography>
                     </Box>
                 )}
 
-                {!isOwnProfile ? (
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        startIcon={<ChatBubble />}
-                        onClick={handleStartChat}
-                        sx={{ mt: 2 }}
-                    >
-                        Send message
-                    </Button>
-                ) : (
-                    <Button
-                        fullWidth
-                        variant="outlined"
-                        onClick={handleProfileEdit}
-                        sx={{ mt: 2 }}
-                    >
-                        Edit Profile
-                    </Button>
-                )}
+                <Box sx={{ width: '100%', mt: 2 }}>
+                    {!isOwnProfile ? (
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            startIcon={<ChatBubble />}
+                            onClick={handleStartChat}
+                        >
+                            Send message
+                        </Button>
+                    ) : (
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            onClick={handleProfileEdit}
+                        >
+                            Edit Profile
+                        </Button>
+                    )}
+                </Box>
             </Box>
         </Paper>
     );
