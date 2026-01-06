@@ -10,7 +10,7 @@ interface LobbyHeaderProps {
 
 export const LobbyHeader = ({ game }: LobbyHeaderProps) => {
     return (
-        <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ mb: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Box>
                 <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
                     {game?.name || 'Game'} Lobbies
