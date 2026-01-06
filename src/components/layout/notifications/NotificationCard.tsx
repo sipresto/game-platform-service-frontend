@@ -53,6 +53,14 @@ export function NotificationCard({ notification: n, }: NotificationCardProps) {
                     readNotification(n.notificationId);
                 }
             }}
+
+            sx={{
+                backgroundColor: n.read ? 'transparent' : 'rgba(0, 0, 0, 0.15)',
+                '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                },
+            }}
+
         >
             <ListItemIcon sx={{ minWidth: 36 }}>
                 {getNotificationIcon(n.notificationType)}
