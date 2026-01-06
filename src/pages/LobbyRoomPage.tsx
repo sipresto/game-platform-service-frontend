@@ -219,9 +219,9 @@ export const LobbyRoomPage = () => {
                         <Button
                             color="inherit"
                             size="small"
-                            onClick={() => navigate(`/game/${gameId}/lobbies`)}
+                            onClick={() => navigate(`/library`)}
                         >
-                            Return to lobbies
+                            Return to library
                         </Button>
                     }
                 >
